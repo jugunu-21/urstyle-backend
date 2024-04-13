@@ -65,12 +65,15 @@ export const authController = {
     { body: { email, password } }: IBodyRequest<SignUpPayload>,
     res: Response
   ) => {
-    // console.log('hheeeeoo', { email, password })
+    
+    console.log('hheeeeoo', { email, password })
     const session = await startSession()
+    console.log("heehehe",session)
     try {
       const isUserExist = await userService.isExistByEmail(email)
 
       if (isUserExist) {
+     
         return res.status(StatusCodes.CONFLICT).json({
           message: ReasonPhrases.CONFLICT,
           status: StatusCodes.CONFLICT
@@ -79,7 +82,6 @@ export const authController = {
 
       session.startTransaction()
       const hashedPassword = await createHash(password)
-
       const user = await userService.create(
         {
           email,
@@ -132,6 +134,7 @@ export const authController = {
         status: StatusCodes.OK
       })
     } catch (error) {
+      console.log(error)
       winston.error(error)
 
       if (session.inTransaction()) {

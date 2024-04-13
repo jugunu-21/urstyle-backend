@@ -78,21 +78,22 @@ export const authValidation = {
         // console.log('hurreeee',req.body.email,' ',req.body.password,' ',normalizedEmail)
       if (normalizedEmail) {
         normalizedEmail = validator.trim(normalizedEmail)
-        console.log('hurreeee11',req.body.email,' ',req.body.password,' ',normalizedEmail)
+        // console.log('hurreeee11',req.body.email,' ',req.body.password,' ',normalizedEmail)
       } 
      
       if (
         !normalizedEmail ||
         !validator.isEmail(normalizedEmail, { allow_utf8_local_part: false })
       ) {
+    
         return res.status(StatusCodes.BAD_REQUEST).json({
           message: ReasonPhrases.BAD_REQUEST,
           status: StatusCodes.BAD_REQUEST
         })
       }
-
+     
       Object.assign(req.body, { email: normalizedEmail })
-
+      // console.log('hurreeee4442',req.body.email,' ',req.body.password,' ',normalizedEmail)
       return next()
     } catch (error) {
    

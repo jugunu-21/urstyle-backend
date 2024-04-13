@@ -29,7 +29,8 @@ export class Image {
     const conversionsPath = join(this.image.destination, 'conversions')
     const filePath = join(
       conversionsPath,
-      `${fileName}.${mime.getExtension(this.image.mimetype)}`
+     
+      `${fileName}.${mime.extension(this.image.mimetype)}`
     )
 
     const fileFullPath = joinRelativeToMainPath(filePath)

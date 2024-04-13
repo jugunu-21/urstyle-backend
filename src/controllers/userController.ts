@@ -154,7 +154,7 @@ export const userController = {
       const verification = await verificationService.getByValidAccessToken(
         params.accessToken
       )
-
+// console.log(params.accessToken)
       if (!verification) {
         return res.status(StatusCodes.FORBIDDEN).json({
           message: ReasonPhrases.FORBIDDEN,
