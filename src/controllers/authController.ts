@@ -51,7 +51,7 @@ export const authController = {
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       })
-    } catch (error) {
+    } catch (error) { 
       winston.error(error)
 
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -65,6 +65,7 @@ export const authController = {
     { body: { email, password } }: IBodyRequest<SignUpPayload>,
     res: Response
   ) => {
+    // console.log('hheeeeoo', { email, password })
     const session = await startSession()
     try {
       const isUserExist = await userService.isExistByEmail(email)

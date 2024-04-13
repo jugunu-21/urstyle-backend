@@ -60,6 +60,7 @@ export const authValidation = {
     next: NextFunction
   ) => {
     try {
+  
       if (
         !req.body.email ||
         !req.body.password ||
@@ -70,13 +71,16 @@ export const authValidation = {
           status: StatusCodes.BAD_REQUEST
         })
       }
-
+   
+    
       let normalizedEmail =
         req.body.email && validator.normalizeEmail(req.body.email)
+        // console.log('hurreeee',req.body.email,' ',req.body.password,' ',normalizedEmail)
       if (normalizedEmail) {
         normalizedEmail = validator.trim(normalizedEmail)
-      }
-
+        console.log('hurreeee11',req.body.email,' ',req.body.password,' ',normalizedEmail)
+      } 
+     
       if (
         !normalizedEmail ||
         !validator.isEmail(normalizedEmail, { allow_utf8_local_part: false })
@@ -91,6 +95,7 @@ export const authValidation = {
 
       return next()
     } catch (error) {
+   
       winston.error(error)
 
       return res.status(StatusCodes.BAD_REQUEST).json({
