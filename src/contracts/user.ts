@@ -15,6 +15,8 @@ export interface IResetPassword {
 
 export interface IUser {
   id: ObjectId
+  phone_number: string
+  otp:string
   email: string
   password: string
   firstName?: string
@@ -30,7 +32,8 @@ export interface IUserMethods {
 
 export type UserModel = Model<IUser, unknown, IUserMethods>
 
-export type VerificationRequestPayload = Pick<IUser, 'email'>
+export type VerificationRequestPayload = Pick<IUser, 'email' | 'phone_number'>;
+
 
 export type UpdateProfilePayload = Required<
   Pick<IUser, 'firstName' | 'lastName'>

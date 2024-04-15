@@ -7,10 +7,14 @@ export const userService = {
     {
       email,
       password,
+      phone_number,
+      otp,
       verified = false
     }: {
       email: string
       password: string
+      phone_number: string
+      otp: string
       verified?: boolean
     },
     session?: ClientSession
@@ -18,6 +22,8 @@ export const userService = {
     new User({
       email,
       password,
+      phone_number,
+      otp,
       verified
     }).save({ session }),
 
@@ -26,7 +32,7 @@ export const userService = {
   getByEmail: (email: string) => User.findOne({ email }),
 
   isExistByEmail: (email: string) => User.exists({ email }),
-
+  isExistByphone_number: (phone_number: string) => User.exists({ phone_number }),
   updatePasswordByUserId: (
     userId: ObjectId,
     password: string,

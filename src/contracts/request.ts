@@ -9,8 +9,9 @@ export interface IContextRequest<T> extends Omit<Request, 'context'> {
 }
 
 export interface IBodyRequest<T> extends Omit<Request, 'body'> {
-  body: T
+  body: T & { email?: string; phone_number?: string };
 }
+
 
 export interface IParamsRequest<T> extends Request {
   params: T & ParamsDictionary

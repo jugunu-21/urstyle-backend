@@ -30,7 +30,7 @@ import { redis } from '@/dataSources'
 
 export const authController = {
   signIn: async (
-    { body: { email, password } }: IBodyRequest<SignInPayload>,
+    { body: { email, password,phone_number } }: IBodyRequest<SignInPayload>,
     res: Response
   ) => {
     try {
@@ -62,17 +62,17 @@ export const authController = {
   },
 
   signUp: async (
-    { body: { email, password } }: IBodyRequest<SignUpPayload>,
+    { body: { email, password,phone_number } }: IBodyRequest<SignUpPayload>,
     res: Response
   ) => {
     
-    console.log('hheeeeoo', { email, password })
+    // console.log('hheeeeoo', { email, password, phone_number })
     const session = await startSession()
     console.log("heehehe",session)
     try {
-      const isUserExist = await userService.isExistByEmail(email)
-
-      if (isUserExist) {
+      const isUserExistbyemail = await userService.isExistByEmail(email)
+      const isUserExistbyphonenumber = await userService.isExistByphone_number(phone_number)
+      if (isUserExistbyemail||isUserExistbyphonenumber) {
      
         return res.status(StatusCodes.CONFLICT).json({
           message: ReasonPhrases.CONFLICT,
@@ -81,11 +81,14 @@ export const authController = {
       }
 
       session.startTransaction()
+      const genotp = Math.floor(100000 + Math.random() * 900000).toString();
       const hashedPassword = await createHash(password)
       const user = await userService.create(
         {
           email,
-          password: hashedPassword
+          password: hashedPassword,
+          phone_number,
+          otp: genotp,
         },
         session
       )

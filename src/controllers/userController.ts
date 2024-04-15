@@ -63,39 +63,43 @@ export const userController = {
   verificationRequest: async (
     {
       context: { user },
-      body: { email }
+      body: { email, phone_number }
     }: ICombinedRequest<IUserRequest, VerificationRequestPayload>,
     res: Response
   ) => {
-    const session = await startSession()
-
+    const session = await startSession();
+  
     try {
-      if (user.email !== email) {
-        const user = await userService.getByEmail(email)
-        if (user) {
-          return res.status(StatusCodes.CONFLICT).json({
-            message: ReasonPhrases.CONFLICT,
-            status: StatusCodes.CONFLICT
-          })
-        }
+      let existingUser;
+  
+      if (email) {
+        existingUser = await userService.getByEmail(email);
+      } else if (phone_number) {
+        // You can add logic here to retrieve user by phone number if needed
+        // existingUser = await userService.getByPhoneNumber(phone_number);
       }
-
-      session.startTransaction()
-      const cryptoString = createCryptoString()
-
-      const dateFromNow = createDateAddDaysFromNow(ExpiresInDays.Verification)
-
-      let verification =
-        await verificationService.findOneAndUpdateByUserIdAndEmail(
-          {
-            userId: user.id,
-            email,
-            accessToken: cryptoString,
-            expiresIn: dateFromNow
-          },
-          session
-        )
-
+  
+      if (existingUser) {
+        return res.status(StatusCodes.CONFLICT).json({
+          message: ReasonPhrases.CONFLICT,
+          status: StatusCodes.CONFLICT
+        });
+      }
+  
+      session.startTransaction();
+      const cryptoString = createCryptoString();
+      const dateFromNow = createDateAddDaysFromNow(ExpiresInDays.Verification);
+  
+      let verification = await verificationService.findOneAndUpdateByUserIdAndEmail(
+        {
+          userId: user.id,
+          email,
+          accessToken: cryptoString,
+          expiresIn: dateFromNow
+        },
+        session
+      );
+  
       if (!verification) {
         verification = await verificationService.create(
           {
@@ -105,104 +109,107 @@ export const userController = {
             expiresIn: dateFromNow
           },
           session
-        )
-
+        );
+  
         await userService.addVerificationToUser(
           {
             userId: user.id,
             verificationId: verification.id
           },
           session
-        )
+        );
       }
-
-      const userMail = new UserMail()
-
+  
+      const userMail = new UserMail();
+  
       userMail.verification({
-        email: user.email,
+        email: email,
+         // Use email if provided, otherwise use phone_number
         accessToken: cryptoString
-      })
-
-      await session.commitTransaction()
-      session.endSession()
-
+      });
+  
+      await session.commitTransaction();
+      session.endSession();
+  
       return res.status(StatusCodes.OK).json({
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
-      })
+      });
     } catch (error) {
-      winston.error(error)
-
+      winston.error(error);
+  
       if (session.inTransaction()) {
-        await session.abortTransaction()
-        session.endSession()
+        await session.abortTransaction();
+        session.endSession();
       }
-
+  
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: ReasonPhrases.BAD_REQUEST,
         status: StatusCodes.BAD_REQUEST
-      })
+      });
     }
   },
-
+  
   verification: async (
     { params }: IParamsRequest<{ accessToken: string }>,
     res: Response
   ) => {
-    const session = await startSession()
+    const session = await startSession();
     try {
       const verification = await verificationService.getByValidAccessToken(
         params.accessToken
-      )
-// console.log(params.accessToken)
+      );
+  
       if (!verification) {
         return res.status(StatusCodes.FORBIDDEN).json({
           message: ReasonPhrases.FORBIDDEN,
           status: StatusCodes.FORBIDDEN
-        })
+        });
       }
-
-      session.startTransaction()
-
+  
+      session.startTransaction();
+  
       await userService.updateVerificationAndEmailByUserId(
         verification.user,
         verification.email,
         session
-      )
-
-      await verificationService.deleteManyByUserId(verification.user, session)
-
-      const { accessToken } = jwtSign(verification.user)
-
-      const userMail = new UserMail()
-
+      );
+  
+      await verificationService.deleteManyByUserId(verification.user, session);
+  
+      const { accessToken } = jwtSign(verification.user);
+  
+      const userMail = new UserMail();
+  
       userMail.successfullyVerified({
         email: verification.email
-      })
-
-      await session.commitTransaction()
-      session.endSession()
-
+      });
+  
+      await session.commitTransaction();
+      session.endSession();
+  
       return res.status(StatusCodes.OK).json({
         data: { accessToken },
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
-      })
+      });
     } catch (error) {
-      winston.error(error)
-
+      winston.error(error);
+  
       if (session.inTransaction()) {
-        await session.abortTransaction()
-        session.endSession()
+        await session.abortTransaction();
+        session.endSession();
       }
-
+  
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: ReasonPhrases.BAD_REQUEST,
         status: StatusCodes.BAD_REQUEST
-      })
+      });
     }
   },
+  
 
+ 
   updateProfile: async (
     {
       context: { user },

@@ -64,12 +64,13 @@ export const authValidation = {
       if (
         !req.body.email ||
         !req.body.password ||
-        !validator.isLength(req.body.password, { min: 6, max: 48 })
+        !validator.isLength(req.body.password, { min: 6, max: 48 }) ||
+        !req.body.phone_number
       ) {
         return res.status(StatusCodes.BAD_REQUEST).json({
           message: ReasonPhrases.BAD_REQUEST,
           status: StatusCodes.BAD_REQUEST
-        })
+        });
       }
    
     
