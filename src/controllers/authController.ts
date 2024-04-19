@@ -81,14 +81,14 @@ export const authController = {
       }
 
       session.startTransaction()
-      const genotp = Math.floor(100000 + Math.random() * 900000).toString();
+      // const genotp = Math.floor(100000 + Math.random() * 900000).toString();
       const hashedPassword = await createHash(password)
       const user = await userService.create(
         {
           email,
           password: hashedPassword,
           phone_number,
-          otp: genotp,
+          // otp: genotp,
         },
         session
       )

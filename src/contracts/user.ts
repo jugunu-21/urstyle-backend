@@ -16,7 +16,7 @@ export interface IResetPassword {
 export interface IUser {
   id: ObjectId
   phone_number: string
-  otp:string
+  // otp:string
   email: string
   password: string
   firstName?: string

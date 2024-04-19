@@ -8,13 +8,13 @@ export const userService = {
       email,
       password,
       phone_number,
-      otp,
+      // otp,
       verified = false
     }: {
       email: string
       password: string
       phone_number: string
-      otp: string
+      // otp: string
       verified?: boolean
     },
     session?: ClientSession
@@ -23,7 +23,7 @@ export const userService = {
       email,
       password,
       phone_number,
-      otp,
+      // otp,
       verified
     }).save({ session }),
 
