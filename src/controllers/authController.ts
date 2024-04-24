@@ -2,7 +2,7 @@ import { Response } from 'express'
 import { startSession } from 'mongoose'
 import { StatusCodes, ReasonPhrases } from 'http-status-codes'
 import winston from 'winston'
-
+import { checkPhoneNumber } from '@/authutils'
 import { ExpiresInDays } from '@/constants'
 import {
   NewPasswordPayload,
@@ -68,7 +68,7 @@ export const authController = {
     
     // console.log('hheeeeoo', { email, password, phone_number })
     const session = await startSession()
-    console.log("heehehe",session)
+    // console.log("heehehe",session)
     try {
       const isUserExistbyemail = await userService.isExistByEmail(email)
       const isUserExistbyphonenumber = await userService.isExistByphone_number(phone_number)
@@ -80,6 +80,17 @@ export const authController = {
         })
       }
 
+
+      const phoneNumber = `+${phone_number}`;
+
+      // Replace with the phone number you want to check
+      const isAssociated = await checkPhoneNumber(phoneNumber);
+       if (!isAssociated) {
+        return res.status(StatusCodes.CONFLICT).json({
+        message: 'The phone number is not  associated with a user account.',
+        status: StatusCodes.CONFLICT
+        });
+        }
       session.startTransaction()
       // const genotp = Math.floor(100000 + Math.random() * 900000).toString();
       const hashedPassword = await createHash(password)
@@ -92,7 +103,7 @@ export const authController = {
         },
         session
       )
-
+      
       const cryptoString = createCryptoString()
 
       const dateFromNow = createDateAddDaysFromNow(ExpiresInDays.Verification)

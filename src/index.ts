@@ -1,6 +1,7 @@
 import express, { Express } from 'express'
 import { join } from 'path'
-import 'dotenv/config'
+require('dotenv').config();
+
 
 import '@/infrastructure/logger'
 import { mongoose, redis } from '@/dataSources'
