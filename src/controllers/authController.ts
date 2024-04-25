@@ -30,22 +30,25 @@ import { redis } from '@/dataSources'
 
 export const authController = {
   signIn: async (
-    { body: { email, password, phone_number } }: IBodyRequest<SignInPayload>,
+    { body: { phone_number } }: IBodyRequest<SignInPayload>,
+    // { body: { email, password, phone_number } }: IBodyRequest<SignInPayload>,
     res: Response
   ) => {
     try {
-      const user = await userService.getByEmail(email)
+      // const user = await userService.getByEmail(email)
       const userbyphonenumber = await userService.getByphone_number(phone_number)
-      const comparePassword = user?.comparePassword(password)
-      if (!user || !comparePassword || !userbyphonenumber) {
+      // const comparePassword = user?.comparePassword(password)
+      if (!userbyphonenumber) {
+      // if (!user || !comparePassword || !userbyphonenumber) {
+
         return res.status(StatusCodes.NOT_FOUND).json({
           message: ReasonPhrases.NOT_FOUND,
           status: StatusCodes.NOT_FOUND
         })
       }
 
-      const { accessToken } = jwtSign(user.id)
-
+      // const { accessToken } = jwtSign(user.id)
+      const { accessToken } = jwtSign(userbyphonenumber.id)
       return res.status(StatusCodes.OK).json({
         data: { accessToken },
         message: ReasonPhrases.OK,

@@ -18,30 +18,32 @@ export const authValidation = {
     next: NextFunction
   ) => {
     try {
-      if (!req.body.email || !req.body.password|| !req.body.phone_number) {
+      // if (!req.body.email || !req.body.password || !req.body.phone_number) {
+        if ( !req.body.phone_number) {
         return res.status(StatusCodes.BAD_REQUEST).json({
           message: ReasonPhrases.BAD_REQUEST,
           status: StatusCodes.BAD_REQUEST
         })
       }
+      let phonenumber = req.body.phone_number
+     
+      // let normalizedEmail =
+      //   req.body.email && validator.normalizeEmail(req.body.email)
+      // if (normalizedEmail) {
+      //   normalizedEmail = validator.trim(normalizedEmail)
+      // }
 
-      let normalizedEmail =
-        req.body.email && validator.normalizeEmail(req.body.email)
-      if (normalizedEmail) {
-        normalizedEmail = validator.trim(normalizedEmail)
-      }
+      // if (
+      //   !normalizedEmail ||
+      //   !validator.isEmail(normalizedEmail, { allow_utf8_local_part: false })
+      // ) {
+      //   return res.status(StatusCodes.BAD_REQUEST).json({
+      //     message: ReasonPhrases.BAD_REQUEST,
+      //     status: StatusCodes.BAD_REQUEST
+      //   })
+      // }
 
-      if (
-        !normalizedEmail ||
-        !validator.isEmail(normalizedEmail, { allow_utf8_local_part: false })
-      ) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-          message: ReasonPhrases.BAD_REQUEST,
-          status: StatusCodes.BAD_REQUEST
-        })
-      }
-
-      Object.assign(req.body, { email: normalizedEmail })
+      Object.assign(req.body, { phone_number: phonenumber })
 
       return next()
     } catch (error) {

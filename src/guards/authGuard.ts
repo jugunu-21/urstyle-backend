@@ -24,9 +24,9 @@ export const authGuard = {
     res: Response,
     next: NextFunction
   ) => {
-    console.log("heyyy")
+   
     if (!user) {
-      console.log("heyyyinside usernot there")
+  
       return next()
     }
 
