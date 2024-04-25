@@ -14,6 +14,7 @@ export const auth = (router: Router): void => {
 
   router.post(
     '/auth/sign-up',
+    // console.log("heyy"),
     authGuard.isGuest,
     authValidation.signUp,
     authController.signUp

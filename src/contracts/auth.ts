@@ -1,6 +1,6 @@
 import { IUser } from './user'
 
-export type SignInPayload = Pick<IUser, 'email' | 'password'>
+export type SignInPayload = Pick<IUser, 'email' | 'password' | 'phone_number'>
 
 export type SignUpPayload = Pick<IUser, 'email' | 'password' | 'phone_number'>;
 
