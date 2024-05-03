@@ -46,8 +46,23 @@ export const authController = {
           status: StatusCodes.NOT_FOUND
         })
       }
+      const phoneNumber = `+${phone_number}`;
+
+      // Replace with the phone number you want to check
+      const isAssociated = await checkPhoneNumber(phoneNumber);
+       if (!isAssociated) {
+        return res.status(StatusCodes.CONFLICT).json({
+        message: 'The phone number is not  associated with a user account.',
+        status: StatusCodes.CONFLICT
+        });
+      }
+      console.log(isAssociated)
+
+
+
 
       // const { accessToken } = jwtSign(user.id)
+
       const { accessToken } = jwtSign(userbyphonenumber.id)
       return res.status(StatusCodes.OK).json({
         data: { accessToken },
@@ -93,7 +108,9 @@ export const authController = {
         message: 'The phone number is not  associated with a user account.',
         status: StatusCodes.CONFLICT
         });
-        }
+      }
+      console.log(isAssociated,"is associated ")
+
       session.startTransaction()
       // const genotp = Math.floor(100000 + Math.random() * 900000).toString();
       const hashedPassword = await createHash(password)
