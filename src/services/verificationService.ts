@@ -4,6 +4,26 @@ import { Verification } from '@/models'
 import { createDateNow } from '@/utils/dates'
 
 export const verificationService = {
+  createnew: (
+    {
+      userId,
+      // email,
+      accessToken,
+      expiresIn
+    }: {
+      userId: ObjectId
+      // email: string
+      accessToken: string
+      expiresIn: Date
+    },
+    session?: ClientSession
+  ) =>
+    new Verification({
+      user: userId,
+      // email,
+      accessToken,
+      expiresIn
+    }).save({ session }),
   create: (
     {
       userId,

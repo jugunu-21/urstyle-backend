@@ -80,7 +80,7 @@ export const authController = {
   },
 
   signUp: async (
-    { body: { email, password,phone_number } }: IBodyRequest<SignUpPayload>,
+    { body: { phone_number } }: IBodyRequest<SignUpPayload>,
     res: Response
   ) => {
     
@@ -88,9 +88,9 @@ export const authController = {
     const session = await startSession()
     // console.log("heehehe",session)
     try {
-      const isUserExistbyemail = await userService.isExistByEmail(email)
+      // const isUserExistbyemail = await userService.isExistByEmail(email)
       const isUserExistbyphonenumber = await userService.isExistByphone_number(phone_number)
-      if (isUserExistbyemail||isUserExistbyphonenumber) {
+      if (isUserExistbyphonenumber) {
      
         return res.status(StatusCodes.CONFLICT).json({
           message: ReasonPhrases.CONFLICT,
@@ -113,11 +113,11 @@ export const authController = {
 
       session.startTransaction()
       // const genotp = Math.floor(100000 + Math.random() * 900000).toString();
-      const hashedPassword = await createHash(password)
-      const user = await userService.create(
+      // const hashedPassword = await createHash(password)
+      const user = await userService.createnew(
         {
-          email,
-          password: hashedPassword,
+          // email,
+          // password: hashedPassword,
           phone_number,
           // otp: genotp,
         },
@@ -128,10 +128,10 @@ export const authController = {
 
       const dateFromNow = createDateAddDaysFromNow(ExpiresInDays.Verification)
 
-      const verification = await verificationService.create(
+      const verification = await verificationService.createnew(
         {
           userId: user.id,
-          email,
+          // email,
           accessToken: cryptoString,
           expiresIn: dateFromNow
         },
@@ -148,16 +148,16 @@ export const authController = {
 
       const { accessToken } = jwtSign(user.id)
 
-      const userMail = new UserMail()
+      // const userMail = new UserMail()
 
-      userMail.signUp({
-        email: user.email
-      })
+      // userMail.signUp({
+      //   email: user.email
+      // })
 
-      userMail.verification({
-        email: user.email,
-        accessToken: cryptoString
-      })
+      // userMail.verification({
+      //   email: user.email,
+      //   accessToken: cryptoString
+      // })
 
       await session.commitTransaction()
       session.endSession()
@@ -183,163 +183,163 @@ export const authController = {
     }
   },
 
-  signOut: async (
-    { context: { user, accessToken } }: IContextRequest<IUserRequest>,
-    res: Response
-  ) => {
-    try {
-      await redis.client.set(`expiredToken:${accessToken}`, `${user.id}`, {
-        EX: process.env.REDIS_TOKEN_EXPIRATION,
-        NX: true
-      })
+  // signOut: async (
+  //   { context: { user, accessToken } }: IContextRequest<IUserRequest>,
+  //   res: Response
+  // ) => {
+  //   try {
+  //     await redis.client.set(`expiredToken:${accessToken}`, `${user.id}`, {
+  //       EX: process.env.REDIS_TOKEN_EXPIRATION,
+  //       NX: true
+  //     })
 
-      return res.status(StatusCodes.OK).json({
-        message: ReasonPhrases.OK,
-        status: StatusCodes.OK
-      })
-    } catch (error) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        message: ReasonPhrases.BAD_REQUEST,
-        status: StatusCodes.BAD_REQUEST
-      })
-    }
-  },
+  //     return res.status(StatusCodes.OK).json({
+  //       message: ReasonPhrases.OK,
+  //       status: StatusCodes.OK
+  //     })
+  //   } catch (error) {
+  //     return res.status(StatusCodes.BAD_REQUEST).json({
+  //       message: ReasonPhrases.BAD_REQUEST,
+  //       status: StatusCodes.BAD_REQUEST
+  //     })
+  //   }
+  // },
 
-  resetPassword: async (
-    { body: { email } }: IBodyRequest<ResetPasswordPayload>,
-    res: Response
-  ) => {
-    const session = await startSession()
+  // resetPassword: async (
+  //   { body: { email } }: IBodyRequest<ResetPasswordPayload>,
+  //   res: Response
+  // ) => {
+  //   const session = await startSession()
 
-    try {
-      const user = await userService.getByEmail(email)
+  //   try {
+  //     const user = await userService.getByEmail(email)
 
-      if (!user) {
-        return res.status(StatusCodes.OK).json({
-          message: ReasonPhrases.OK,
-          status: StatusCodes.OK
-        })
-      }
+  //     if (!user) {
+  //       return res.status(StatusCodes.OK).json({
+  //         message: ReasonPhrases.OK,
+  //         status: StatusCodes.OK
+  //       })
+  //     }
 
-      session.startTransaction()
+  //     session.startTransaction()
 
-      const cryptoString = createCryptoString()
+  //     const cryptoString = createCryptoString()
 
-      const dateFromNow = createDateAddDaysFromNow(ExpiresInDays.ResetPassword)
+  //     const dateFromNow = createDateAddDaysFromNow(ExpiresInDays.ResetPassword)
 
-      const resetPassword = await resetPasswordService.create(
-        {
-          userId: user.id,
-          accessToken: cryptoString,
-          expiresIn: dateFromNow
-        },
-        session
-      )
+  //     const resetPassword = await resetPasswordService.create(
+  //       {
+  //         userId: user.id,
+  //         accessToken: cryptoString,
+  //         expiresIn: dateFromNow
+  //       },
+  //       session
+  //     )
 
-      await userService.addResetPasswordToUser(
-        {
-          userId: user.id,
-          resetPasswordId: resetPassword.id
-        },
-        session
-      )
+  //     await userService.addResetPasswordToUser(
+  //       {
+  //         userId: user.id,
+  //         resetPasswordId: resetPassword.id
+  //       },
+  //       session
+  //     )
 
-      const userMail = new UserMail()
+  //     const userMail = new UserMail()
 
-      userMail.resetPassword({
-        email: user.email,
-        accessToken: cryptoString
-      })
+  //     userMail.resetPassword({
+  //       email: user.email,
+  //       accessToken: cryptoString
+  //     })
 
-      await session.commitTransaction()
-      session.endSession()
+  //     await session.commitTransaction()
+  //     session.endSession()
 
-      return res.status(StatusCodes.OK).json({
-        message: ReasonPhrases.OK,
-        status: StatusCodes.OK
-      })
-    } catch (error) {
-      winston.error(error)
+  //     return res.status(StatusCodes.OK).json({
+  //       message: ReasonPhrases.OK,
+  //       status: StatusCodes.OK
+  //     })
+  //   } catch (error) {
+  //     winston.error(error)
 
-      if (session.inTransaction()) {
-        await session.abortTransaction()
-        session.endSession()
-      }
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        message: ReasonPhrases.BAD_REQUEST,
-        status: StatusCodes.BAD_REQUEST
-      })
-    }
-  },
+  //     if (session.inTransaction()) {
+  //       await session.abortTransaction()
+  //       session.endSession()
+  //     }
+  //     return res.status(StatusCodes.BAD_REQUEST).json({
+  //       message: ReasonPhrases.BAD_REQUEST,
+  //       status: StatusCodes.BAD_REQUEST
+  //     })
+  //   }
+  // },
 
-  newPassword: async (
-    {
-      body: { password },
-      params
-    }: ICombinedRequest<null, NewPasswordPayload, { accessToken: string }>,
-    res: Response
-  ) => {
-    const session = await startSession()
-    try {
-      const resetPassword = await resetPasswordService.getByValidAccessToken(
-        params.accessToken
-      )
+  // newPassword: async (
+  //   {
+  //     body: { password },
+  //     params
+  //   }: ICombinedRequest<null, NewPasswordPayload, { accessToken: string }>,
+  //   res: Response
+  // ) => {
+  //   const session = await startSession()
+  //   try {
+  //     const resetPassword = await resetPasswordService.getByValidAccessToken(
+  //       params.accessToken
+  //     )
 
-      if (!resetPassword) {
-        return res.status(StatusCodes.FORBIDDEN).json({
-          message: ReasonPhrases.FORBIDDEN,
-          status: StatusCodes.FORBIDDEN
-        })
-      }
+  //     if (!resetPassword) {
+  //       return res.status(StatusCodes.FORBIDDEN).json({
+  //         message: ReasonPhrases.FORBIDDEN,
+  //         status: StatusCodes.FORBIDDEN
+  //       })
+  //     }
 
-      const user = await userService.getById(resetPassword.user)
+  //     const user = await userService.getById(resetPassword.user)
 
-      if (!user) {
-        return res.status(StatusCodes.NOT_FOUND).json({
-          message: ReasonPhrases.NOT_FOUND,
-          status: StatusCodes.NOT_FOUND
-        })
-      }
+  //     if (!user) {
+  //       return res.status(StatusCodes.NOT_FOUND).json({
+  //         message: ReasonPhrases.NOT_FOUND,
+  //         status: StatusCodes.NOT_FOUND
+  //       })
+  //     }
 
-      session.startTransaction()
-      const hashedPassword = await createHash(password)
+  //     session.startTransaction()
+  //     const hashedPassword = await createHash(password)
 
-      await userService.updatePasswordByUserId(
-        resetPassword.user,
-        hashedPassword,
-        session
-      )
+  //     await userService.updatePasswordByUserId(
+  //       resetPassword.user,
+  //       hashedPassword,
+  //       session
+  //     )
 
-      await resetPasswordService.deleteManyByUserId(user.id, session)
+  //     await resetPasswordService.deleteManyByUserId(user.id, session)
 
-      const { accessToken } = jwtSign(user.id)
+  //     const { accessToken } = jwtSign(user.id)
 
-      const userMail = new UserMail()
+  //     const userMail = new UserMail()
 
-      userMail.successfullyUpdatedPassword({
-        email: user.email
-      })
+  //     userMail.successfullyUpdatedPassword({
+  //       email: user.email
+  //     })
 
-      await session.commitTransaction()
-      session.endSession()
+  //     await session.commitTransaction()
+  //     session.endSession()
 
-      return res.status(StatusCodes.OK).json({
-        data: { accessToken },
-        message: ReasonPhrases.OK,
-        status: StatusCodes.OK
-      })
-    } catch (error) {
-      winston.error(error)
+  //     return res.status(StatusCodes.OK).json({
+  //       data: { accessToken },
+  //       message: ReasonPhrases.OK,
+  //       status: StatusCodes.OK
+  //     })
+  //   } catch (error) {
+  //     winston.error(error)
 
-      if (session.inTransaction()) {
-        await session.abortTransaction()
-        session.endSession()
-      }
+  //     if (session.inTransaction()) {
+  //       await session.abortTransaction()
+  //       session.endSession()
+  //     }
 
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        message: ReasonPhrases.BAD_REQUEST,
-        status: StatusCodes.BAD_REQUEST
-      })
-    }
-  }
+  //     return res.status(StatusCodes.BAD_REQUEST).json({
+  //       message: ReasonPhrases.BAD_REQUEST,
+  //       status: StatusCodes.BAD_REQUEST
+  //     })
+  //   }
+  // }
 }

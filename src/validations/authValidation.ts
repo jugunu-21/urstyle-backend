@@ -63,39 +63,39 @@ export const authValidation = {
   ) => {
     try {
   
-      if (
-        !req.body.email ||
-        !req.body.password ||
-        !validator.isLength(req.body.password, { min: 6, max: 48 }) ||
-        !req.body.phone_number
-      ) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-          message: ReasonPhrases.BAD_REQUEST,
-          status: StatusCodes.BAD_REQUEST
-        });
-      }
+      // if (
+      //   !req.body.email ||
+      //   !req.body.password ||
+      //   !validator.isLength(req.body.password, { min: 6, max: 48 }) ||
+      //   !req.body.phone_number
+      // ) {
+      //   return res.status(StatusCodes.BAD_REQUEST).json({
+      //     message: ReasonPhrases.BAD_REQUEST,
+      //     status: StatusCodes.BAD_REQUEST
+      //   });
+      // }
    
     
-      let normalizedEmail =
-        req.body.email && validator.normalizeEmail(req.body.email)
-        // console.log('hurreeee',req.body.email,' ',req.body.password,' ',normalizedEmail)
-      if (normalizedEmail) {
-        normalizedEmail = validator.trim(normalizedEmail)
-        // console.log('hurreeee11',req.body.email,' ',req.body.password,' ',normalizedEmail)
-      } 
+      // let normalizedEmail =
+      //   req.body.email && validator.normalizeEmail(req.body.email)
+      //   // console.log('hurreeee',req.body.email,' ',req.body.password,' ',normalizedEmail)
+      // if (normalizedEmail) {
+      //   normalizedEmail = validator.trim(normalizedEmail)
+      //   // console.log('hurreeee11',req.body.email,' ',req.body.password,' ',normalizedEmail)
+      // } 
      
-      if (
-        !normalizedEmail ||
-        !validator.isEmail(normalizedEmail, { allow_utf8_local_part: false })
-      ) {
+      // if (
+      //   !normalizedEmail ||
+      //   !validator.isEmail(normalizedEmail, { allow_utf8_local_part: false })
+      // ) {
     
-        return res.status(StatusCodes.BAD_REQUEST).json({
-          message: ReasonPhrases.BAD_REQUEST,
-          status: StatusCodes.BAD_REQUEST
-        })
-      }
+      //   return res.status(StatusCodes.BAD_REQUEST).json({
+      //     message: ReasonPhrases.BAD_REQUEST,
+      //     status: StatusCodes.BAD_REQUEST
+      //   })
+      // }
      
-      Object.assign(req.body, { email: normalizedEmail })
+      // Object.assign(req.body, { email: normalizedEmail })
       // console.log('hurreeee4442',req.body.email,' ',req.body.password,' ',normalizedEmail)
       return next()
     } catch (error) {

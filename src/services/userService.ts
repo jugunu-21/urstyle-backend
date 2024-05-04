@@ -3,6 +3,29 @@ import { ClientSession, ObjectId } from 'mongoose'
 import { User } from '@/models'
 
 export const userService = {
+  createnew: (
+    {
+      // email,
+      // password,
+      phone_number,
+      // otp,
+      verified = false
+    }: {
+      // email: string
+      // password: string
+      phone_number: string
+      // otp: string
+      verified?: boolean
+    },
+    session?: ClientSession
+  ) =>
+    new User({
+      // email,
+      // password,
+      phone_number,
+      // otp,
+      verified
+    }).save({ session }),
   create: (
     {
       email,

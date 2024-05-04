@@ -9,7 +9,8 @@ export interface IContextRequest<T> extends Omit<Request, 'context'> {
 }
 
 export interface IBodyRequest<T> extends Omit<Request, 'body'> {
-  body: T & { email?: string; phone_number?: string };
+  // body: T & { email?: string; phone_number?: string };
+  body: T & {  phone_number?: string };
 }
 
 
