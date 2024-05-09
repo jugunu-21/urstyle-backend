@@ -62,6 +62,15 @@ export const authValidation = {
     next: NextFunction
   ) => {
     try {
+      if (
+       
+        !req.body.phone_number
+      ) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+          message: ReasonPhrases.BAD_REQUEST,
+          status: StatusCodes.BAD_REQUEST
+        });
+      }
   
       // if (
       //   !req.body.email ||

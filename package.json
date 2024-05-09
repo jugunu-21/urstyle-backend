@@ -25,12 +25,10 @@
   "scripts": {
     "start": "npm run rm:public && cross-env NODE_ENV=production ts-node --files -r tsconfig-paths/register ./src",
     "dev": "npm run rm:public && cross-env NODE_ENV=production nodemon --exec ts-node --files -r tsconfig-paths/register ./src",
-
     "watch": "npm run rm:public && cross-env ts-node-dev --files --respawn --inspect -r tsconfig-paths/register ./src",
     "build": "npm run rm:public && cross-env NODE_ENV=production tsc && tsc-alias && npm run copy:files",
     "rm:public": "rimraf ./public",
     "copy:files": "if [ -f .env ]; then cp .env ./public/.env; fi && cp -R ./src/templates ./public",
-
     "seed": "ts-node --files -r tsconfig-paths/register ./src/seeds",
     "lint": "eslint --debug ./src",
     "lint:write": "eslint --debug ./src --fix",
@@ -69,6 +67,7 @@
   },
   "dependencies": {
     "bcrypt": "5.1.0",
+    "cookie-parser": "^1.4.6",
     "cors": "2.8.5",
     "dotenv": "^16.0.3",
     "ejs": "3.1.8",
@@ -78,6 +77,7 @@
     "http-status-codes": "2.2.0",
     "i18next": "22.4.9",
     "i18next-http-middleware": "3.2.2",
+    "js-cookie": "^3.0.5",
     "jsonwebtoken": "8.5.1",
     "mongoose": "6.6.5",
     "multer": "1.4.5-lts.1",

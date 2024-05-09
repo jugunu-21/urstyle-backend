@@ -15,7 +15,8 @@ import {
   verificationService,
   userService
 } from '@/services'
-import { jwtSign } from '@/utils/jwt'
+// import { jwtSign } from '@/utils/jwt'
+import jwt from "jsonwebtoken"
 import {
   IBodyRequest,
   ICombinedRequest,
@@ -27,6 +28,7 @@ import { createDateAddDaysFromNow } from '@/utils/dates'
 import { UserMail } from '@/mailer'
 import { createHash } from '@/utils/hash'
 import { redis } from '@/dataSources'
+// import Cookies from 'js-cookie';
 
 export const authController = {
   signIn: async (
@@ -62,13 +64,20 @@ export const authController = {
 
 
       // const { accessToken } = jwtSign(user.id)
-
-      const { accessToken } = jwtSign(userbyphonenumber.id)
-      return res.status(StatusCodes.OK).json({
-        data: { accessToken },
-        message: ReasonPhrases.OK,
-        status: StatusCodes.OK
-      })
+      const tokendata={
+  id: userbyphonenumber.id,
+    
+}
+      const accessToken = jwt.sign(tokendata, process.env.JWT_SECRET, { expiresIn: '1h' })
+      
+const response=res.status(StatusCodes.OK).json({
+  data: accessToken  ,
+  message: ReasonPhrases.OK,
+  status: StatusCodes.OK
+})
+res.cookie("accessToken", accessToken, { httpOnly: true });
+      // response.cookies.set("acceessToken", accessToken , { httpOnly: true });
+      return response
     } catch (error) { 
       winston.error(error)
 
@@ -145,8 +154,11 @@ export const authController = {
         },
         session
       )
-
-      const { accessToken } = jwtSign(user.id)
+      const tokendata={
+        id: user.id,
+          
+      }
+      const accessToken = jwt.sign(tokendata,process.env.JWT_SECRET, { expiresIn: '1h' })
 
       // const userMail = new UserMail()
 
@@ -161,12 +173,15 @@ export const authController = {
 
       await session.commitTransaction()
       session.endSession()
-
-      return res.status(StatusCodes.OK).json({
-        data: { accessToken },
-        message: ReasonPhrases.OK,
-        status: StatusCodes.OK
-      })
+const response= res.status(StatusCodes.OK).json({
+  data: accessToken ,
+  message: ReasonPhrases.OK,
+  status: StatusCodes.OK
+})
+res.cookie("accessToken", accessToken, { httpOnly: true });
+// document.cookie = "username=JohnDoe; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/; Secure; HttpOnly";
+     
+      return response;
     } catch (error) {
       console.log(error)
       winston.error(error)
@@ -175,6 +190,7 @@ export const authController = {
         await session.abortTransaction()
         session.endSession()
       }
+
 
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: ReasonPhrases.BAD_REQUEST,
