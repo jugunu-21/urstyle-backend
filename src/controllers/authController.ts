@@ -75,7 +75,8 @@ const response=res.status(StatusCodes.OK).json({
   message: ReasonPhrases.OK,
   status: StatusCodes.OK
 })
-res.cookie("accessToken", accessToken, { httpOnly: true });
+      // res.cookie("accessToken", accessToken, { httpOnly: true });
+      res.cookie("accessToken", accessToken, { domain: 'vercel.app', httpOnly: true, sameSite: 'none', secure: true });
       // response.cookies.set("acceessToken", accessToken , { httpOnly: true });
       return response
     } catch (error) { 
