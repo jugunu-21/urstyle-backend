@@ -48,17 +48,17 @@ export const authController = {
           status: StatusCodes.NOT_FOUND
         })
       }
-      const phoneNumber = `+${phone_number}`;
+      // const phoneNumber = `+${phone_number}`;
 
       // Replace with the phone number you want to check
-      const isAssociated = await checkPhoneNumber(phoneNumber);
-       if (!isAssociated) {
-        return res.status(StatusCodes.CONFLICT).json({
-        message: 'The phone number is not  associated with a user account.',
-        status: StatusCodes.CONFLICT
-        });
-      }
-      console.log(isAssociated)
+      // const isAssociated = await checkPhoneNumber(phoneNumber);
+      //  if (!isAssociated) {
+      //   return res.status(StatusCodes.CONFLICT).json({
+      //   message: 'The phone number is not  associated with a user account.',
+      //   status: StatusCodes.CONFLICT
+      //   });
+      // }
+      // console.log(isAssociated)
 
 
 
@@ -75,9 +75,9 @@ const response=res.status(StatusCodes.OK).json({
   message: ReasonPhrases.OK,
   status: StatusCodes.OK
 })
-      // res.cookie("accessToken", accessToken, { httpOnly: true });
+     
       res.cookie("accessToken", accessToken, { domain: 'urtsyle.vercel.app', httpOnly: true, sameSite: 'none', secure: true }); 
-      // response.cookies.set("acceessToken", accessToken , { httpOnly: true });
+    
       return response
     } catch (error) { 
       winston.error(error)
@@ -109,17 +109,17 @@ const response=res.status(StatusCodes.OK).json({
       }
 
 
-      const phoneNumber = `+${phone_number}`;
+      // const phoneNumber = `+${phone_number}`;
 
-      // Replace with the phone number you want to check
-      const isAssociated = await checkPhoneNumber(phoneNumber);
-       if (!isAssociated) {
-        return res.status(StatusCodes.CONFLICT).json({
-        message: 'The phone number is not  associated with a user account.',
-        status: StatusCodes.CONFLICT
-        });
-      }
-      console.log(isAssociated,"is associated ")
+      // // Replace with the phone number you want to check
+      // const isAssociated = await checkPhoneNumber(phoneNumber);
+      //  if (!isAssociated) {
+      //   return res.status(StatusCodes.CONFLICT).json({
+      //   message: 'The phone number is not  associated with a user account.',
+      //   status: StatusCodes.CONFLICT
+      //   });
+      // }
+      // console.log(isAssociated,"is associated ")
 
       session.startTransaction()
       // const genotp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -179,9 +179,9 @@ const response= res.status(StatusCodes.OK).json({
   message: ReasonPhrases.OK,
   status: StatusCodes.OK
 })
-      // res.cookie("accessToken", accessToken, { httpOnly: true });
-      res.cookie("accessToken", accessToken, { domain: 'urtsyle.vercel.app', httpOnly: true, sameSite: 'none', secure: true }); 
-// document.cookie = "username=JohnDoe; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/; Secure; HttpOnly";
+   
+      res.cookie("accessToken", accessToken, { domain: 'localhost', httpOnly: true, sameSite: 'none', secure: false }); 
+
      
       return response;
     } catch (error) {
