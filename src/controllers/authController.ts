@@ -16,7 +16,7 @@ import {
   userService
 } from '@/services'
 // import { jwtSign } from '@/utils/jwt'
-import jwt from "jsonwebtoken"
+import jwt from 'jsonwebtoken'
 import {
   IBodyRequest,
   ICombinedRequest,
@@ -38,10 +38,12 @@ export const authController = {
   ) => {
     try {
       // const user = await userService.getByEmail(email)
-      const userbyphonenumber = await userService.getByphone_number(phone_number)
+      const userbyphonenumber = await userService.getByphone_number(
+        phone_number
+      )
       // const comparePassword = user?.comparePassword(password)
       if (!userbyphonenumber) {
-      // if (!user || !comparePassword || !userbyphonenumber) {
+        // if (!user || !comparePassword || !userbyphonenumber) {
 
         return res.status(StatusCodes.NOT_FOUND).json({
           message: ReasonPhrases.NOT_FOUND,
@@ -60,26 +62,28 @@ export const authController = {
       // }
       // console.log(isAssociated)
 
-
-
-
       // const { accessToken } = jwtSign(user.id)
-      const tokendata={
-  id: userbyphonenumber.id,
-    
-}
-      const accessToken = jwt.sign(tokendata, process.env.JWT_SECRET, { expiresIn: '1h' })
-      
-const response=res.status(StatusCodes.OK).json({
-  data: accessToken  ,
-  message: ReasonPhrases.OK,
-  status: StatusCodes.OK
-})
-     
-      res.cookie("accessToken", accessToken, { domain: 'urtsyle.vercel.app', httpOnly: true, sameSite: 'none', secure: true }); 
-    
+      const tokendata = {
+        id: userbyphonenumber.id
+      }
+      const accessToken = jwt.sign(tokendata, process.env.JWT_SECRET, {
+        expiresIn: '1h'
+      })
+      const response = res.status(StatusCodes.OK).json({
+        data: accessToken,
+        message: ReasonPhrases.OK,
+        status: StatusCodes.OK
+      })
+      // res.cookie('accessToken', accessToken, {
+      //   domain: 'localhost',
+      //   httpOnly: true,
+      //   sameSite: 'none',
+      //   secure: false
+      // })
+      // res.cookie("accessToken", accessToken, { domain: 'urtsyle.vercel.app', httpOnly: true, sameSite: 'none', secure: true });
+
       return response
-    } catch (error) { 
+    } catch (error) {
       winston.error(error)
 
       return res.status(StatusCodes.BAD_REQUEST).json({
@@ -93,21 +97,20 @@ const response=res.status(StatusCodes.OK).json({
     { body: { phone_number } }: IBodyRequest<SignUpPayload>,
     res: Response
   ) => {
-    
     // console.log('hheeeeoo', { email, password, phone_number })
     const session = await startSession()
     // console.log("heehehe",session)
     try {
       // const isUserExistbyemail = await userService.isExistByEmail(email)
-      const isUserExistbyphonenumber = await userService.isExistByphone_number(phone_number)
+      const isUserExistbyphonenumber = await userService.isExistByphone_number(
+        phone_number
+      )
       if (isUserExistbyphonenumber) {
-     
         return res.status(StatusCodes.CONFLICT).json({
           message: ReasonPhrases.CONFLICT,
           status: StatusCodes.CONFLICT
         })
       }
-
 
       // const phoneNumber = `+${phone_number}`;
 
@@ -128,12 +131,12 @@ const response=res.status(StatusCodes.OK).json({
         {
           // email,
           // password: hashedPassword,
-          phone_number,
+          phone_number
           // otp: genotp,
         },
         session
       )
-      
+
       const cryptoString = createCryptoString()
 
       const dateFromNow = createDateAddDaysFromNow(ExpiresInDays.Verification)
@@ -155,11 +158,12 @@ const response=res.status(StatusCodes.OK).json({
         },
         session
       )
-      const tokendata={
-        id: user.id,
-          
+      const tokendata = {
+        id: user.id
       }
-      const accessToken = jwt.sign(tokendata,process.env.JWT_SECRET, { expiresIn: '1h' })
+      const accessToken = jwt.sign(tokendata, process.env.JWT_SECRET, {
+        expiresIn: '1h'
+      })
 
       // const userMail = new UserMail()
 
@@ -174,16 +178,20 @@ const response=res.status(StatusCodes.OK).json({
 
       await session.commitTransaction()
       session.endSession()
-const response= res.status(StatusCodes.OK).json({
-  data: accessToken ,
-  message: ReasonPhrases.OK,
-  status: StatusCodes.OK
-})
-   
-      res.cookie("accessToken", accessToken, { domain: 'localhost', httpOnly: true, sameSite: 'none', secure: false }); 
+      const response = res.status(StatusCodes.OK).json({
+        data: accessToken,
+        message: ReasonPhrases.OK,
+        status: StatusCodes.OK
+      })
 
-     
-      return response;
+      // res.cookie('accessToken', accessToken, {
+      //   domain: 'localhost',
+      //   httpOnly: true,
+      //   sameSite: 'none',
+      //   secure: false
+      // })
+
+      return response
     } catch (error) {
       console.log(error)
       winston.error(error)
@@ -193,13 +201,12 @@ const response= res.status(StatusCodes.OK).json({
         session.endSession()
       }
 
-
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: ReasonPhrases.BAD_REQUEST,
         status: StatusCodes.BAD_REQUEST
       })
     }
-  },
+  }
 
   // signOut: async (
   //   { context: { user, accessToken } }: IContextRequest<IUserRequest>,
