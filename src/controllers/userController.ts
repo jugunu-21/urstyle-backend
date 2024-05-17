@@ -424,39 +424,39 @@ export const userController = {
   deleteProfile: async (
     {
       context: {
-        user: { email }
+        user: { phone_number }
       },
-      body: { password }
+     
     }: ICombinedRequest<IUserRequest, DeleteProfilePayload>,
     res: Response
   ) => {
     const session = await startSession()
 
     try {
-      const user = await userService.getByEmail(email)
+      const user = await userService.getByphone_number(phone_number)
 
-      const comparePassword = user?.comparePassword(password)
-      if (!user || !comparePassword) {
+      // const comparePassword = user?.comparePassword(password)
+      if (!user ) {
         return res.status(StatusCodes.FORBIDDEN).json({
           message: ReasonPhrases.FORBIDDEN,
           status: StatusCodes.FORBIDDEN
         })
       }
       session.startTransaction()
-
+console.log("sessionusercontroller",session)
       await userService.deleteById(user.id, session)
-
+      console.log(`User with ID ${user.id} deleted successfully.`);
       await resetPasswordService.deleteManyByUserId(user.id, session)
 
       await verificationService.deleteManyByUserId(user.id, session)
 
-      const userMail = new UserMail()
+      // const userMail = new UserMail()
 
-      userMail.successfullyDeleted({ email: user.email })
+      // userMail.successfullyDeleted({ email: user.email })
 
       await session.commitTransaction()
       session.endSession()
-
+console.log('User profile deleted successfully')
       return res.status(StatusCodes.OK).json({
         message: ReasonPhrases.OK,
         status: StatusCodes.OK

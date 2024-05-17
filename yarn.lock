@@ -4601,7 +4601,7 @@ readdirp@~3.6.0:
   dependencies:
     picomatch "^2.2.1"
 
-redis@4.3.1:
+redis@^4.3.1:
   version "4.3.1"
   resolved "https://registry.npmjs.org/redis/-/redis-4.3.1.tgz"
   integrity sha512-cM7yFU5CA6zyCF7N/+SSTcSJQSRMEKN0k0Whhu6J7n9mmXRoXugfWDBo5iOzGwABmsWKSwGPTU5J4Bxbl+0mrA==

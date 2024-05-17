@@ -193,18 +193,20 @@ export const userValidation = {
   },
 
   deleteProfile: (
-    { body: { password } }: IBodyRequest<DeleteProfilePayload>,
+    { body: { phone_number } }: IBodyRequest<DeleteProfilePayload>,
     res: Response,
     next: NextFunction
   ) => {
     try {
-      if (!password) {
+      if (!phone_number) {
+        console.log("Phone number is required");
         return res.status(StatusCodes.BAD_REQUEST).json({
           message: ReasonPhrases.BAD_REQUEST,
           status: StatusCodes.BAD_REQUEST
         })
       }
-
+// console.log()
+console.log("uservalidation is there ")
       return next()
     } catch (error) {
       winston.error(error)

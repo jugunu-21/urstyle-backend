@@ -47,5 +47,5 @@ export interface UpdatePasswordPayload {
 }
 
 export interface DeleteProfilePayload {
-  password: string
+ phone_number: string
 }
