@@ -8,7 +8,7 @@ const schema = new Schema<IVerification>(
       type: Schema.Types.ObjectId,
       ref: 'User'
     },
-    email: String,
+    // email: String,
     accessToken: String,
     expiresIn: Date
   },
