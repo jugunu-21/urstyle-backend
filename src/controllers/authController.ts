@@ -127,7 +127,7 @@ export const authController = {
       session.startTransaction()
       // const genotp = Math.floor(100000 + Math.random() * 900000).toString();
       // const hashedPassword = await createHash(password)
-      const user = await userService.createnew(
+      const user = await userService.create(
         {
           // email,
           // password: hashedPassword,
@@ -141,7 +141,7 @@ export const authController = {
 
       const dateFromNow = createDateAddDaysFromNow(ExpiresInDays.Verification)
 
-      const verification = await verificationService.createnew(
+      const verification = await verificationService.create(
         {
           userId: user.id,
           // email,
@@ -206,29 +206,29 @@ export const authController = {
         status: StatusCodes.BAD_REQUEST
       })
     }
-  }
+  },
 
-  // signOut: async (
-  //   { context: { user, accessToken } }: IContextRequest<IUserRequest>,
-  //   res: Response
-  // ) => {
-  //   try {
-  //     await redis.client.set(`expiredToken:${accessToken}`, `${user.id}`, {
-  //       EX: process.env.REDIS_TOKEN_EXPIRATION,
-  //       NX: true
-  //     })
+  signOut: async (
+    { context: { user, accessToken } }: IContextRequest<IUserRequest>,
+    res: Response
+  ) => {
+    try {
+      await redis.client.set(`expiredToken:${accessToken}`, `${user.id}`, {
+        EX: process.env.REDIS_TOKEN_EXPIRATION,
+        NX: true
+      })
 
-  //     return res.status(StatusCodes.OK).json({
-  //       message: ReasonPhrases.OK,
-  //       status: StatusCodes.OK
-  //     })
-  //   } catch (error) {
-  //     return res.status(StatusCodes.BAD_REQUEST).json({
-  //       message: ReasonPhrases.BAD_REQUEST,
-  //       status: StatusCodes.BAD_REQUEST
-  //     })
-  //   }
-  // },
+      return res.status(StatusCodes.OK).json({
+        message: ReasonPhrases.OK,
+        status: StatusCodes.OK
+      })
+    } catch (error) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: ReasonPhrases.BAD_REQUEST,
+        status: StatusCodes.BAD_REQUEST
+      })
+    }
+  },
 
   // resetPassword: async (
   //   { body: { email } }: IBodyRequest<ResetPasswordPayload>,

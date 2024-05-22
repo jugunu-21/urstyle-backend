@@ -25,7 +25,7 @@ export const authValidation = {
           status: StatusCodes.BAD_REQUEST
         })
       }
-      let phonenumber = req.body.phone_number
+      // let phonenumber = req.body.phone_number
      
       // let normalizedEmail =
       //   req.body.email && validator.normalizeEmail(req.body.email)
@@ -43,7 +43,7 @@ export const authValidation = {
       //   })
       // }
 
-      Object.assign(req.body, { phone_number: phonenumber })
+      // Object.assign(req.body, { phone_number: phonenumber })
 
       return next()
     } catch (error) {

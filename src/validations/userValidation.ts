@@ -206,7 +206,7 @@ export const userValidation = {
         })
       }
 // console.log()
-console.log("uservalidation is there ")
+// console.log("uservalidation is there ")
       return next()
     } catch (error) {
       winston.error(error)

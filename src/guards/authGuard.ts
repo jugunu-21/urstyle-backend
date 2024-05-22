@@ -36,43 +36,70 @@ console.log("no user")
       message: ReasonPhrases.FORBIDDEN,
       status: StatusCodes.FORBIDDEN
     })
-  },
-
-  isVerified: (
-    {
-      context: {
-        user: { verified }
-      }
-    }: IContextRequest<IUserRequest>,
-    res: Response,
-    next: NextFunction
-  ) => {
-    if (verified) {
-      return next()
-    }
-
-    return res.status(StatusCodes.FORBIDDEN).json({
-      message: ReasonPhrases.FORBIDDEN,
-      status: StatusCodes.FORBIDDEN
-    })
-  },
-
-  isUnverfied: (
-    {
-      context: {
-        user: { verified }
-      }
-    }: IContextRequest<IUserRequest>,
-    res: Response,
-    next: NextFunction
-  ) => {
-    if (!verified) {
-      return next()
-    }
-
-    return res.status(StatusCodes.FORBIDDEN).json({
-      message: ReasonPhrases.FORBIDDEN,
-      status: StatusCodes.FORBIDDEN
-    })
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // isVerified: (
+  //   {
+  //     context: {
+  //       user: { verified }
+  //     }
+  //   }: IContextRequest<IUserRequest>,
+  //   res: Response,
+  //   next: NextFunction
+  // ) => {
+  //   if (verified) {
+  //     return next()
+  //   }
+
+  //   return res.status(StatusCodes.FORBIDDEN).json({
+  //     message: ReasonPhrases.FORBIDDEN,
+  //     status: StatusCodes.FORBIDDEN
+  //   })
+  // },
+
+  // isUnverfied: (
+  //   {
+  //     context: {
+  //       user: { verified }
+  //     }
+  //   }: IContextRequest<IUserRequest>,
+  //   res: Response,
+  //   next: NextFunction
+  // ) => {
+  //   if (!verified) {
+  //     return next()
+  //   }
+
+  //   return res.status(StatusCodes.FORBIDDEN).json({
+  //     message: ReasonPhrases.FORBIDDEN,
+  //     status: StatusCodes.FORBIDDEN
+  //   })
+  // }
+

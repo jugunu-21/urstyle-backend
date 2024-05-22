@@ -3,58 +3,33 @@ import { ClientSession, ObjectId } from 'mongoose'
 import { User } from '@/models'
 
 export const userService = {
-  createnew: (
-    {
-      // email,
-      // password,
-      phone_number,
-      // otp,
-      verified = false
-    }: {
-      // email: string
-      // password: string
-      phone_number: string
-      // otp: string
-      verified?: boolean
-    },
-    session?: ClientSession
-  ) =>
-    new User({
-      // email,
-      // password,
-      phone_number,
-      // otp,
-      verified
-    }).save({ session }),
   create: (
     {
-      email,
-      password,
+   
       phone_number,
-      // otp,
+   
       verified = false
     }: {
-      email: string
-      password: string
+   
       phone_number: string
-      // otp: string
+  
       verified?: boolean
     },
     session?: ClientSession
   ) =>
     new User({
-      email,
-      password,
+   
       phone_number,
-      // otp,
+   
       verified
     }).save({ session }),
+
 
   getById: (userId: ObjectId) => User.findById(userId),
 
   getByEmail: (email: string) => User.findOne({ email }),
   getByphone_number: (phone_number: string) => User.findOne({ phone_number }),
-  isExistByEmail: (email: string) => User.exists({ email }),
+  // isExistByEmail: (email: string) => User.exists({ email }),
   isExistByphone_number: (phone_number: string) => User.exists({ phone_number }),
   updatePasswordByUserId: (
     userId: ObjectId,
@@ -74,23 +49,23 @@ export const userService = {
     return User.updateOne(...params)
   },
 
-  updateVerificationAndEmailByUserId: (
-    userId: ObjectId,
-    email: string,
-    session?: ClientSession
-  ) => {
-    const data = [{ _id: userId }, { email, verified: true, verifications: [] }]
+  // updateVerificationAndEmailByUserId: (
+  //   userId: ObjectId,
+  //   email: string,
+  //   session?: ClientSession
+  // ) => {
+  //   const data = [{ _id: userId }, { email, verified: true, verifications: [] }]
 
-    let params = null
+  //   let params = null
 
-    if (session) {
-      params = [...data, { session }]
-    } else {
-      params = data
-    }
+  //   if (session) {
+  //     params = [...data, { session }]
+  //   } else {
+  //     params = data
+  //   }
 
-    return User.updateOne(...params)
-  },
+  //   return User.updateOne(...params)
+  // },
 
   updateProfileByUserId: (
     userId: ObjectId,
@@ -110,53 +85,53 @@ export const userService = {
     return User.updateOne(...params)
   },
 
-  updateEmailByUserId: (
-    userId: ObjectId,
-    email: string,
-    session?: ClientSession
-  ) => {
-    const data = [{ _id: userId }, { email, verified: false }]
+  // updateEmailByUserId: (
+  //   userId: ObjectId,
+  //   email: string,
+  //   session?: ClientSession
+  // ) => {
+  //   const data = [{ _id: userId }, { email, verified: false }]
 
-    let params = null
+  //   let params = null
 
-    if (session) {
-      params = [...data, { session }]
-    } else {
-      params = data
-    }
+  //   if (session) {
+  //     params = [...data, { session }]
+  //   } else {
+  //     params = data
+  //   }
 
-    return User.updateOne(...params)
-  },
+  //   return User.updateOne(...params)
+  // },
 
   deleteById: (userId: ObjectId, session?: ClientSession) =>
     User.deleteOne({ user: userId }, { session }),
 
-  addResetPasswordToUser: async (
-    {
-      userId,
-      resetPasswordId
-    }: {
-      userId: ObjectId
-      resetPasswordId: ObjectId
-    },
-    session?: ClientSession
-  ) => {
-    let options = {}
+  // addResetPasswordToUser: async (
+  //   {
+  //     userId,
+  //     resetPasswordId
+  //   }: {
+  //     userId: ObjectId
+  //     resetPasswordId: ObjectId
+  //   },
+  //   session?: ClientSession
+  // ) => {
+  //   let options = {}
 
-    if (session) {
-      options = { session }
-    }
+  //   if (session) {
+  //     options = { session }
+  //   }
 
-    const user = await User.findOne({ _id: userId }, null, options)
+  //   const user = await User.findOne({ _id: userId }, null, options)
 
-    if (user) {
-      if (!user.resetPasswords) {
-        user.resetPasswords = []
-      }
-      user.resetPasswords.push(resetPasswordId)
-      await user.save({ session })
-    }
-  },
+  //   if (user) {
+  //     if (!user.resetPasswords) {
+  //       user.resetPasswords = []
+  //     }
+  //     user.resetPasswords.push(resetPasswordId)
+  //     await user.save({ session })
+  //   }
+  // },
 
   addVerificationToUser: async (
     {

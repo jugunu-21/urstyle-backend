@@ -5,12 +5,10 @@ import { IUser, IUserMethods, UserModel } from '@/contracts/user'
 
 const schema = new Schema<IUser, UserModel, IUserMethods>(
   {
-    email: String,
-    password: String,
+   
     phone_number: String,
     // otp: String,
-    firstName: String,
-    lastName: String,
+ 
     verified: {
       type: Boolean,
       default: false
@@ -21,18 +19,18 @@ const schema = new Schema<IUser, UserModel, IUserMethods>(
   { timestamps: true }
 )
 
-schema.methods.comparePassword = function (password: string) {
-  return compareSync(password, this.password)
-}
+// schema.methods.comparePassword = function (password: string) {
+//   return compareSync(password, this.password)
+// }
 
-schema.methods.toJSON = function () {
-  const obj = this.toObject()
+// schema.methods.toJSON = function () {
+//   const obj = this.toObject()
 
-  delete obj.password
-  delete obj.verifications
-  delete obj.resetPasswords
+//   delete obj.password
+//   delete obj.verifications
+//   delete obj.resetPasswords
 
-  return obj
-}
+//   return obj
+// }
 
 export const User = model<IUser, UserModel>('User', schema)

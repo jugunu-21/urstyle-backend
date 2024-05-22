@@ -14,15 +14,43 @@ export const auth = (router: Router): void => {
 
   router.post(
     '/auth/sign-up',
-    // console.log("heyy"),
     authGuard.isGuest,
     authValidation.signUp,
     authController.signUp
   )
 
-  // router.get('/auth/sign-out', authGuard.isAuth, authController.signOut)
+  router.get('/auth/sign-out', authGuard.isAuth, authController.signOut)
 
-  // router.post(
+ 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ // router.post(
   //   '/auth/password/reset',
   //   authGuard.isGuest,
   //   authValidation.resetPassword,
@@ -34,4 +62,3 @@ export const auth = (router: Router): void => {
   //   authValidation.newPassword,
   //   authController.newPassword
   // )
-}

@@ -43,383 +43,383 @@ export const userController = {
       })
     }
 
-    const media = await mediaService.findOneByRef({
-      refType: MediaRefType.User,
-      refId: user.id
-    })
+    // const media = await mediaService.findOneByRef({
+    //   refType: MediaRefType.User,
+    //   refId: user.id
+    // })
 
-    let image
-    if (media) {
-      image = appUrl(await new Image(media).sharp({ width: 150, height: 150 }))
-    }
+    // let image
+    // if (media) {
+    //   image = appUrl(await new Image(media).sharp({ width: 150, height: 150 }))
+    // }
 
     return res.status(StatusCodes.OK).json({
-      data: { ...user.toJSON(), image },
+      data: { ...user.toJSON() },
       message: ReasonPhrases.OK,
       status: StatusCodes.OK
     })
   },
 
-  verificationRequest: async (
-    {
-      context: { user },
-      body: { email, phone_number }
-    }: ICombinedRequest<IUserRequest, VerificationRequestPayload>,
-    res: Response
-  ) => {
-    const session = await startSession();
+  // verificationRequest: async (
+  //   {
+  //     context: { user },
+  //     body: { email, phone_number }
+  //   }: ICombinedRequest<IUserRequest, VerificationRequestPayload>,
+  //   res: Response
+  // ) => {
+  //   const session = await startSession();
   
-    try {
-      let existingUser;
+  //   try {
+  //     let existingUser;
   
-      if (email) {
-        existingUser = await userService.getByEmail(email);
-      } else if (phone_number) {
-        // You can add logic here to retrieve user by phone number if needed
-        // existingUser = await userService.getByPhoneNumber(phone_number);
-      }
+  //     if (email) {
+  //       existingUser = await userService.getByEmail(email);
+  //     } else if (phone_number) {
+  //       // You can add logic here to retrieve user by phone number if needed
+  //       // existingUser = await userService.getByPhoneNumber(phone_number);
+  //     }
   
-      if (existingUser) {
-        return res.status(StatusCodes.CONFLICT).json({
-          message: ReasonPhrases.CONFLICT,
-          status: StatusCodes.CONFLICT
-        });
-      }
+  //     if (existingUser) {
+  //       return res.status(StatusCodes.CONFLICT).json({
+  //         message: ReasonPhrases.CONFLICT,
+  //         status: StatusCodes.CONFLICT
+  //       });
+  //     }
   
-      session.startTransaction();
-      const cryptoString = createCryptoString();
-      const dateFromNow = createDateAddDaysFromNow(ExpiresInDays.Verification);
+  //     session.startTransaction();
+  //     const cryptoString = createCryptoString();
+  //     const dateFromNow = createDateAddDaysFromNow(ExpiresInDays.Verification);
   
-      let verification = await verificationService.findOneAndUpdateByUserIdAndEmail(
-        {
-          userId: user.id,
-          email,
-          accessToken: cryptoString,
-          expiresIn: dateFromNow
-        },
-        session
-      );
+  //     let verification = await verificationService.findOneAndUpdateByUserIdAndEmail(
+  //       {
+  //         userId: user.id,
+  //         email,
+  //         accessToken: cryptoString,
+  //         expiresIn: dateFromNow
+  //       },
+  //       session
+  //     );
   
-      if (!verification) {
-        verification = await verificationService.create(
-          {
-            userId: user.id,
-            email,
-            accessToken: cryptoString,
-            expiresIn: dateFromNow
-          },
-          session
-        );
+  //     if (!verification) {
+  //       verification = await verificationService.create(
+  //         {
+  //           userId: user.id,
+  //           email,
+  //           accessToken: cryptoString,
+  //           expiresIn: dateFromNow
+  //         },
+  //         session
+  //       );
   
-        await userService.addVerificationToUser(
-          {
-            userId: user.id,
-            verificationId: verification.id
-          },
-          session
-        );
-      }
+  //       await userService.addVerificationToUser(
+  //         {
+  //           userId: user.id,
+  //           verificationId: verification.id
+  //         },
+  //         session
+  //       );
+  //     }
   
-      const userMail = new UserMail();
+  //     const userMail = new UserMail();
   
-      userMail.verification({
-        email: email,
-         // Use email if provided, otherwise use phone_number
-        accessToken: cryptoString
-      });
+  //     userMail.verification({
+  //       email: email,
+  //        // Use email if provided, otherwise use phone_number
+  //       accessToken: cryptoString
+  //     });
   
-      await session.commitTransaction();
-      session.endSession();
+  //     await session.commitTransaction();
+  //     session.endSession();
   
-      return res.status(StatusCodes.OK).json({
-        message: ReasonPhrases.OK,
-        status: StatusCodes.OK
-      });
-    } catch (error) {
-      winston.error(error);
+  //     return res.status(StatusCodes.OK).json({
+  //       message: ReasonPhrases.OK,
+  //       status: StatusCodes.OK
+  //     });
+  //   } catch (error) {
+  //     winston.error(error);
   
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-        session.endSession();
-      }
+  //     if (session.inTransaction()) {
+  //       await session.abortTransaction();
+  //       session.endSession();
+  //     }
   
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        message: ReasonPhrases.BAD_REQUEST,
-        status: StatusCodes.BAD_REQUEST
-      });
-    }
-  },
+  //     return res.status(StatusCodes.BAD_REQUEST).json({
+  //       message: ReasonPhrases.BAD_REQUEST,
+  //       status: StatusCodes.BAD_REQUEST
+  //     });
+  //   }
+  // },
   
-  verification: async (
-    { params }: IParamsRequest<{ accessToken: string }>,
-    res: Response
-  ) => {
-    const session = await startSession();
-    try {
-      const verification = await verificationService.getByValidAccessToken(
-        params.accessToken
-      );
+  // verification: async (
+  //   { params }: IParamsRequest<{ accessToken: string }>,
+  //   res: Response
+  // ) => {
+  //   const session = await startSession();
+  //   try {
+  //     const verification = await verificationService.getByValidAccessToken(
+  //       params.accessToken
+  //     );
   
-      if (!verification) {
-        return res.status(StatusCodes.FORBIDDEN).json({
-          message: ReasonPhrases.FORBIDDEN,
-          status: StatusCodes.FORBIDDEN
-        });
-      }
+  //     if (!verification) {
+  //       return res.status(StatusCodes.FORBIDDEN).json({
+  //         message: ReasonPhrases.FORBIDDEN,
+  //         status: StatusCodes.FORBIDDEN
+  //       });
+  //     }
   
-      session.startTransaction();
+  //     session.startTransaction();
   
-      await userService.updateVerificationAndEmailByUserId(
-        verification.user,
-        verification.email,
-        session
-      );
+  //     await userService.updateVerificationAndEmailByUserId(
+  //       verification.user,
+  //       verification.email,
+  //       session
+  //     );
   
-      await verificationService.deleteManyByUserId(verification.user, session);
+  //     await verificationService.deleteManyByUserId(verification.user, session);
   
-      const { accessToken } = jwtSign(verification.user);
+  //     const { accessToken } = jwtSign(verification.user);
   
-      const userMail = new UserMail();
+  //     const userMail = new UserMail();
   
-      userMail.successfullyVerified({
-        email: verification.email
-      });
+  //     userMail.successfullyVerified({
+  //       email: verification.email
+  //     });
   
-      await session.commitTransaction();
-      session.endSession();
+  //     await session.commitTransaction();
+  //     session.endSession();
   
-      return res.status(StatusCodes.OK).json({
-        data: { accessToken },
-        message: ReasonPhrases.OK,
-        status: StatusCodes.OK
-      });
-    } catch (error) {
-      winston.error(error);
+  //     return res.status(StatusCodes.OK).json({
+  //       data: { accessToken },
+  //       message: ReasonPhrases.OK,
+  //       status: StatusCodes.OK
+  //     });
+  //   } catch (error) {
+  //     winston.error(error);
   
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-        session.endSession();
-      }
+  //     if (session.inTransaction()) {
+  //       await session.abortTransaction();
+  //       session.endSession();
+  //     }
   
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        message: ReasonPhrases.BAD_REQUEST,
-        status: StatusCodes.BAD_REQUEST
-      });
-    }
-  },
+  //     return res.status(StatusCodes.BAD_REQUEST).json({
+  //       message: ReasonPhrases.BAD_REQUEST,
+  //       status: StatusCodes.BAD_REQUEST
+  //     });
+  //   }
+  // },
   
 
  
-  updateProfile: async (
-    {
-      context: { user },
-      body: { firstName, lastName }
-    }: ICombinedRequest<IUserRequest, UpdateProfilePayload>,
-    res: Response
-  ) => {
-    try {
-      await userService.updateProfileByUserId(user.id, { firstName, lastName })
+  // updateProfile: async (
+  //   {
+  //     context: { user },
+  //     body: { firstName, lastName }
+  //   }: ICombinedRequest<IUserRequest, UpdateProfilePayload>,
+  //   res: Response
+  // ) => {
+  //   try {
+  //     await userService.updateProfileByUserId(user.id, { firstName, lastName })
 
-      const userMail = new UserMail()
+  //     const userMail = new UserMail()
 
-      userMail.successfullyUpdatedProfile({
-        email: user.email
-      })
+  //     userMail.successfullyUpdatedProfile({
+  //       email: user.email
+  //     })
 
-      return res.status(StatusCodes.OK).json({
-        data: { firstName, lastName },
-        message: ReasonPhrases.OK,
-        status: StatusCodes.OK
-      })
-    } catch (error) {
-      winston.error(error)
+  //     return res.status(StatusCodes.OK).json({
+  //       data: { firstName, lastName },
+  //       message: ReasonPhrases.OK,
+  //       status: StatusCodes.OK
+  //     })
+  //   } catch (error) {
+  //     winston.error(error)
 
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        message: ReasonPhrases.BAD_REQUEST,
-        status: StatusCodes.BAD_REQUEST
-      })
-    }
-  },
+  //     return res.status(StatusCodes.BAD_REQUEST).json({
+  //       message: ReasonPhrases.BAD_REQUEST,
+  //       status: StatusCodes.BAD_REQUEST
+  //     })
+  //   }
+  // },
 
-  updateEmail: async (
-    {
-      context: { user },
-      body: { email, password }
-    }: ICombinedRequest<IUserRequest, UpdateEmailPayload>,
-    res: Response
-  ) => {
-    const session = await startSession()
+  // updateEmail: async (
+  //   {
+  //     context: { user },
+  //     body: { email, password }
+  //   }: ICombinedRequest<IUserRequest, UpdateEmailPayload>,
+  //   res: Response
+  // ) => {
+  //   const session = await startSession()
 
-    try {
-      if (user.email === email) {
-        return res.status(StatusCodes.OK).json({
-          data: { email },
-          message: ReasonPhrases.OK,
-          status: StatusCodes.OK
-        })
-      }
+  //   try {
+  //     if (user.email === email) {
+  //       return res.status(StatusCodes.OK).json({
+  //         data: { email },
+  //         message: ReasonPhrases.OK,
+  //         status: StatusCodes.OK
+  //       })
+  //     }
 
-      const isUserExist = await userService.isExistByEmail(email)
+  //     const isUserExist = await userService.isExistByEmail(email)
 
-      if (isUserExist) {
-        return res.status(StatusCodes.CONFLICT).json({
-          message: ReasonPhrases.CONFLICT,
-          status: StatusCodes.CONFLICT
-        })
-      }
+  //     if (isUserExist) {
+  //       return res.status(StatusCodes.CONFLICT).json({
+  //         message: ReasonPhrases.CONFLICT,
+  //         status: StatusCodes.CONFLICT
+  //       })
+  //     }
 
-      const currentUser = await userService.getById(user.id)
+  //     const currentUser = await userService.getById(user.id)
 
-      const comparePassword = currentUser?.comparePassword(password)
-      if (!comparePassword) {
-        return res.status(StatusCodes.FORBIDDEN).json({
-          message: ReasonPhrases.FORBIDDEN,
-          status: StatusCodes.FORBIDDEN
-        })
-      }
+  //     const comparePassword = currentUser?.comparePassword(password)
+  //     if (!comparePassword) {
+  //       return res.status(StatusCodes.FORBIDDEN).json({
+  //         message: ReasonPhrases.FORBIDDEN,
+  //         status: StatusCodes.FORBIDDEN
+  //       })
+  //     }
 
-      session.startTransaction()
+  //     session.startTransaction()
 
-      await userService.updateEmailByUserId(user.id, email, session)
+  //     await userService.updateEmailByUserId(user.id, email, session)
 
-      const cryptoString = createCryptoString()
+  //     const cryptoString = createCryptoString()
 
-      const dateFromNow = createDateAddDaysFromNow(ExpiresInDays.Verification)
+  //     const dateFromNow = createDateAddDaysFromNow(ExpiresInDays.Verification)
 
-      let verification =
-        await verificationService.findOneAndUpdateByUserIdAndEmail(
-          {
-            userId: user.id,
-            email,
-            accessToken: cryptoString,
-            expiresIn: dateFromNow
-          },
-          session
-        )
+  //     let verification =
+  //       await verificationService.findOneAndUpdateByUserIdAndEmail(
+  //         {
+  //           userId: user.id,
+  //           email,
+  //           accessToken: cryptoString,
+  //           expiresIn: dateFromNow
+  //         },
+  //         session
+  //       )
 
-      if (!verification) {
-        verification = await verificationService.create(
-          {
-            userId: user.id,
-            email,
-            accessToken: cryptoString,
-            expiresIn: dateFromNow
-          },
-          session
-        )
-      }
+  //     if (!verification) {
+  //       verification = await verificationService.create(
+  //         {
+  //           userId: user.id,
+  //           email,
+  //           accessToken: cryptoString,
+  //           expiresIn: dateFromNow
+  //         },
+  //         session
+  //       )
+  //     }
 
-      await userService.addVerificationToUser(
-        {
-          userId: user.id,
-          verificationId: verification.id
-        },
-        session
-      )
+  //     await userService.addVerificationToUser(
+  //       {
+  //         userId: user.id,
+  //         verificationId: verification.id
+  //       },
+  //       session
+  //     )
 
-      const userMail = new UserMail()
+  //     const userMail = new UserMail()
 
-      userMail.successfullyUpdatedEmail({ email })
+  //     userMail.successfullyUpdatedEmail({ email })
 
-      userMail.verification({
-        email,
-        accessToken: cryptoString
-      })
+  //     userMail.verification({
+  //       email,
+  //       accessToken: cryptoString
+  //     })
 
-      await session.commitTransaction()
-      session.endSession()
+  //     await session.commitTransaction()
+  //     session.endSession()
 
-      return res.status(StatusCodes.OK).json({
-        data: { email },
-        message: ReasonPhrases.OK,
-        status: StatusCodes.OK
-      })
-    } catch (error) {
-      winston.error(error)
+  //     return res.status(StatusCodes.OK).json({
+  //       data: { email },
+  //       message: ReasonPhrases.OK,
+  //       status: StatusCodes.OK
+  //     })
+  //   } catch (error) {
+  //     winston.error(error)
 
-      if (session.inTransaction()) {
-        await session.abortTransaction()
-        session.endSession()
-      }
+  //     if (session.inTransaction()) {
+  //       await session.abortTransaction()
+  //       session.endSession()
+  //     }
 
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        message: ReasonPhrases.BAD_REQUEST,
-        status: StatusCodes.BAD_REQUEST
-      })
-    }
-  },
+  //     return res.status(StatusCodes.BAD_REQUEST).json({
+  //       message: ReasonPhrases.BAD_REQUEST,
+  //       status: StatusCodes.BAD_REQUEST
+  //     })
+  //   }
+  // },
 
-  updatePassword: async (
-    {
-      context: {
-        user: { email }
-      },
-      body: { oldPassword, newPassword }
-    }: ICombinedRequest<IUserRequest, UpdatePasswordPayload>,
-    res: Response
-  ) => {
-    try {
-      const user = await userService.getByEmail(email)
+  // updatePassword: async (
+  //   {
+  //     context: {
+  //       user: { email }
+  //     },
+  //     body: { oldPassword, newPassword }
+  //   }: ICombinedRequest<IUserRequest, UpdatePasswordPayload>,
+  //   res: Response
+  // ) => {
+  //   try {
+  //     const user = await userService.getByEmail(email)
 
-      const comparePassword = user?.comparePassword(oldPassword)
+  //     const comparePassword = user?.comparePassword(oldPassword)
 
-      if (!user || !comparePassword) {
-        return res.status(StatusCodes.FORBIDDEN).json({
-          message: ReasonPhrases.FORBIDDEN,
-          status: StatusCodes.FORBIDDEN
-        })
-      }
+  //     if (!user || !comparePassword) {
+  //       return res.status(StatusCodes.FORBIDDEN).json({
+  //         message: ReasonPhrases.FORBIDDEN,
+  //         status: StatusCodes.FORBIDDEN
+  //       })
+  //     }
 
-      const hashedPassword = await createHash(newPassword)
+  //     const hashedPassword = await createHash(newPassword)
 
-      await userService.updatePasswordByUserId(user.id, hashedPassword)
+  //     await userService.updatePasswordByUserId(user.id, hashedPassword)
 
-      const userMail = new UserMail()
+  //     const userMail = new UserMail()
 
-      userMail.successfullyUpdatedPassword({ email: user.email })
+  //     userMail.successfullyUpdatedPassword({ email: user.email })
 
-      return res.status(StatusCodes.OK).json({
-        message: ReasonPhrases.OK,
-        status: StatusCodes.OK
-      })
-    } catch (error) {
-      winston.error(error)
+  //     return res.status(StatusCodes.OK).json({
+  //       message: ReasonPhrases.OK,
+  //       status: StatusCodes.OK
+  //     })
+  //   } catch (error) {
+  //     winston.error(error)
 
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        message: ReasonPhrases.BAD_REQUEST,
-        status: StatusCodes.BAD_REQUEST
-      })
-    }
-  },
+  //     return res.status(StatusCodes.BAD_REQUEST).json({
+  //       message: ReasonPhrases.BAD_REQUEST,
+  //       status: StatusCodes.BAD_REQUEST
+  //     })
+  //   }
+  // },
 
-  updateAvatar: async (
-    {
-      context: { user },
-      body: { imageId }
-    }: ICombinedRequest<IUserRequest, { imageId: ObjectId }>,
-    res: Response
-  ) => {
-    try {
-      await userController.deleteUserImages({ userId: user.id })
+  // updateAvatar: async (
+  //   {
+  //     context: { user },
+  //     body: { imageId }
+  //   }: ICombinedRequest<IUserRequest, { imageId: ObjectId }>,
+  //   res: Response
+  // ) => {
+  //   try {
+  //     await userController.deleteUserImages({ userId: user.id })
 
-      await mediaService.updateById(imageId, {
-        refType: MediaRefType.User,
-        refId: user.id
-      })
+  //     await mediaService.updateById(imageId, {
+  //       refType: MediaRefType.User,
+  //       refId: user.id
+  //     })
 
-      return res.status(StatusCodes.OK).json({
-        message: ReasonPhrases.OK,
-        status: StatusCodes.OK
-      })
-    } catch (error) {
-      winston.error(error)
+  //     return res.status(StatusCodes.OK).json({
+  //       message: ReasonPhrases.OK,
+  //       status: StatusCodes.OK
+  //     })
+  //   } catch (error) {
+  //     winston.error(error)
 
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        message: ReasonPhrases.BAD_REQUEST,
-        status: StatusCodes.BAD_REQUEST
-      })
-    }
-  },
+  //     return res.status(StatusCodes.BAD_REQUEST).json({
+  //       message: ReasonPhrases.BAD_REQUEST,
+  //       status: StatusCodes.BAD_REQUEST
+  //     })
+  //   }
+  // },
 
   deleteProfile: async (
     {
@@ -443,7 +443,7 @@ export const userController = {
         })
       }
       session.startTransaction()
-console.log("sessionusercontroller",session)
+      console.log("sessionusercontroller",session)
       await userService.deleteById(user.id, session)
       console.log(`User with ID ${user.id} deleted successfully.`);
       await resetPasswordService.deleteManyByUserId(user.id, session)
@@ -476,23 +476,23 @@ console.log('User profile deleted successfully')
     }
   },
 
-  deleteUserImages: async ({ userId }: { userId: ObjectId }) => {
-    const images = await mediaService.findManyByRef({
-      refType: MediaRefType.User,
-      refId: userId
-    })
+  // deleteUserImages: async ({ userId }: { userId: ObjectId }) => {
+  //   const images = await mediaService.findManyByRef({
+  //     refType: MediaRefType.User,
+  //     refId: userId
+  //   })
 
-    const promises = []
+  //   const promises = []
 
-    for (let i = 0; i < images.length; i++) {
-      promises.push(new Image(images[i]).deleteFile())
-    }
+  //   for (let i = 0; i < images.length; i++) {
+  //     promises.push(new Image(images[i]).deleteFile())
+  //   }
 
-    await Promise.all(promises)
+  //   await Promise.all(promises)
 
-    await mediaService.deleteManyByRef({
-      refType: MediaRefType.User,
-      refId: userId
-    })
-  }
+  //   await mediaService.deleteManyByRef({
+  //     refType: MediaRefType.User,
+  //     refId: userId
+  //   })
+  // }
 }
