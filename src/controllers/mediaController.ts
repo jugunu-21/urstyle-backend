@@ -34,5 +34,8 @@ export const mediaController = {
         status: StatusCodes.BAD_REQUEST
       })
     }
+  },
+  itemupload: () => {
+    
   }
 }

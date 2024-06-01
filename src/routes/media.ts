@@ -11,4 +11,5 @@ export const media = (router: Router): void => {
     uploadSingleImageMiddleware,
     mediaController.imageUpload
   )
+  router.post('',authGuard.isAuth,mediaController.itemupload)
 }

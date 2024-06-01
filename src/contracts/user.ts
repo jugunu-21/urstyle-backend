@@ -1,4 +1,4 @@
-import { Model, ObjectId } from 'mongoose'
+import { Model, ObjectId, isObjectIdOrHexString } from 'mongoose'
 
 export interface IVerification {
   email: string
@@ -6,6 +6,34 @@ export interface IVerification {
   expiresIn: Date
   user: ObjectId
 }
+export interface IItem{
+  id: number
+  name: ObjectId
+  code: string
+  link: string
+  image_url: string
+  price: string
+  review: ObjectId
+  description:string
+}
+
+export interface IReview{
+  id:ObjectId
+  rname:string
+  data: string
+ content : string
+  rating: string
+  
+}
+export interface ICart{
+  id:string
+ look:string
+  desc: string
+ expected_delivery: string
+  cart: ObjectId
+  overall_description:string 
+  
+} 
 
 export interface IResetPassword {
   accessToken: string
