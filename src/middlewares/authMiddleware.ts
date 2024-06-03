@@ -35,7 +35,8 @@ console.log('req.headers', req.headers)
         accessToken
       }
     })
-console.log('req.context', req.context)
+    console.log('req.body', req.body)
+    console.log('req.context', req.context)
     return next()
   } catch (error) {
     return next()
