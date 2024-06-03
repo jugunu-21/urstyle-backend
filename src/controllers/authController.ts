@@ -192,7 +192,8 @@ export const authController = {
       // })
 
       return response
-    } catch (error) {
+    } catch (error)
+    {
       console.log(error)
       winston.error(error)
 

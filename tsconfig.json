@@ -1,3 +1,4 @@
+// we are in json file
 {
   "compilerOptions": {
     "target": "ESNext",

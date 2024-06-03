@@ -10,9 +10,15 @@ export interface IContextRequest<T> extends Omit<Request, 'context'> {
 
 export interface IBodyRequest<T> extends Omit<Request, 'body'> {
   // body: T & { email?: string; phone_number?: string };
-  body: T & {phone_number?: string };
+  body: T & { phone_number?: string };
 }
+export interface IBodyRequestRaw<T> extends Omit<Request, 'body'> {
+  
+  body: T & {
+    name: string, link: string, price: string, code: string, id: number, image_url: "string", description: "string"
+  }
 
+}
 
 export interface IParamsRequest<T> extends Request {
   params: T & ParamsDictionary

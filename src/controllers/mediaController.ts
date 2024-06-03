@@ -1,11 +1,20 @@
 import { Response } from 'express'
 import { ReasonPhrases, StatusCodes } from 'http-status-codes'
 import winston from 'winston'
-
+import { startSession } from 'mongoose'
 import { mediaService } from '@/services'
 import { Image } from '@/infrastructure/image'
-import { IContextRequest, IUserRequest } from '@/contracts/request'
+
 import { appUrl } from '@/utils/paths'
+import { productService } from '@/services'
+import { ProductPayload } from '../contracts/product'
+import {
+  IBodyRequestRaw,
+  IBodyRequest,
+  ICombinedRequest,
+  IContextRequest,
+  IUserRequest
+} from '@/contracts/request'
 
 export const mediaController = {
   imageUpload: async (
@@ -14,7 +23,7 @@ export const mediaController = {
   ) => {
     try {
       const media = await mediaService.create(file as Express.Multer.File)
-
+      console.log('media', media)
       const image = appUrl(
         await new Image(media).sharp({ width: 150, height: 150 })
       )
@@ -35,7 +44,55 @@ export const mediaController = {
       })
     }
   },
-  itemupload: () => {
+  productUpload: async (
+    { body: { name, price, code,id,image_url,description,link } }: IBodyRequestRaw<ProductPayload>,
+    res: Response
+  ) => {
+    console.log('saved in db')
+    const session = await startSession()
+    try {
     
+      session.startTransaction()
+
+      const product = await productService.create(
+        {
+          name,
+          price,
+          code,
+          id,
+          image_url,
+          description,
+          link
+          
+        },
+        session
+      )
+      console.log(product)
+      await session.commitTransaction()
+      session.endSession()
+      const response = res.status(StatusCodes.OK).json({
+        // data: accessToken,
+        message: ReasonPhrases.OK,
+        status: StatusCodes.OK
+      })
+
+      return response
+
+     
+    } catch (error) {
+      console.log(' error saved in db')
+      console.log(error)
+      winston.error(error)
+
+      if (session.inTransaction()) {
+        await session.abortTransaction()
+        session.endSession()
+      }
+
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: ReasonPhrases.BAD_REQUEST,
+        status: StatusCodes.BAD_REQUEST
+      })
+    }
   }
 }

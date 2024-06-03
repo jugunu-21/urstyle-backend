@@ -4,7 +4,8 @@ import { Media } from '@/models'
 import { CreateMediaPayload, UpdateMediaPayload } from '@/contracts/media'
 import { MediaRefType } from '@/constants'
 
-export const mediaService = {
+export const mediaService =
+{
   getById: (mediaId: ObjectId) => Media.findById(mediaId),
 
   findOneByRef: ({
