@@ -16,6 +16,7 @@ import {
   IUserRequest
 } from '@/contracts/request'
 
+import cloudinary from '../utils/cloudinary'
 export const mediaController = {
   imageUpload: async (
     { file }: IContextRequest<IUserRequest>,
@@ -45,22 +46,27 @@ export const mediaController = {
     }
   },
   productUpload: async (
-    { body: { name, price, code,id,image_url,description,link } }: IBodyRequestRaw<ProductPayload>,
+    { body: { name, price, code,id,image,description,link } }: IBodyRequestRaw<ProductPayload>,
     res: Response
   ) => {
-    console.log('saved in db')
+    // console.log('saved in db')
     const session = await startSession()
     try {
     
       session.startTransaction()
-
+      // Your Buffer object
+// const filePathString = image.toString('utf8');
+      const cloudresult = await cloudinary.uploader.upload(image)
       const product = await productService.create(
         {
           name,
           price,
           code,
           id,
-          image_url,
+          image_url: {
+            public_id: cloudresult.public_id,
+            url:cloudresult.secure_url
+          },
           description,
           link
           

@@ -2,45 +2,47 @@ import { Schema, model } from 'mongoose'
 import { IProduct } from '@/contracts/product'
 const schema = new Schema<IProduct>(
   {
-    id:
-    {
+    id: {
       type: Number,
-      required:true
-      }
-    ,
+      required: true
+    },
     name: {
       type: String,
-      required:true
-      }
-    ,
+      required: true
+    },
     code: {
       type: String,
-      required:true
-      }
-    ,
-    link:  {
+      required: true
+    },
+    link: {
       type: String,
-      required:true
+      required: true
+    },
+    image_url: {
+      public_id: {
+        type: String,
+        required: true
+      },
+      url: {
+        type: String,
+        required: true
       }
-    ,
-    image_url:  {
+    },
+
+    price: {
       type: String,
-      required:true
+      required: true
+    },
+    review: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'review'
       }
-    ,
-    price:  {
-      type: String,
-      required:true
-      }
-    ,
-    review: [{
-      type: Schema.Types.ObjectId,
-      ref: 'review'
-    }],
+    ],
     description: String
   },
 
   { timestamps: true }
 )
 export const Product = model<IProduct>('Product', schema)
-export type productPayload = Pick<IProduct, 'name'>;
+export type productPayload = Pick<IProduct, 'name'>

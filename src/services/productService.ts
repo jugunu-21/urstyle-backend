@@ -9,7 +9,10 @@ export const productService = {
       name,
       code,
       link,
-      image_url,
+      image_url: {
+        public_id,
+        url
+      },
       price,
       review,
       description,
@@ -18,7 +21,10 @@ export const productService = {
       id?: number
       code: string
       link?: string
-      image_url?: string
+      image_url: {
+          public_id: string,
+          url:string
+      } 
       price: string
       name: string
       review?: string
@@ -32,7 +38,10 @@ export const productService = {
       name,
       code,
       link,
-      image_url,
+      image_url: {
+        public_id,
+        url
+      },
       price,
       review,
       description,

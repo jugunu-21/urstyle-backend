@@ -9,12 +9,11 @@ export const authGuard = {
     res: Response,
     next: NextFunction
   ) => {
-
     if (user) {
       console.log('user is logged in')
       return next()
     }
-console.log("no user")
+    console.log('no user')
     return res.status(StatusCodes.UNAUTHORIZED).json({
       message: ReasonPhrases.UNAUTHORIZED,
       status: StatusCodes.UNAUTHORIZED
@@ -26,9 +25,7 @@ console.log("no user")
     res: Response,
     next: NextFunction
   ) => {
-   
     if (!user) {
-  
       return next()
     }
 
@@ -39,67 +36,40 @@ console.log("no user")
   }
 }
 
+// isVerified: (
+//   {
+//     context: {
+//       user: { verified }
+//     }
+//   }: IContextRequest<IUserRequest>,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   if (verified) {
+//     return next()
+//   }
 
+//   return res.status(StatusCodes.FORBIDDEN).json({
+//     message: ReasonPhrases.FORBIDDEN,
+//     status: StatusCodes.FORBIDDEN
+//   })
+// },
 
+// isUnverfied: (
+//   {
+//     context: {
+//       user: { verified }
+//     }
+//   }: IContextRequest<IUserRequest>,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   if (!verified) {
+//     return next()
+//   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // isVerified: (
-  //   {
-  //     context: {
-  //       user: { verified }
-  //     }
-  //   }: IContextRequest<IUserRequest>,
-  //   res: Response,
-  //   next: NextFunction
-  // ) => {
-  //   if (verified) {
-  //     return next()
-  //   }
-
-  //   return res.status(StatusCodes.FORBIDDEN).json({
-  //     message: ReasonPhrases.FORBIDDEN,
-  //     status: StatusCodes.FORBIDDEN
-  //   })
-  // },
-
-  // isUnverfied: (
-  //   {
-  //     context: {
-  //       user: { verified }
-  //     }
-  //   }: IContextRequest<IUserRequest>,
-  //   res: Response,
-  //   next: NextFunction
-  // ) => {
-  //   if (!verified) {
-  //     return next()
-  //   }
-
-  //   return res.status(StatusCodes.FORBIDDEN).json({
-  //     message: ReasonPhrases.FORBIDDEN,
-  //     status: StatusCodes.FORBIDDEN
-  //   })
-  // }
-
+//   return res.status(StatusCodes.FORBIDDEN).json({
+//     message: ReasonPhrases.FORBIDDEN,
+//     status: StatusCodes.FORBIDDEN
+//   })
+// }

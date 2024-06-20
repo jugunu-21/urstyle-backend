@@ -12,7 +12,10 @@ export const authMiddleware = async (
 ): Promise<void> => {
   try {
     Object.assign(req, { context: {} })
-console.log('req.headers', req.headers)
+    console.log('req.headers', req.headers)
+    console.log('req.body', req.body)
+    // console.log('req', req)
+    
     const { accessToken } = getAccessTokenFromHeaders(req.headers)
     if (!accessToken) return next()
       console.log('accessToken', accessToken)

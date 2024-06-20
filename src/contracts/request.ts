@@ -15,7 +15,7 @@ export interface IBodyRequest<T> extends Omit<Request, 'body'> {
 export interface IBodyRequestRaw<T> extends Omit<Request, 'body'> {
   
   body: T & {
-    name: string, link: string, price: string, code: string, id: number, image_url: "string", description: "string"
+    name: string, link: string, price: string, code: string, id: number, image: "Buffer", description: "string"
   }
 
 }
