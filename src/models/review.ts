@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import { IReview } from '@/contracts/user'
+import { IReview } from '@/contracts/product'
 const schema = new Schema<IReview>(
   {
     id: {

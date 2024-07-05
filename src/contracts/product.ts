@@ -1,7 +1,7 @@
 import { Model, ObjectId, isObjectIdOrHexString } from 'mongoose'
 
 export interface IProduct {
-  id: number
+  pid: number
   name: string
   code: string
   link: string
@@ -19,9 +19,10 @@ export interface IProduct {
   price: string
   review: ObjectId
   description: string
+  userId:ObjectId
 }
 export interface IProductinitial {
-  id: number
+  pid: number
   name: string
   code: string
   link: string
@@ -39,7 +40,7 @@ export interface IReview {
   rating: string
 }
 export interface IPairing {
-  id: string
+  ppid: string
   look: string
   desc: string
   expected_delivery: string
@@ -48,5 +49,5 @@ export interface IPairing {
 }
 export type ProductPayload = Pick<
   IProductinitial,
-  'name' | 'price' | 'code' | 'id' | 'link' | 'image' | 'description'
+  'name' | 'price' | 'code' | 'pid' | 'link' | 'image' | 'description'
 >

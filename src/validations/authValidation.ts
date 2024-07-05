@@ -44,7 +44,7 @@ export const authValidation = {
       // }
 
       // Object.assign(req.body, { phone_number: phonenumber })
-
+console.log("has the phone number for validtaion ")
       return next()
     } catch (error) {
       winston.error(error)

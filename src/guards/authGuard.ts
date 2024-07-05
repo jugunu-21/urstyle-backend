@@ -10,6 +10,7 @@ export const authGuard = {
     next: NextFunction
   ) => {
     if (user) {
+      console.log(user,"user is accessiblein authguard")
       console.log('user is logged in')
       return next()
     }
@@ -26,6 +27,7 @@ export const authGuard = {
     next: NextFunction
   ) => {
     if (!user) {
+      console.log("user is a guest")
       return next()
     }
 

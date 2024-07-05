@@ -5,7 +5,7 @@ import { Product } from '@/models'
 export const productService = {
   create: (
     {
-      id,
+      pid,
       name,
       code,
       link,
@@ -16,25 +16,27 @@ export const productService = {
       price,
       review,
       description,
+      userId,
       verified = false
     }: {
-      id?: number
+      pid?: number
       code: string
       link?: string
       image_url: {
-          public_id: string,
-          url:string
-      } 
+        public_id: string,
+        url: string
+      }
       price: string
       name: string
       review?: string
       description?: string
+      userId?: ObjectId
       verified?: boolean
     },
     session?: ClientSession
   ) =>
     new Product({
-      id,
+      pid,
       name,
       code,
       link,
@@ -45,17 +47,25 @@ export const productService = {
       price,
       review,
       description,
+      userId,
       verified
     }).save({ session }),
 
   getById: (userId: ObjectId) => Product.findById(userId),
 
   updateProductByProductId: (
-    userId: ObjectId,
-    { name, price }: { name: string; price: string },
+    productId: ObjectId,
+    { name, price, description, code, link, }: {
+      pid: number,
+      name: string,
+      code: string,
+      link: string,
+      price: string,
+      description: string
+    },
     session?: ClientSession
   ) => {
-    const data = [{ _id: userId }, { name, price }]
+    const data = [{ _id: productId }, { name, price,  description,link,code }]
 
     let params = null
 
@@ -65,7 +75,7 @@ export const productService = {
       params = data
     }
 
-    return Product.updateOne(...params)
+    return Product.updateMany(...params)
   },
 
   deleteById: (userId: ObjectId, session?: ClientSession) =>

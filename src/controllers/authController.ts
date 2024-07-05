@@ -40,7 +40,8 @@ export const authController = {
       // const user = await userService.getByEmail(email)
       const userbyphonenumber = await userService.getByphone_number(
         phone_number
-      )
+      ) 
+      console.log("fetching the phone number ")
       // const comparePassword = user?.comparePassword(password)
       if (!userbyphonenumber) {
         // if (!user || !comparePassword || !userbyphonenumber) {

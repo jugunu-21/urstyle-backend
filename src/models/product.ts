@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose'
 import { IProduct } from '@/contracts/product'
 const schema = new Schema<IProduct>(
   {
-    id: {
+    pid: {
       type: Number,
       required: true
     },
@@ -39,7 +39,11 @@ const schema = new Schema<IProduct>(
         ref: 'review'
       }
     ],
-    description: String
+    description: String,
+    userId:{
+      type : Schema.Types.ObjectId,
+      ref:'User'
+    }
   },
 
   { timestamps: true }
