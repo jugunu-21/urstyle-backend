@@ -129,70 +129,127 @@ export const mediaController = {
   },
   productUpdate: async (
     req: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
-
     res: Response,
   ) => {
     const session = await startSession();
     try {
       const { user } = req.context;
-      const { name, price, code, image, description, link,pid } = req.body;
+      const { name, price, code, description, link, pid } = req.body;
       const accessToken = req.params.productAccessToken;
-  
       // Validate accessToken
       if (!accessToken) {
         return res.status(401).json({ message: 'Unauthorized' });
       }
-  
-      // Verify JWT token
       const { id } = jwtVerify({ accessToken });
       if (!id) {
         return res.status(401).json({ message: 'Invalid token' });
       }
-      let image_url;
-  if(image){
-    const cloudresult = await cloudinary.uploader.upload(
-      image.toString('base64'),
-      {
-        resource_type: "auto",
-        // Add other necessary options here
-      }
-    );
-     image_url= {
-      public_id: cloudresult.public_id,
-      url: cloudresult.secure_url
-    }
-   
-  }
 
       // Update product
-      await productService.updateProductByProductId(id, { name, price, description, link,code,pid });
-  
+      await productService.updateProductByProductId(id, { name, price, description, link, code, pid });
+
       // Log success
       console.log("Product is updated successfully");
-  
+
       // Send successful response
       return res.status(StatusCodes.OK).json({
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       });
-  
+
     } catch (error) {
       console.log('Error updating product:', error);
       winston.error(error);
-  
+
       // Handle transaction rollback if needed
       if (session.inTransaction()) {
         await session.abortTransaction();
         session.endSession();
       }
-  
+
       // Send error response
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: ReasonPhrases.BAD_REQUEST,
         status: StatusCodes.BAD_REQUEST
       });
     }
+  },
+  productImageUpdate: async (
+    req: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
+    res: Response,
+  ) => {
+    const session = await startSession();
+    try {
+      const { user } = req.context;
+      const { image } = req.body;
+      const accessToken = req.params.productAccessToken;
+      // Validate accessToken
+      if (!accessToken) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+      // Verify JWT token
+      const { id } = jwtVerify({ accessToken });
+      if (!id) {
+        return res.status(401).json({ message: 'Invalid token' });
+      }
+
+      interface ImageUrl {
+        public_id: string;
+        url: string;
+      }
+
+      let image_url: ImageUrl
+      console.log("about to store data on cloudinary")
+      const cloudresult = await cloudinary.uploader.upload(
+        image.toString('base64'),
+        {
+          resource_type: "auto",
+          // Add other necessary options here
+        }
+      );
+      console.log("clouderesult", cloudresult.public_id)
+      console.log("clouderesult", cloudresult.secure_url)
+      // Construct the image_url object with the result from Cloudinary
+      image_url = {
+        public_id: cloudresult.public_id,
+        url: cloudresult.secure_url
+      };
+      // Update the product with the new image_url
+      console.log("uploaddedd to cloudinary")
+
+      await productService.updateProductImageByProductId(id, { image_url });
+
+      console.log("ProductImage  is updated successfully");
+      session.endSession()
+      // Send successful response
+      return res.status(StatusCodes.OK).json({
+        message: ReasonPhrases.OK,
+        status: StatusCodes.OK
+      });
+    } catch (error) {
+      console.error('Failed to upload image to Cloudinary:', error);
+      console.log('Error updating product:', error);
+      winston.error(error);
+
+      // Handle transaction rollback if needed
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+        session.endSession();
+      }
+
+      // Send error response
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: ReasonPhrases.BAD_REQUEST,
+        status: StatusCodes.BAD_REQUEST
+      });
+      // Handle the error appropriately, e.g., by returning an error response
+    }
+
+    // Update product
+    // Log success
+
+
   }
-  
+
 
 }

@@ -4,12 +4,12 @@ import { mediaController } from '@/controllers'
 import { uploadSingleImageMiddleware } from '@/middlewares'
 
 export const media = (router: Router): void => {
-  router.post(
-    '/media/image/upload',
-    authGuard.isAuth,
-    uploadSingleImageMiddleware,
-    mediaController.imageUpload
-  )
+  // router.post(
+  //   '/media/image/upload',
+  //   authGuard.isAuth,
+  //   uploadSingleImageMiddleware,
+  //   mediaController.imageUpload
+  // )
   // router.post('', authGuard.isAuth, mediaController.itemupload)
  
    router.post(
@@ -22,9 +22,9 @@ export const media = (router: Router): void => {
     authGuard.isAuth,
     mediaController.productUpdate
   )
-  // router.post(
-  //   '/media/productImage/update/:productAccessToken',
-  //   authGuard.isAuth,
-  //   mediaController.  productImageUpdate
-  // )
+  router.post(
+    '/media/productImage/update/:productAccessToken',
+    authGuard.isAuth,
+    mediaController.productImageUpdate
+  )
 }

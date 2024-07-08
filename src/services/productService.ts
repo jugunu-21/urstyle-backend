@@ -1,8 +1,9 @@
 import { ClientSession, ObjectId } from 'mongoose'
 
 import { Product } from '@/models'
+import { error } from 'console'
 
-export const productService = {
+export const  productService = {
   create: (
     {
       pid,
@@ -53,9 +54,9 @@ export const productService = {
 
   getById: (userId: ObjectId) => Product.findById(userId),
 
-  updateProductByProductId: (
+  updateProductByProductId: async(
     productId: ObjectId,
-    { name, price, description, code, link, }: {
+    { name, price, description, code, link, pid}: {
       pid: number,
       name: string,
       code: string,
@@ -65,17 +66,70 @@ export const productService = {
     },
     session?: ClientSession
   ) => {
-    const data = [{ _id: productId }, { name, price,  description,link,code }]
+    try{
+      const product = await Product.findById(productId);
 
-    let params = null
+      if (!product) {
+        throw new Error('Product not found'); // Throw an error if the product does not exist
+      }
+    //     const fieldsToUpdate = { name, price, description, link, code, pid };
+    // const missingFields = Object.entries(fieldsToUpdate).filter(([key, value]) => value === undefined || value === null ||  (typeof value === 'string' && value.trim() === ''));
 
-    if (session) {
-      params = [...data, { session }]
-    } else {
-      params = data
+    // if (missingFields.length > 0) {
+    //   throw new Error(`Missing fields: ${missingFields.map(([key]) => key).join(', ')}`);
+    // }
+      const data = [{ _id: productId }, { name, price,  description,link,code ,pid}]
+
+      let params = null
+  
+      if (session) {
+        params = [...data, { session }]
+      } else {
+        params = data
+      }
+  
+      return Product.updateMany(...params)
     }
-
-    return Product.updateMany(...params)
+    catch{ error}
+    console.error('Error updating product:', error);
+    throw error; 
+  },
+  updateProductImageByProductId:async (
+    productId: ObjectId,
+    {  image_url: {
+      public_id,
+      url
+    }}: {
+      image_url: {
+        public_id: string,
+        url: string
+      }
+    },
+    session?: ClientSession
+  ) => {
+    try{
+      const product = await Product.findById(productId)
+      if(!product){
+        throw new Error('Product not found');
+      }
+      const data = [{ _id: productId }, {  image_url: {
+        public_id,
+        url
+      }}]
+  
+      let params = null
+  
+      if (session) {
+        params = [...data, { session }]
+      } else {
+        params = data
+      }
+  
+      return Product.updateOne(...params)
+    }catch{error} 
+    console.error('Error updating product:', error);
+    throw error;
+   
   },
 
   deleteById: (userId: ObjectId, session?: ClientSession) =>
