@@ -249,7 +249,51 @@ export const mediaController = {
     // Log success
 
 
-  }
+  },
+  productDelete:
+    async (
+      req: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
+      res: Response,
+    ) => {
+      const session = await startSession();
+      try {
+        const { user } = req.context
+        const accessToken = req.params.productAccessToken;
+        if (!accessToken) {
+          return res.status(401).json({ message: 'Unauthorized' });
+        }
+        // Verify JWT token
+        const { id } = jwtVerify({ accessToken });
+        if (!id) {
+          return res.status(401).json({ message: 'Invalid token' });
+        }
+        await productService.deleteById(id)
+        session.endSession()
+        return res.status(StatusCodes.OK).json({
+          message: ReasonPhrases.OK,
+          Status: StatusCodes.OK
+        })
+      }
+      catch (error) {
+
+        console.log('Error while deleting the  product:', error);
+        winston.error(error);
+
+        // Handle transaction rollback if needed
+        if (session.inTransaction()) {
+          await session.abortTransaction();
+          session.endSession();
+        }
+
+        // Send error response
+        return res.status(StatusCodes.BAD_REQUEST).json({
+          message: ReasonPhrases.BAD_REQUEST,
+          status: StatusCodes.BAD_REQUEST
+        });
+        // Handle the error appropriately, e.g., by returning an error response
+      }
+
+    }
 
 
 }

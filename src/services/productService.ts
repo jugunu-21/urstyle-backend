@@ -2,6 +2,7 @@ import { ClientSession, ObjectId } from 'mongoose'
 
 import { Product } from '@/models'
 import { error } from 'console'
+import { ok } from 'assert'
 
 export const  productService = {
   create: (
@@ -132,8 +133,19 @@ export const  productService = {
    
   },
 
-  deleteById: (userId: ObjectId, session?: ClientSession) =>
-    Product.deleteOne({ user: userId }, { session })
+  deleteById: async(userId: ObjectId, session?: ClientSession) =>{
+    try{
+      const product = await Product.findById(userId)
+      if(!product){
+        throw new Error('Product not found');
+      }
+      
+      return Product.deleteOne({ user: userId }, { session })
+    }
+  catch{error}
+  console.error("doesnot exist any product with this id ")
+  throw error;
+  }
 
   //
 }

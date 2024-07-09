@@ -27,4 +27,9 @@ export const media = (router: Router): void => {
     authGuard.isAuth,
     mediaController.productImageUpdate
   )
+  router.post(
+    '/media/product/delete/:productAccessToken',
+    authGuard.isAuth,
+    mediaController.productDelete
+  )
 }
