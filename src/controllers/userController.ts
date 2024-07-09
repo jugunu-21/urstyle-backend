@@ -7,7 +7,8 @@ import {
   ICombinedRequest,
   IContextRequest,
   IParamsRequest,
-  IUserRequest
+  IUserRequest,
+  IUserRequestwithId
 } from '@/contracts/request'
 import {
   DeleteProfilePayload,
@@ -68,28 +69,28 @@ export const userController = {
   //   res: Response
   // ) => {
   //   const session = await startSession();
-  
+
   //   try {
   //     let existingUser;
-  
+
   //     if (email) {
   //       existingUser = await userService.getByEmail(email);
   //     } else if (phone_number) {
   //       // You can add logic here to retrieve user by phone number if needed
   //       // existingUser = await userService.getByPhoneNumber(phone_number);
   //     }
-  
+
   //     if (existingUser) {
   //       return res.status(StatusCodes.CONFLICT).json({
   //         message: ReasonPhrases.CONFLICT,
   //         status: StatusCodes.CONFLICT
   //       });
   //     }
-  
+
   //     session.startTransaction();
   //     const cryptoString = createCryptoString();
   //     const dateFromNow = createDateAddDaysFromNow(ExpiresInDays.Verification);
-  
+
   //     let verification = await verificationService.findOneAndUpdateByUserIdAndEmail(
   //       {
   //         userId: user.id,
@@ -99,7 +100,7 @@ export const userController = {
   //       },
   //       session
   //     );
-  
+
   //     if (!verification) {
   //       verification = await verificationService.create(
   //         {
@@ -110,7 +111,7 @@ export const userController = {
   //         },
   //         session
   //       );
-  
+
   //       await userService.addVerificationToUser(
   //         {
   //           userId: user.id,
@@ -119,37 +120,37 @@ export const userController = {
   //         session
   //       );
   //     }
-  
+
   //     const userMail = new UserMail();
-  
+
   //     userMail.verification({
   //       email: email,
   //        // Use email if provided, otherwise use phone_number
   //       accessToken: cryptoString
   //     });
-  
+
   //     await session.commitTransaction();
   //     session.endSession();
-  
+
   //     return res.status(StatusCodes.OK).json({
   //       message: ReasonPhrases.OK,
   //       status: StatusCodes.OK
   //     });
   //   } catch (error) {
   //     winston.error(error);
-  
+
   //     if (session.inTransaction()) {
   //       await session.abortTransaction();
   //       session.endSession();
   //     }
-  
+
   //     return res.status(StatusCodes.BAD_REQUEST).json({
   //       message: ReasonPhrases.BAD_REQUEST,
   //       status: StatusCodes.BAD_REQUEST
   //     });
   //   }
   // },
-  
+
   // verification: async (
   //   { params }: IParamsRequest<{ accessToken: string }>,
   //   res: Response
@@ -159,35 +160,35 @@ export const userController = {
   //     const verification = await verificationService.getByValidAccessToken(
   //       params.accessToken
   //     );
-  
+
   //     if (!verification) {
   //       return res.status(StatusCodes.FORBIDDEN).json({
   //         message: ReasonPhrases.FORBIDDEN,
   //         status: StatusCodes.FORBIDDEN
   //       });
   //     }
-  
+
   //     session.startTransaction();
-  
+
   //     await userService.updateVerificationAndEmailByUserId(
   //       verification.user,
   //       verification.email,
   //       session
   //     );
-  
+
   //     await verificationService.deleteManyByUserId(verification.user, session);
-  
+
   //     const { accessToken } = jwtSign(verification.user);
-  
+
   //     const userMail = new UserMail();
-  
+
   //     userMail.successfullyVerified({
   //       email: verification.email
   //     });
-  
+
   //     await session.commitTransaction();
   //     session.endSession();
-  
+
   //     return res.status(StatusCodes.OK).json({
   //       data: { accessToken },
   //       message: ReasonPhrases.OK,
@@ -195,21 +196,21 @@ export const userController = {
   //     });
   //   } catch (error) {
   //     winston.error(error);
-  
+
   //     if (session.inTransaction()) {
   //       await session.abortTransaction();
   //       session.endSession();
   //     }
-  
+
   //     return res.status(StatusCodes.BAD_REQUEST).json({
   //       message: ReasonPhrases.BAD_REQUEST,
   //       status: StatusCodes.BAD_REQUEST
   //     });
   //   }
   // },
-  
 
- 
+
+
   // updateProfile: async (
   //   {
   //     context: { user },
@@ -424,31 +425,39 @@ export const userController = {
   deleteProfile: async (
     {
       context: {
-        user: { phone_number }
+        user: {  id,phone_number},
+       
       },
+      body:{phone_number: bodyPhoneNumber}
      
-    }: ICombinedRequest<IUserRequest, DeleteProfilePayload>,
+    }: ICombinedRequest<IUserRequestwithId, DeleteProfilePayload>,
     res: Response
   ) => {
+
     const session = await startSession()
 
     try {
-      const user = await userService.getByphone_number(phone_number)
-
-      // const comparePassword = user?.comparePassword(password)
-      if (!user ) {
-        return res.status(StatusCodes.FORBIDDEN).json({
-          message: ReasonPhrases.FORBIDDEN,
-          status: StatusCodes.FORBIDDEN
-        })
+      if (phone_number !== bodyPhoneNumber) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+          message: 'Phone numbers do not match.',
+          status: StatusCodes.BAD_REQUEST,
+        });
       }
+      // const user = await userService.getByphone_number(phone_number)
+      // // const comparePassword = user?.comparePassword(password)
+      // if (!user) {
+      //   return res.status(StatusCodes.FORBIDDEN).json({
+      //     message: ReasonPhrases.FORBIDDEN,
+      //     status: StatusCodes.FORBIDDEN
+      //   })
+      // }
       session.startTransaction()
-      console.log("sessionusercontroller",session)
-      await userService.deleteById(user.id, session)
-      console.log(`User with ID ${user.id} deleted successfully.`);
-      await resetPasswordService.deleteManyByUserId(user.id, session)
+      console.log("sessionusercontroller", session)
+      await userService.deleteById(id, session)
+      console.log(`User with ID ${id} deleted successfully.`);
+      await resetPasswordService.deleteManyByUserId(id, session)
 
-      await verificationService.deleteManyByUserId(user.id, session)
+      await verificationService.deleteManyByUserId(id, session)
 
       // const userMail = new UserMail()
 
@@ -456,7 +465,7 @@ export const userController = {
 
       await session.commitTransaction()
       session.endSession()
-console.log('User profile deleted successfully')
+      console.log('User profile deleted successfully')
       return res.status(StatusCodes.OK).json({
         message: ReasonPhrases.OK,
         status: StatusCodes.OK

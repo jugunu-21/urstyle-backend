@@ -1,6 +1,7 @@
 import { ClientSession, ObjectId } from 'mongoose'
 
 import { User } from '@/models'
+import { error } from 'console'
 
 export const userService = {
   create: (
@@ -104,7 +105,7 @@ export const userService = {
   // },
 
   deleteById: (userId: ObjectId, session?: ClientSession) =>
-    User.deleteOne({ user: userId }, { session }),
+    User.deleteOne({ _id: userId }, { session }),
 
   // addResetPasswordToUser: async (
   //   {
