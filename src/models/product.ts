@@ -42,7 +42,8 @@ const schema = new Schema<IProduct>(
     description: String,
     userId:{
       type : Schema.Types.ObjectId,
-      ref:'User'
+      ref:'User',
+      required:true
     }
   },
 

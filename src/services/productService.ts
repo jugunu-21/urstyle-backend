@@ -95,6 +95,16 @@ export const  productService = {
     console.error('Error updating product:', error);
     throw error; 
   },
+  getproductsbyuser: async (userId: ObjectId, session: ClientSession) => {
+    try {
+      const products = await Product.find({ userId }).session(session);
+      return products;
+    } catch (error) {
+      console.error('Error fetching products by user:', error);
+      throw error;
+    }
+  },
+
   updateProductImageByProductId:async (
     productId: ObjectId,
     {  image_url: {

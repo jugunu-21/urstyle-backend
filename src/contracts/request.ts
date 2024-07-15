@@ -18,7 +18,10 @@ export interface IContextandBodyRequest<T,S>extends Omit<Request, 'context'&'bod
   context: T,
   body: S
 }
-
+export interface IContextandBodyRequestforProducts<T>extends Omit<Request, 'context'> 
+{
+  context: T
+}
 export interface IProductBodyRequestRaw<T> extends Omit<Request, 'body'> {
   body: T & {
     name: string,

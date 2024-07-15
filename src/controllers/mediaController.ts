@@ -18,7 +18,8 @@ import {
   IContextRequest,
   IUserRequest,
   IParamsRequest,
-  IUserRequestwithid
+  IUserRequestwithid,
+  IContextandBodyRequestforProducts
 } from '@/contracts/request'
 
 import cloudinary from '../utils/cloudinary'
@@ -126,6 +127,32 @@ export const mediaController = {
         status: StatusCodes.BAD_REQUEST
       })
     }
+  },
+  productFetch: async (
+    req: IContextandBodyRequestforProducts<IUserRequestwithid>,
+    res: Response
+
+  ) => {
+    try {
+      const session = await startSession();
+      const { user } = req.context;
+      const id = user.id;
+      const products = await productService.getproductsbyuser(id, session);
+      console.log("products", products)
+      return res.status(StatusCodes.OK).json({
+        data: products,
+        message: ReasonPhrases.OK,
+        status: StatusCodes.OK
+      });
+
+    }
+    catch (error) {
+
+
+
+
+    }
+
   },
   productUpdate: async (
     req: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,

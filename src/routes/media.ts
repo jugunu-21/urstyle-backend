@@ -18,6 +18,11 @@ export const media = (router: Router): void => {
     mediaController.productUpload
   )
   router.post(
+    '/media/product/Fetch',
+    authGuard.isAuth,
+    mediaController.productFetch
+  )
+  router.post(
     '/media/product/update/:productAccessToken',
     authGuard.isAuth,
     mediaController.productUpdate
