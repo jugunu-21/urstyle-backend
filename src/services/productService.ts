@@ -56,7 +56,7 @@ export const  productService = {
   getById: (userId: ObjectId) => Product.findById(userId),
 
   updateProductByProductId: async(
-    productId: ObjectId,
+    productId: string,
     { name, price, description, code, link, pid}: {
       pid: number,
       name: string,
@@ -106,7 +106,7 @@ export const  productService = {
   },
 
   updateProductImageByProductId:async (
-    productId: ObjectId,
+    productId: string,
     {  image_url: {
       public_id,
       url
@@ -143,7 +143,7 @@ export const  productService = {
    
   },
 
-  deleteById: async(userId: ObjectId, session?: ClientSession) =>{
+  deleteById: async(userId: string, session?: ClientSession) =>{
     try{
       const product = await Product.findById(userId)
       if(!product){

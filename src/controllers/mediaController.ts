@@ -10,6 +10,10 @@ import { productService } from '@/services'
 import { ProductPayload } from '../contracts/product'
 import jwt from 'jsonwebtoken'
 import { Params } from 'express-serve-static-core'
+import { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
+import { Schema } from 'mongoose';
+import { Types } from 'mongoose';
 import {
   IProductBodyRequestRaw,
   IContextandBodyRequest,
@@ -138,9 +142,20 @@ export const mediaController = {
       const { user } = req.context;
       const id = user.id;
       const products = await productService.getproductsbyuser(id, session);
+      const simplifiedProducts = products.map(product => ({
+        image: product.image_url.url, // Assuming you want the URL of the image
+        id: product.id,
+        pid: product.pid,
+        name: product.name,
+        code: product.code,
+        price: product.price,
+        link: product.link,
+        review: product.review,
+        description: product.description
+      }));
       console.log("products", products)
       return res.status(StatusCodes.OK).json({
-        data: products,
+        data: simplifiedProducts,
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       });
@@ -159,27 +174,36 @@ export const mediaController = {
     res: Response,
   ) => {
     const session = await startSession();
+    session.startTransaction()
     try {
       const { user } = req.context;
       const { name, price, code, description, link, pid } = req.body;
-      const accessToken = req.params.productAccessToken;
+
+
+      // Now use Schema.Types.ObjectId when you need to create an ObjectId instance
+      // const id = new Schema.Types.ObjectId(req.params.id);
+      // const id = new mongoose.Types.ObjectId(req.params.id);
+      const productId = req.params.id;
       // Validate accessToken
-      if (!accessToken) {
-        return res.status(401).json({ message: 'Unauthorized' });
-      }
-      const { id } = jwtVerify({ accessToken });
-      if (!id) {
-        return res.status(401).json({ message: 'Invalid token' });
-      }
+      // if (!id) {
+      //   return res.status(401).json({ message: 'Unauthorized' });
+      // }
+      // const { id } = jwtVerify({ accessToken });
+      // if (!id) {
+      //   return res.status(401).json({ message: 'Invalid token' });
+      // }
 
       // Update product
-      await productService.updateProductByProductId(id, { name, price, description, link, code, pid });
+      // const id = new mongoose.ObjectId(idd);
+      await productService.updateProductByProductId(productId, { name, price, description, link, code, pid });
 
       // Log success
       console.log("Product is updated successfully");
-
+      await session.commitTransaction()
+      session.endSession()
       // Send successful response
       return res.status(StatusCodes.OK).json({
+        data:"product upldated",
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       });
@@ -206,20 +230,16 @@ export const mediaController = {
     res: Response,
   ) => {
     const session = await startSession();
+    session.startTransaction()
     try {
       const { user } = req.context;
       const { image } = req.body;
-      const accessToken = req.params.productAccessToken;
+      const id = req.params.id;
       // Validate accessToken
-      if (!accessToken) {
+      if (!id) {
         return res.status(401).json({ message: 'Unauthorized' });
       }
-      // Verify JWT token
-      const { id } = jwtVerify({ accessToken });
-      if (!id) {
-        return res.status(401).json({ message: 'Invalid token' });
-      }
-
+     
       interface ImageUrl {
         public_id: string;
         url: string;
@@ -285,16 +305,13 @@ export const mediaController = {
       const session = await startSession();
       try {
         const { user } = req.context
-        const accessToken = req.params.productAccessToken;
-        if (!accessToken) {
+        const id = req.params.id;
+        if (!id) {
           return res.status(401).json({ message: 'Unauthorized' });
         }
         // Verify JWT token
-        const { id } = jwtVerify({ accessToken });
-        if (!id) {
-          return res.status(401).json({ message: 'Invalid token' });
-        }
-        await productService.deleteById(id)
+       
+        await productService.deleteById(id,session)
         session.endSession()
         return res.status(StatusCodes.OK).json({
           message: ReasonPhrases.OK,
