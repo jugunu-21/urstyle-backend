@@ -5,7 +5,7 @@ import { startSession } from 'mongoose'
 import { mediaService } from '@/services'
 import { Image } from '@/infrastructure/image'
 
-import { appUrl } from '@/utils/paths'
+import { appUrl,joinRelativeToMainPath } from '@/utils/paths'
 import { productService } from '@/services'
 import { ProductPayload } from '../contracts/product'
 import jwt from 'jsonwebtoken'
@@ -39,18 +39,8 @@ export const mediaController = {
       // const filePath = 'storage/public/your-file-name.png'; // Adjust the path according to your storage configuration
       const filepath = file?.path
       if (filepath) {
-        console.log("path", filepath)
-        const normalizedFilePath = path.normalize(filepath);
-        console.log("normalizedFilePath",normalizedFilePath)
-       
-        // console.log("fileBuffer", fileBuffer)
-        try {
-          const fileBuffer = fs.readFileSync(normalizedFilePath);
-          console.log("fileBuffer", fileBuffer);
-        } catch (error) {
-          console.error("Error reading file:", error);
-        }
-        const fileBuffer = fs.readFileSync(normalizedFilePath)
+        const path=joinRelativeToMainPath(filepath)
+        const fileBuffer = fs.readFileSync(path)
         const url =  await uploadFileToCloudinary(fileBuffer)
         console.log("url", url)
         const media = await mediaService.create(file as Express.Multer.File)
@@ -69,7 +59,7 @@ export const mediaController = {
       console.log("errorlast")
       winston.error(error)
 
-      await new Image(file as Express.Multer.File).deleteFile()
+      // await new Image(file as Express.Multer.File).deleteFile()
 
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: ReasonPhrases.BAD_REQUEST,
