@@ -36,18 +36,37 @@ export const mediaController = {
     res: Response
   ) => {
     try {
+      // const filePath = 'storage/public/your-file-name.png'; // Adjust the path according to your storage configuration
+      const filepath = file?.path
+      if (filepath) {
+        console.log("path", filepath)
+        const normalizedFilePath = path.normalize(filepath);
+        console.log("normalizedFilePath",normalizedFilePath)
+       
+        // console.log("fileBuffer", fileBuffer)
+        try {
+          const fileBuffer = fs.readFileSync(normalizedFilePath);
+          console.log("fileBuffer", fileBuffer);
+        } catch (error) {
+          console.error("Error reading file:", error);
+        }
+        const fileBuffer = fs.readFileSync(normalizedFilePath)
+        const url =  await uploadFileToCloudinary(fileBuffer)
+        console.log("url", url)
         const media = await mediaService.create(file as Express.Multer.File)
         console.log('media', media)
-      const image = appUrl(
-        await new Image(media).sharp({ width: 150, height: 150 })
-      )
-
         return res.status(StatusCodes.OK).json({
-        data: { id: media.id, image },
+          data: { url: url },
           message: ReasonPhrases.OK,
           status: StatusCodes.OK
+        })
+      }
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: ReasonPhrases.BAD_REQUEST,
+        status: StatusCodes.BAD_REQUEST
       })
     } catch (error) {
+      console.log("errorlast")
       winston.error(error)
 
       await new Image(file as Express.Multer.File).deleteFile()
