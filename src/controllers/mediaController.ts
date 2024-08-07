@@ -45,12 +45,14 @@ export const mediaController = {
         console.log("url", url)
         const media = await mediaService.create(file as Express.Multer.File)
         console.log('media', media)
+        await new Image(file as Express.Multer.File).deleteFile()
         return res.status(StatusCodes.OK).json({
           data: { url: url },
           message: ReasonPhrases.OK,
           status: StatusCodes.OK
         })
       }
+      await new Image(file as Express.Multer.File).deleteFile()
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: ReasonPhrases.BAD_REQUEST,
         status: StatusCodes.BAD_REQUEST
@@ -59,7 +61,7 @@ export const mediaController = {
       console.log("errorlast")
       winston.error(error)
 
-      // await new Image(file as Express.Multer.File).deleteFile()
+      await new Image(file as Express.Multer.File).deleteFile()
 
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: ReasonPhrases.BAD_REQUEST,
