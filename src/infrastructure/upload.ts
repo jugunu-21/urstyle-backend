@@ -10,12 +10,14 @@ const fileFilter = (
   file: Express.Multer.File,
   cb: FileFilterCallback
 ) => {
+  console.log("file",file)
   const mimetypes: string[] = Object.values(Mimetype)
 
   if (!mimetypes.includes(file.mimetype)) {
+    console.log("fileeee",)
     return cb(new Error(`Only ${mimetypes} files are allowed.`))
   }
-
+  console.log("fileeeemm",)
   cb(null, true)
 }
 
@@ -24,5 +26,6 @@ const upload = multer({
   limits: { fileSize: mbToBytes(ImageSizeInMb.Ten) },
   fileFilter
 })
-
-export const uploadSingleImage = upload.single('file')
+console.log("upload",upload)
+export const uploadMultipleImages = upload.array('files', 10) 
+export const uploadSingleImage = upload.single('files')

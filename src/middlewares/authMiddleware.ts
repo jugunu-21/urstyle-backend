@@ -8,14 +8,14 @@ import { redis } from '@/dataSources'
 export const authMiddleware = async (
   req: Request,
   _: Response,
+
   next: NextFunction
 ): Promise<void> => {
   try {
     Object.assign(req, { context: {} })
     // console.log('req.headers', req.headers)
     // console.log('req.body', req.body)
-    // console.log('req', req)
-    
+    // console.log('reqfilllllllllll', req.files)
     const { accessToken } = getAccessTokenFromHeaders(req.headers)
     if (!accessToken) return next()
       // console.log('accessToken', accessToken)
@@ -39,7 +39,7 @@ export const authMiddleware = async (
       }
     })
     // console.log('req.body', req.body)
-    console.log('req.context', req.context)
+    // console.log('req.context', req.context)
     return next()
   } catch (error) {
     return next()

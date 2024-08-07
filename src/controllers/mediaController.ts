@@ -25,25 +25,27 @@ import {
   IUserRequestwithid,
   IContextandBodyRequestforProducts
 } from '@/contracts/request'
-
+import fs from 'fs';
 import cloudinary from '../utils/cloudinary'
 import { jwtVerify } from '@/utils/jwt'
+import path from 'path';
+import { uploadFileToCloudinary } from '../utils/cloudinary'
 export const mediaController = {
   imageUpload: async (
     { file }: IContextRequest<IUserRequest>,
     res: Response
   ) => {
     try {
-      const media = await mediaService.create(file as Express.Multer.File)
-      console.log('media', media)
+        const media = await mediaService.create(file as Express.Multer.File)
+        console.log('media', media)
       const image = appUrl(
         await new Image(media).sharp({ width: 150, height: 150 })
       )
 
-      return res.status(StatusCodes.OK).json({
+        return res.status(StatusCodes.OK).json({
         data: { id: media.id, image },
-        message: ReasonPhrases.OK,
-        status: StatusCodes.OK
+          message: ReasonPhrases.OK,
+          status: StatusCodes.OK
       })
     } catch (error) {
       winston.error(error)
@@ -73,23 +75,21 @@ export const mediaController = {
       // console.log(name,"name")
       console.log(user, "user")
       // console.log(user.id,"userid")
-      const cloudresult = await cloudinary.uploader.upload(
-        image.toString('base64'),
-        {
-          resource_type: "auto",
-          // Add other necessary options here
-        }
-      );
+      // const images = 
+      // const cloudresult = await cloudinary.uploader.upload(
+      //   image.toString('base64'),
+      //   {
+      //     resource_type: "auto",
+      //     // Add other necessary options here
+      //   }
+      // );
       const product = await productService.create(
         {
           name,
           price,
           code,
           pid,
-          image_url: {
-            public_id: cloudresult.public_id,
-            url: cloudresult.secure_url
-          },
+          image_url: image,
           description,
           link,
           userId: user.id
@@ -203,7 +203,7 @@ export const mediaController = {
       session.endSession()
       // Send successful response
       return res.status(StatusCodes.OK).json({
-        data:"product upldated",
+        data: "product upldated",
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       });
@@ -225,78 +225,78 @@ export const mediaController = {
       });
     }
   },
-  productImageUpdate: async (
-    req: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
-    res: Response,
-  ) => {
-    const session = await startSession();
-    session.startTransaction()
-    try {
-      const { user } = req.context;
-      const { image } = req.body;
-      const id = req.params.id;
-      // Validate accessToken
-      if (!id) {
-        return res.status(401).json({ message: 'Unauthorized' });
-      }
-     
-      interface ImageUrl {
-        public_id: string;
-        url: string;
-      }
+  // productImageUpdate: async (
+  //   req: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
+  //   res: Response,
+  // ) => {
+  //   const session = await startSession();
+  //   session.startTransaction()
+  //   try {
+  //     const { user } = req.context;
+  //     const { image } = req.body;
+  //     const id = req.params.id;
+  //     // Validate accessToken
+  //     if (!id) {
+  //       return res.status(401).json({ message: 'Unauthorized' });
+  //     }
 
-      let image_url: ImageUrl
-      console.log("about to store data on cloudinary")
-      const cloudresult = await cloudinary.uploader.upload(
-        image.toString('base64'),
-        {
-          resource_type: "auto",
-          // Add other necessary options here
-        }
-      );
-      console.log("clouderesult", cloudresult.public_id)
-      console.log("clouderesult", cloudresult.secure_url)
-      // Construct the image_url object with the result from Cloudinary
-      image_url = {
-        public_id: cloudresult.public_id,
-        url: cloudresult.secure_url
-      };
-      // Update the product with the new image_url
-      console.log("uploaddedd to cloudinary")
+  //     interface ImageUrl {
+  //       public_id: string;
+  //       url: string;
+  //     }
 
-      await productService.updateProductImageByProductId(id, { image_url });
+  //     let image_url: ImageUrl
+  //     console.log("about to store data on cloudinary")
+  //     const cloudresult = await cloudinary.uploader.upload(
+  //       image.toString('base64'),
+  //       {
+  //         resource_type: "auto",
+  //         // Add other necessary options here
+  //       }
+  //     );
+  //     console.log("clouderesult", cloudresult.public_id)
+  //     console.log("clouderesult", cloudresult.secure_url)
+  //     // Construct the image_url object with the result from Cloudinary
+  //     image_url = {
+  //       public_id: cloudresult.public_id,
+  //       url: cloudresult.secure_url
+  //     };
+  //     // Update the product with the new image_url
+  //     console.log("uploaddedd to cloudinary")
 
-      console.log("ProductImage  is updated successfully");
-      session.endSession()
-      // Send successful response
-      return res.status(StatusCodes.OK).json({
-        message: ReasonPhrases.OK,
-        status: StatusCodes.OK
-      });
-    } catch (error) {
-      console.error('Failed to upload image to Cloudinary:', error);
-      console.log('Error updating product:', error);
-      winston.error(error);
+  //     await productService.updateProductImageByProductId(id, { image_url });
 
-      // Handle transaction rollback if needed
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-        session.endSession();
-      }
+  //     console.log("ProductImage  is updated successfully");
+  //     session.endSession()
+  //     // Send successful response
+  //     return res.status(StatusCodes.OK).json({
+  //       message: ReasonPhrases.OK,
+  //       status: StatusCodes.OK
+  //     });
+  //   } catch (error) {
+  //     console.error('Failed to upload image to Cloudinary:', error);
+  //     console.log('Error updating product:', error);
+  //     winston.error(error);
 
-      // Send error response
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        message: ReasonPhrases.BAD_REQUEST,
-        status: StatusCodes.BAD_REQUEST
-      });
-      // Handle the error appropriately, e.g., by returning an error response
-    }
+  //     // Handle transaction rollback if needed
+  //     if (session.inTransaction()) {
+  //       await session.abortTransaction();
+  //       session.endSession();
+  //     }
 
-    // Update product
-    // Log success
+  //     // Send error response
+  //     return res.status(StatusCodes.BAD_REQUEST).json({
+  //       message: ReasonPhrases.BAD_REQUEST,
+  //       status: StatusCodes.BAD_REQUEST
+  //     });
+  //     // Handle the error appropriately, e.g., by returning an error response
+  //   }
+
+  //   // Update product
+  //   // Log success
 
 
-  },
+  // },
   productDelete:
     async (
       req: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
@@ -310,8 +310,8 @@ export const mediaController = {
           return res.status(401).json({ message: 'Unauthorized' });
         }
         // Verify JWT token
-       
-        await productService.deleteById(id,session)
+
+        await productService.deleteById(id, session)
         session.endSession()
         return res.status(StatusCodes.OK).json({
           message: ReasonPhrases.OK,

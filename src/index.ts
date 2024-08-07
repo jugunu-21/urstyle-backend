@@ -16,7 +16,7 @@ import { i18next, i18nextHttpMiddleware } from '@/i18n'
 mongoose.run()
 redis.run()
 const app: Express = express()
-const upload = multer({ dest: 'uploads/' });
+// const upload = multer({ dest: 'uploads/' });
 app.use(
   join('/', process.env.STORAGE_PATH),
   express.static(join(__dirname, process.env.STORAGE_PATH))

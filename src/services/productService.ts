@@ -4,17 +4,18 @@ import { Product } from '@/models'
 import { error } from 'console'
 import { ok } from 'assert'
 
-export const  productService = {
+export const productService = {
   create: (
     {
       pid,
       name,
       code,
       link,
-      image_url: {
-        public_id,
-        url
-      },
+      image_url,
+      // image_url: {
+      //   public_id,
+      //   url
+      // },
       price,
       review,
       description,
@@ -24,10 +25,11 @@ export const  productService = {
       pid?: number
       code: string
       link?: string
-      image_url: {
-        public_id: string,
-        url: string
-      }
+      image_url?: string
+      // image_url: {
+      //   public_id: string,
+      //   url: string
+      // }
       price: string
       name: string
       review?: string
@@ -42,10 +44,11 @@ export const  productService = {
       name,
       code,
       link,
-      image_url: {
-        public_id,
-        url
-      },
+      image_url,
+      // image_url: {
+      //   public_id,
+      //   url
+      // },
       price,
       review,
       description,
@@ -55,9 +58,9 @@ export const  productService = {
 
   getById: (userId: ObjectId) => Product.findById(userId),
 
-  updateProductByProductId: async(
+  updateProductByProductId: async (
     productId: string,
-    { name, price, description, code, link, pid}: {
+    { name, price, description, code, link, pid }: {
       pid: number,
       name: string,
       code: string,
@@ -67,33 +70,33 @@ export const  productService = {
     },
     session?: ClientSession
   ) => {
-    try{
+    try {
       const product = await Product.findById(productId);
 
       if (!product) {
         throw new Error('Product not found'); // Throw an error if the product does not exist
       }
-    //     const fieldsToUpdate = { name, price, description, link, code, pid };
-    // const missingFields = Object.entries(fieldsToUpdate).filter(([key, value]) => value === undefined || value === null ||  (typeof value === 'string' && value.trim() === ''));
+      //     const fieldsToUpdate = { name, price, description, link, code, pid };
+      // const missingFields = Object.entries(fieldsToUpdate).filter(([key, value]) => value === undefined || value === null ||  (typeof value === 'string' && value.trim() === ''));
 
-    // if (missingFields.length > 0) {
-    //   throw new Error(`Missing fields: ${missingFields.map(([key]) => key).join(', ')}`);
-    // }
-      const data = [{ _id: productId }, { name, price,  description,link,code ,pid}]
+      // if (missingFields.length > 0) {
+      //   throw new Error(`Missing fields: ${missingFields.map(([key]) => key).join(', ')}`);
+      // }
+      const data = [{ _id: productId }, { name, price, description, link, code, pid }]
 
       let params = null
-  
+
       if (session) {
         params = [...data, { session }]
       } else {
         params = data
       }
-  
+
       return Product.updateMany(...params)
     }
-    catch{ error}
+    catch { error }
     console.error('Error updating product:', error);
-    throw error; 
+    throw error;
   },
   getproductsbyuser: async (userId: ObjectId, session: ClientSession) => {
     try {
@@ -105,56 +108,40 @@ export const  productService = {
     }
   },
 
-  updateProductImageByProductId:async (
+  updateProductImageByProductId: async (
     productId: string,
-    {  image_url: {
-      public_id,
-      url
-    }}: {
-      image_url: {
-        public_id: string,
-        url: string
-      }
-    },
+    image_url: string,
     session?: ClientSession
   ) => {
-    try{
+    try {
       const product = await Product.findById(productId)
-      if(!product){
+      if (!product) {
         throw new Error('Product not found');
       }
-      const data = [{ _id: productId }, {  image_url: {
-        public_id,
-        url
-      }}]
-  
+      const data = [{ _id: productId }, { image_url: image_url }]
       let params = null
-  
       if (session) {
         params = [...data, { session }]
       } else {
         params = data
       }
-  
       return Product.updateOne(...params)
-    }catch{error} 
+    } catch { error }
     console.error('Error updating product:', error);
     throw error;
-   
   },
-
-  deleteById: async(userId: string, session?: ClientSession) =>{
-    try{
+  deleteById: async (userId: string, session?: ClientSession) => {
+    try {
       const product = await Product.findById(userId)
-      if(!product){
+      if (!product) {
         throw new Error('Product not found');
       }
-      
+
       return Product.deleteOne({ user: userId }, { session })
     }
-  catch{error}
-  console.error("doesnot exist any product with this id ")
-  throw error;
+    catch { error }
+    console.error("doesnot exist any product with this id ")
+    throw error;
   }
 
   //

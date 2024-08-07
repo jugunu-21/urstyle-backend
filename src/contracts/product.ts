@@ -26,7 +26,7 @@ export interface IProductinitial {
   name: string
   code: string
   link: string
-  image: Buffer
+  image: string
   price: string
   review: ObjectId
   description: string

@@ -29,7 +29,7 @@ export interface IProductBodyRequestRaw<T> extends Omit<Request, 'body'> {
     code: string,
     pid: number,
     link: string,
-    image: Buffer,
+    image: string,
     description: string
   };
 }
