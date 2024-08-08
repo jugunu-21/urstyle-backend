@@ -14,7 +14,6 @@ export const authMiddleware = async (
   try {
     Object.assign(req, { context: {} })
     // console.log('req.headers', req.headers)
-    // console.log('req.body', req.body)
     // console.log('reqfilllllllllll', req.files)
     const { accessToken } = getAccessTokenFromHeaders(req.headers)
     if (!accessToken) return next()

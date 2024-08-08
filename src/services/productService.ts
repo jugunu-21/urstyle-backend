@@ -3,7 +3,7 @@ import { ClientSession, ObjectId } from 'mongoose'
 import { Product } from '@/models'
 import { error } from 'console'
 import { ok } from 'assert'
-
+import { uploadFileToCloudinary, deleteFromCloudinaryWithUrl } from '../utils/cloudinary'
 export const productService = {
   create: (
     {
@@ -12,10 +12,6 @@ export const productService = {
       code,
       link,
       image_url,
-      // image_url: {
-      //   public_id,
-      //   url
-      // },
       price,
       review,
       description,
@@ -26,10 +22,6 @@ export const productService = {
       code: string
       link?: string
       image_url?: string
-      // image_url: {
-      //   public_id: string,
-      //   url: string
-      // }
       price: string
       name: string
       review?: string
@@ -45,10 +37,6 @@ export const productService = {
       code,
       link,
       image_url,
-      // image_url: {
-      //   public_id,
-      //   url
-      // },
       price,
       review,
       description,
@@ -60,12 +48,13 @@ export const productService = {
 
   updateProductByProductId: async (
     productId: string,
-    { name, price, description, code, link, pid }: {
+    { name, price, description, code, link, pid, image_url }: {
       pid: number,
       name: string,
       code: string,
       link: string,
       price: string,
+      image_url: string
       description: string
     },
     session?: ClientSession
@@ -76,13 +65,8 @@ export const productService = {
       if (!product) {
         throw new Error('Product not found'); // Throw an error if the product does not exist
       }
-      //     const fieldsToUpdate = { name, price, description, link, code, pid };
-      // const missingFields = Object.entries(fieldsToUpdate).filter(([key, value]) => value === undefined || value === null ||  (typeof value === 'string' && value.trim() === ''));
-
-      // if (missingFields.length > 0) {
-      //   throw new Error(`Missing fields: ${missingFields.map(([key]) => key).join(', ')}`);
-      // }
-      const data = [{ _id: productId }, { name, price, description, link, code, pid }]
+      await deleteFromCloudinaryWithUrl(product.image_url)
+      const data = [{ _id: productId }, { name, price, description, link, code, pid, image_url }]
 
       let params = null
 
@@ -108,35 +92,35 @@ export const productService = {
     }
   },
 
-  updateProductImageByProductId: async (
-    productId: string,
-    image_url: string,
-    session?: ClientSession
-  ) => {
-    try {
-      const product = await Product.findById(productId)
-      if (!product) {
-        throw new Error('Product not found');
-      }
-      const data = [{ _id: productId }, { image_url: image_url }]
-      let params = null
-      if (session) {
-        params = [...data, { session }]
-      } else {
-        params = data
-      }
-      return Product.updateOne(...params)
-    } catch { error }
-    console.error('Error updating product:', error);
-    throw error;
-  },
+  // updateProductImageByProductId: async (
+  //   productId: string,
+  //   image_url: string,
+  //   session?: ClientSession
+  // ) => {
+  //   try {
+  //     const product = await Product.findById(productId)
+  //     if (!product) {
+  //       throw new Error('Product not found');
+  //     }
+  //     const data = [{ _id: productId }, { image_url: image_url }]
+  //     let params = null
+  //     if (session) {
+  //       params = [...data, { session }]
+  //     } else {
+  //       params = data
+  //     }
+  //     return Product.updateOne(...params)
+  //   } catch { error }
+  //   console.error('Error updating product:', error);
+  //   throw error;
+  // },
   deleteById: async (userId: string, session?: ClientSession) => {
     try {
       const product = await Product.findById(userId)
       if (!product) {
         throw new Error('Product not found');
       }
-
+      await deleteFromCloudinaryWithUrl(product.image_url)
       return Product.deleteOne({ user: userId }, { session })
     }
     catch { error }

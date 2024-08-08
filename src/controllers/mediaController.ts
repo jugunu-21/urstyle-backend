@@ -5,7 +5,7 @@ import { startSession } from 'mongoose'
 import { mediaService } from '@/services'
 import { Image } from '@/infrastructure/image'
 
-import { appUrl,joinRelativeToMainPath } from '@/utils/paths'
+import { appUrl, joinRelativeToMainPath } from '@/utils/paths'
 import { productService } from '@/services'
 import { ProductPayload } from '../contracts/product'
 import jwt from 'jsonwebtoken'
@@ -26,10 +26,8 @@ import {
   IContextandBodyRequestforProducts
 } from '@/contracts/request'
 import fs from 'fs';
-import cloudinary from '../utils/cloudinary'
-import { jwtVerify } from '@/utils/jwt'
-import path from 'path';
-import { uploadFileToCloudinary } from '../utils/cloudinary'
+
+import { uploadFileToCloudinary,deleteFromCloudinaryWithUrl } from '../utils/cloudinary'
 export const mediaController = {
   imageUpload: async (
     { file }: IContextRequest<IUserRequest>,
@@ -39,9 +37,9 @@ export const mediaController = {
       // const filePath = 'storage/public/your-file-name.png'; // Adjust the path according to your storage configuration
       const filepath = file?.path
       if (filepath) {
-        const path=joinRelativeToMainPath(filepath)
+        const path = joinRelativeToMainPath(filepath)
         const fileBuffer = fs.readFileSync(path)
-        const url =  await uploadFileToCloudinary(fileBuffer)
+        const url = await uploadFileToCloudinary(fileBuffer)
         console.log("url", url)
         const media = await mediaService.create(file as Express.Multer.File)
         console.log('media', media)
@@ -72,7 +70,6 @@ export const mediaController = {
   productUpload: async (
     //  { context: { user } },{ body: { name, price, code,id,image,description,link } }: IContextandBodyRequest<IUserRequest,ProductPayload>,
     request: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
-
     res: Response
   ) => {
     const { user } = request.context;
@@ -104,7 +101,6 @@ export const mediaController = {
           description,
           link,
           userId: user.id
-
         },
         session
       )
@@ -117,26 +113,20 @@ export const mediaController = {
       const accessToken = jwt.sign(tokendata, process.env.JWT_SECRET, {
         expiresIn: '1h'
       })
-
       const response = res.status(StatusCodes.OK).json({
         data: accessToken,
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       })
-
       return response
-
-
     } catch (error) {
       console.log(' error saved in db')
       console.log(error)
       winston.error(error)
-
       if (session.inTransaction()) {
         await session.abortTransaction()
         session.endSession()
       }
-
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: ReasonPhrases.BAD_REQUEST,
         status: StatusCodes.BAD_REQUEST
@@ -146,7 +136,6 @@ export const mediaController = {
   productFetch: async (
     req: IContextandBodyRequestforProducts<IUserRequestwithid>,
     res: Response
-
   ) => {
     try {
       const session = await startSession();
@@ -154,7 +143,7 @@ export const mediaController = {
       const id = user.id;
       const products = await productService.getproductsbyuser(id, session);
       const simplifiedProducts = products.map(product => ({
-        image: product.image_url.url, // Assuming you want the URL of the image
+        image: product.image_url, // Assuming you want the URL of the image
         id: product.id,
         pid: product.pid,
         name: product.name,
@@ -173,12 +162,7 @@ export const mediaController = {
 
     }
     catch (error) {
-
-
-
-
     }
-
   },
   productUpdate: async (
     req: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
@@ -187,34 +171,15 @@ export const mediaController = {
     const session = await startSession();
     session.startTransaction()
     try {
-      const { user } = req.context;
-      const { name, price, code, description, link, pid } = req.body;
-
-
-      // Now use Schema.Types.ObjectId when you need to create an ObjectId instance
-      // const id = new Schema.Types.ObjectId(req.params.id);
-      // const id = new mongoose.Types.ObjectId(req.params.id);
+      const { name, price, code, description, link, pid, image } = req.body;
       const productId = req.params.id;
-      // Validate accessToken
-      // if (!id) {
-      //   return res.status(401).json({ message: 'Unauthorized' });
-      // }
-      // const { id } = jwtVerify({ accessToken });
-      // if (!id) {
-      //   return res.status(401).json({ message: 'Invalid token' });
-      // }
-
-      // Update product
-      // const id = new mongoose.ObjectId(idd);
-      await productService.updateProductByProductId(productId, { name, price, description, link, code, pid });
-
-      // Log success
+    
+      await productService.updateProductByProductId(productId, { name, price, description, link, code, pid, image_url:image });
       console.log("Product is updated successfully");
       await session.commitTransaction()
       session.endSession()
-      // Send successful response
       return res.status(StatusCodes.OK).json({
-        data: "product upldated",
+        data: "product updated",
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       });
@@ -222,14 +187,10 @@ export const mediaController = {
     } catch (error) {
       console.log('Error updating product:', error);
       winston.error(error);
-
-      // Handle transaction rollback if needed
       if (session.inTransaction()) {
         await session.abortTransaction();
         session.endSession();
       }
-
-      // Send error response
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: ReasonPhrases.BAD_REQUEST,
         status: StatusCodes.BAD_REQUEST

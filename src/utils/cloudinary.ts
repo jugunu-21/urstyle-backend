@@ -23,3 +23,21 @@ export async function uploadFileToCloudinary(buffer: Buffer): Promise<string | u
         ).end(buffer);
     });
 }
+export async function deleteFromCloudinaryWithUrl(url:string){
+    try {
+        const parts = url.split('/');
+        const fileName = parts.pop(); // Get the file name part
+        const publicId = fileName?.split('.')[0]; // Extract the public ID before the file extension
+        if (publicId) {
+          const result = await cloudinary.uploader.destroy(publicId);
+          console.log("sucessfully deleted from cloudinary",result);
+          return true;
+        } else {
+          console.error('Public ID is undefined');
+          return false;
+        }
+      } catch (error) {
+        console.error('Error deleting file from Cloudinary:', error);
+        return false;
+      }
+}

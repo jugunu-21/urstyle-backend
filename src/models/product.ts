@@ -19,16 +19,9 @@ const schema = new Schema<IProduct>(
       required: true
     },
     image_url: {
-      public_id: {
-        type: String,
-        required: true
-      },
-      url: {
-        type: String,
-        required: true
-      }
+      type: String,
+      required: true
     },
-
     price: {
       type: String,
       required: true
@@ -40,10 +33,10 @@ const schema = new Schema<IProduct>(
       }
     ],
     description: String,
-    userId:{
-      type : Schema.Types.ObjectId,
-      ref:'User',
-      required:true
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
     }
   },
 

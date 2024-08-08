@@ -9,3 +9,10 @@ export const joinRelativeToMainPath = (path = '') => {
 }
 
 export const appUrl = (path = '') => `${process.env.APP_URL}/src/${path}`
+export const cloudUrlId=(url:string)=>{
+  const parts = url.split('/');
+  const fileName = parts.pop();
+  const publicId = fileName?.split('.')[0]; 
+  return publicId
+
+}

@@ -5,17 +5,7 @@ export interface IProduct {
   name: string
   code: string
   link: string
-  image_url: {
-    public_id: {
-      type: string
-      required: true
-    }
-    url: {
-      type: string
-      required: true
-    }
-  }
-
+  image_url:string
   price: string
   review: ObjectId
   description: string
