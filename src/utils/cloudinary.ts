@@ -1,4 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
+import { appUrl, joinRelativeToMainPath } from '@/utils/paths'
+import fs from "fs"
 cloudinary.config({ 
     cloud_name: process.env.CLOUDINARY_NAME, 
     api_key: process.env.CLOUDINARY_API_KEY, 
@@ -40,4 +42,9 @@ export async function deleteFromCloudinaryWithUrl(url:string){
         console.error('Error deleting file from Cloudinary:', error);
         return false;
       }
+}
+export async function uploadCloudinary(filepath:string){
+    const fileBuffer = fs.readFileSync(filepath)
+    const url = await uploadFileToCloudinary(fileBuffer)
+return url
 }

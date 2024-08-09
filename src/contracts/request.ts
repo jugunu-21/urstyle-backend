@@ -7,7 +7,12 @@ import { IUser } from './user'
 export interface IContextRequest<T> extends Omit<Request, 'context'> {
   context: T
 }
-
+export interface IContextRequest<T> extends Omit<Request, 'context'> {
+  context: T
+}
+export interface IfileRequest<T> extends Omit<Request, 'file'> {
+  file: T
+}
 export interface IBodyRequest<T> extends Omit<Request, 'body'> {
   // body: T & { email?: string; phone_number?: string };
   body: T & { phone_number?: string };
@@ -53,6 +58,11 @@ export interface ICombinedRequest<
     Pick<IParamsRequest<Params>, 'params'>,
     Pick<IQueryRequest<Query>, 'query'> {}
 
+export interface IUserRequest
+ {
+  user: Omit<IUser, 'id'> & Document
+  accessToken: string
+}
 export interface IUserRequest
  {
   user: Omit<IUser, 'id'> & Document

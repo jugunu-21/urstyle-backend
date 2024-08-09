@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose'
 import { IPairing } from '@/contracts/product'
 const schema = new Schema<IPairing>(
   {
-    id: String,
+  
     look: String,
     desc: String,
     expected_delivery: String,

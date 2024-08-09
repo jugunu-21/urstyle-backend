@@ -13,6 +13,17 @@ export interface IMedia {
   refId?: ObjectId
 }
 
+export type ImediaCompress={
+  filess:any
+  destination:string
+  path:string[]
+}
+export interface IfileRequest<T> extends Omit<ImediaCompress, 'filess'> {
+  filess: T
+  destination:string
+  path:string[]
+
+}
 export type CreateMediaPayload = Omit<
   IMedia,
   'refId' | 'refType' | 'orderColumn'

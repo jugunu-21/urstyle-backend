@@ -1,9 +1,9 @@
 import { Router } from 'express'
-
+import multer from 'multer';
 import { authController } from '@/controllers'
 import { authGuard } from '@/guards'
 import { authValidation } from '@/validations'
-
+const upload = multer();
 export const auth = (router: Router): void => {
   router.post(
     '/auth/sign-in',

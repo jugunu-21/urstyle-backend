@@ -26,7 +26,7 @@ import {
   IContextandBodyRequestforProducts
 } from '@/contracts/request'
 import fs from 'fs';
-
+import { uploadCloudinary } from '../utils/cloudinary'
 import { uploadFileToCloudinary,deleteFromCloudinaryWithUrl } from '../utils/cloudinary'
 export const mediaController = {
   imageUpload: async (
@@ -67,30 +67,19 @@ export const mediaController = {
       })
     }
   },
+  
   productUpload: async (
     //  { context: { user } },{ body: { name, price, code,id,image,description,link } }: IContextandBodyRequest<IUserRequest,ProductPayload>,
     request: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
     res: Response
   ) => {
+    console.log("control")
     const { user } = request.context;
     const { name, price, code, pid, image, description, link } = request.body;
+    // console.log("req.body",request.body)
     const session = await startSession()
     try {
-
       session.startTransaction()
-      // Your Buffer object
-      // const filePathString = image.toString('utf8');
-      // console.log(name,"name")
-      console.log(user, "user")
-      // console.log(user.id,"userid")
-      // const images = 
-      // const cloudresult = await cloudinary.uploader.upload(
-      //   image.toString('base64'),
-      //   {
-      //     resource_type: "auto",
-      //     // Add other necessary options here
-      //   }
-      // );
       const product = await productService.create(
         {
           name,
@@ -120,7 +109,7 @@ export const mediaController = {
       })
       return response
     } catch (error) {
-      console.log(' error saved in db')
+      // console.log(' error saved in db')
       console.log(error)
       winston.error(error)
       if (session.inTransaction()) {

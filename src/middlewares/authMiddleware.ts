@@ -39,6 +39,7 @@ export const authMiddleware = async (
     })
     // console.log('req.body', req.body)
     // console.log('req.context', req.context)
+  
     return next()
   } catch (error) {
     return next()

@@ -16,7 +16,7 @@ import { i18next, i18nextHttpMiddleware } from '@/i18n'
 mongoose.run()
 redis.run()
 const app: Express = express()
-// const upload = multer({ dest: 'uploads/' });
+const upload = multer();
 app.use(
   join('/', process.env.STORAGE_PATH),
   express.static(join(__dirname, process.env.STORAGE_PATH))
@@ -24,12 +24,13 @@ app.use(
 
 app.use
 (
-  // upload.array('files', 10),
+ 
   express.json({ limit: '10mb' }),
   express.urlencoded({ limit: '10mb', extended: true }),
   corsMiddleware,
   i18nextHttpMiddleware.handle(i18next),
   // uploadSingleImageMiddleware,
+  // upload.none(),
   authMiddleware,
   router,
   notFoundMiddleware
