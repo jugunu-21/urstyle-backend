@@ -36,4 +36,6 @@ app.use
   notFoundMiddleware
 )
 
-app.listen(process.env.APP_PORT)
+const port = process.env.APP_PORT || 443 ; // Recommended default for development
+
+app.listen(port, () => console.log(`Server listening on port ${port}`));
