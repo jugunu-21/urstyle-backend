@@ -26,7 +26,7 @@
     "start": "npm run rm:public && cross-env NODE_ENV=production ts-node --files -r tsconfig-paths/register ./src",
     "dev": "npm run rm:public && cross-env NODE_ENV=production nodemon --exec ts-node --files -r tsconfig-paths/register ./src",
     "watch": "npm run rm:public && cross-env ts-node-dev --files --respawn --inspect -r tsconfig-paths/register ./src",
-    "build": "npm run rm:public && cross-env NODE_ENV=production tsc && tsc-alias && npm run copy:files",
+
     "rm:public": "rimraf ./public",
     "copy:files": "if [ -f .env ]; then cp .env ./public/.env; fi && cp -R ./src/templates ./public",
     "seed": "ts-node --files -r tsconfig-paths/register ./src/seeds",
@@ -92,3 +92,4 @@
     "winston": "3.8.2"
   }
 }
+   
