@@ -2,14 +2,26 @@
   "version": 2,
   "builds": [
     {
-      "src": "public",
-      "use": "@vercel/node"
+      "src": "package.json",
+      "use": "@vercel/node",
+      "config": {
+        "builds": [
+          {
+            "src": "package.json",
+            "use": "@vercel/npm-package",
+            "config": {
+              "installCommand": "npm ci",
+              "buildCommand": "npm run build"
+            }
+          }
+        ]
+      }
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/"
+      "dest": "/public/index.js"
     }
   ]
 }
