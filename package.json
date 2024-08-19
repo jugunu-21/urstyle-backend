@@ -26,7 +26,7 @@
     "start": "npm run rm:public && cross-env NODE_ENV=production ts-node --files -r tsconfig-paths/register ./src",
     "dev": "npm run rm:public && cross-env NODE_ENV=production nodemon --exec ts-node --files -r tsconfig-paths/register ./src",
     "watch": "npm run rm:public && cross-env ts-node-dev --files --respawn --inspect -r tsconfig-paths/register ./src",
-    "build": "npm run rm:public && cross-env  tsc && tsc-alias && npm run copy:files",
+    "build": "npm run rm:public && cross-env  tsc && tsc-alias ",
     "rm:public": "rimraf ./public",
     "copy:files": "  ncp ./src/templates ./public",
     "seed": "ts-node --files -r tsconfig-paths/register ./src/seeds",
