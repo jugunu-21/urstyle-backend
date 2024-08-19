@@ -29,7 +29,7 @@
     "build": "npm run rm:public && cross-env NODE_ENV=production tsc && tsc-alias && npm run copy:files",
     "rm:public": "rimraf ./public",
     "copy:files//": "if [ -f .env ]; then cp .env ./public/.env; fi && cp -R ./src/templates ./public",
-    "copy:files": "rimraf ./public && ncp .env ./public/.env && ncp -r ./src/templates ./public",
+    "copy:files": "  ncp ./src/templates ./public",
     "seed": "ts-node --files -r tsconfig-paths/register ./src/seeds",
     "lint": "eslint --debug ./src",
     "lint:write": "eslint --debug ./src --fix",
