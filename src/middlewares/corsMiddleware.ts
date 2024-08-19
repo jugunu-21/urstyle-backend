@@ -4,9 +4,13 @@ import { StatusCodes } from 'http-status-codes'
 
 export const corsMiddleware = cors({
 
-  origin: process.env.CLIENT_URL,
+ 
+  origin: '*',
+
   credentials: true ,
 
  
   optionsSuccessStatus: StatusCodes.OK
 })
+
+ // origin: process.env.CLIENT_URL,
