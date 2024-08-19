@@ -3,7 +3,13 @@
   "builds": [
     {
       "src": "public",
-      "use": "@vercel/static"
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/"
     }
   ]
 }
