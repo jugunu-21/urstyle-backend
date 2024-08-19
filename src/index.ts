@@ -18,27 +18,27 @@ mongoose.run()
 redis.run()
 const app: Express = express()
 const upload = multer();
-// app.use(
-//   join('/', process.env.STORAGE_PATH),
-//   express.static(join(__dirname, process.env.STORAGE_PATH))
-// )
-app.use("/", (req, res) => {
-  res.json({ message: "hello welcome" });
-});
+app.use(
+  join('/', process.env.STORAGE_PATH),
+  express.static(join(__dirname, process.env.STORAGE_PATH))
+)
+// app.use("/", (req, res) => {
+//   res.json({ message: "hello welcome" });
+// });
 
-// app.use
-// (
+app.use
+(
  
-//   express.json({ limit: '10mb' }),
-//   express.urlencoded({ limit: '10mb', extended: true }),
-//   corsMiddleware,
-//   i18nextHttpMiddleware.handle(i18next),
-//   // uploadSingleImageMiddleware,
-//   // upload.none(),
-//   authMiddleware,
-//   router,
-//   notFoundMiddleware
-// )
+  express.json({ limit: '10mb' }),
+  express.urlencoded({ limit: '10mb', extended: true }),
+  corsMiddleware,
+  i18nextHttpMiddleware.handle(i18next),
+  // uploadSingleImageMiddleware,
+  // upload.none(),
+  authMiddleware,
+  router,
+  notFoundMiddleware
+)
 
 const port = process.env.APP_PORT || 443 ; // Recommended default for development
 
