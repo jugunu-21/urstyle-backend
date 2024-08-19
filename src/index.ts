@@ -18,10 +18,10 @@ mongoose.run()
 redis.run()
 const app: Express = express()
 const upload = multer();
-app.use(
-  join('/', process.env.STORAGE_PATH),
-  express.static(join(__dirname, process.env.STORAGE_PATH))
-)
+// app.use(
+//   join('/', process.env.STORAGE_PATH),
+//   express.static(join(__dirname, process.env.STORAGE_PATH))
+// )
 app.use("/", (req, res) => {
   res.json({ message: "hello welcome" });
 });
