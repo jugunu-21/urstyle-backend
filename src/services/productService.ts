@@ -109,8 +109,8 @@ export const productService = {
     console.log("iteman page",page)
     return Product.paginate({}, { page, limit })
       .then((result) => {
-    //  console.log("result",result)
-        return result.docs; // This returns the docs from the resolved promise
+     console.log("result",result)
+        return result; // This returns the docs from the resolved promise
       })
       .catch((err) => {
        

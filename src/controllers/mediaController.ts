@@ -129,13 +129,13 @@ export const mediaController = {
     try {
       const session = await startSession();
       const page = parseInt(req.query.page as string) ||1 ;
-      const limit = parseInt(req.query.limit as string) || 10;
+      const limit = parseInt(req.query.limit as string) || 6;
       const { user } = req.context;
       const id = user.id;
       const product = await productService. getProductsByUserForPagination(id, session,limit,page,);
       // const products = await productService.getProductsByUser(id, session);
       // console.log("productraw", product )
-      const simplifiedProducts = product.map(product => ({
+      const simplifiedProducts = product.docs.map(product => ({
         image: product.image_url, // Assuming you want the URL of the image
         id: product.id,
         pid: product.pid,
@@ -148,7 +148,7 @@ export const mediaController = {
       }));
       // console.log("products", simplifiedProducts)
       return res.status(StatusCodes.OK).json({
-        data: simplifiedProducts,
+        data: {simplifiedProducts,totalDocs:product.totalDocs},
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       });
