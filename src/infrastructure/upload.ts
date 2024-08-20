@@ -27,5 +27,5 @@ const upload = multer({
   // fileFilter
 })
 console.log("upload",upload)
-export const uploadMultipleImages = upload.array('image', 10) 
+export const uploadMultipleImages = upload.array('file', 10) 
 export const uploadSingleImage = upload.single('files')
