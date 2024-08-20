@@ -82,7 +82,7 @@ export const productService = {
     console.error('Error updating product:', error);
     throw error;
   },
-  getproductsbyuser: async (userId: ObjectId, session: ClientSession) => {
+  getProductsByUser: async (userId: ObjectId, session: ClientSession) => {
     try {
       const products = await Product.find({ userId }).session(session);
       return products;
@@ -91,7 +91,32 @@ export const productService = {
       throw error;
     }
   },
-
+ 
+  // getProductsByUserForPagination: async (userId: ObjectId, session: ClientSession,limit:number,page:number) => {
+  //   try {
+  //     const products = await Product.find({ userId }).session(session)
+  //       .skip((page - 1) * limit)
+  //       .limit(limit);
+  
+  //       return products;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  
+  // },
+  getProductsByUserForPagination: async (userId: ObjectId, session: ClientSession, limit: number, page: number) => {
+    console.log("iteman limit",limit)
+    console.log("iteman page",page)
+    return Product.paginate({}, { page, limit })
+      .then((result) => {
+    //  console.log("result",result)
+        return result.docs; // This returns the docs from the resolved promise
+      })
+      .catch((err) => {
+       
+        throw err; // Ensure you're throwing the caught error to handle it properly in the calling code
+      });
+  },
   // updateProductImageByProductId: async (
   //   productId: string,
   //   image_url: string,

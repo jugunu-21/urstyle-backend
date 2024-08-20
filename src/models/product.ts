@@ -1,5 +1,9 @@
 import { Schema, model } from 'mongoose'
+import mongoose from 'mongoose';
 import { IProduct } from '@/contracts/product'
+import { Document } from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
+
 const schema = new Schema<IProduct>(
   {
     pid: {
@@ -42,5 +46,17 @@ const schema = new Schema<IProduct>(
 
   { timestamps: true }
 )
-export const Product = model<IProduct>('Product', schema)
+interface ProductDocument extends Document {
+  pid: number;
+  name: string;
+  code: string;
+  link: string;
+  image_url: string;
+  price: string;
+  review: Array<string>; // Adjusted to Array<string> assuming review contains strings
+  description?: string; // Made optional if it's not always required
+  userId: string;
+}
+schema.plugin(paginate);
+export const Product = model<IProduct, mongoose.PaginateModel<ProductDocument>>('Product', schema)
 export type productPayload = Pick<IProduct, 'name'>

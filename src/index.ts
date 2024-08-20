@@ -22,9 +22,9 @@ app.use(
   join('/', process.env.STORAGE_PATH),
   express.static(join(__dirname, process.env.STORAGE_PATH))
 )
-app.get("/", (req, res) => {
-  res.json({ message: "hello welcome" });
-});
+// app.get("/", (req, res) => {
+//   res.json({ message: "hello welcome" });
+// });
 
 app.use
 (
