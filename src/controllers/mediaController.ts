@@ -41,9 +41,9 @@ export const mediaController = {
         const path = joinRelativeToMainPath(filepath)
         const fileBuffer = fs.readFileSync(path)
         const url = await uploadFileToCloudinary(fileBuffer)
-        console.log("url", url)
+        // console.log("url", url)
         const media = await mediaService.create(file as Express.Multer.File)
-        console.log('media', media)
+        // console.log('media', media)
         await new Image(file as Express.Multer.File).deleteFile()
         return res.status(StatusCodes.OK).json({
           data: { url: url },
@@ -57,7 +57,7 @@ export const mediaController = {
         status: StatusCodes.BAD_REQUEST
       })
     } catch (error) {
-      console.log("errorlast")
+      // console.log("errorlast")
       winston.error(error)
 
       await new Image(file as Express.Multer.File).deleteFile()
@@ -74,7 +74,7 @@ export const mediaController = {
     req: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
     res: Response
   ) => {
-    console.log("control")
+    // console.log("control")
 
     const session = await startSession();
     session.startTransaction()
@@ -88,7 +88,7 @@ export const mediaController = {
         uploadCloudinary(file.path)
           .then((async response => {
             if (response !== undefined) {
-              console.log("imGE aLATERED1", response);
+              // console.log("imGE aLATERED1", response);
               await productService.create(
                 {
                   name,
@@ -98,7 +98,8 @@ export const mediaController = {
                   image_url: response,
                   description,
                   link,
-                  userId: user.id
+                  userId: user.id,
+                
                 },
                 session
               )
@@ -141,7 +142,7 @@ export const mediaController = {
       return response
     } catch (error) {
 
-      console.log(error)
+      // console.log(error)
       winston.error(error)
       if (session.inTransaction()) {
         await session.abortTransaction()
@@ -166,8 +167,7 @@ export const mediaController = {
       const { user } = req.context;
       const id = user.id;
       const product = await productService.getProductsByUserForPagination(id, session, limit, page,);
-      // const products = await productService.getProductsByUser(id, session);
-      // console.log("productraw", product )
+     
       const simplifiedProducts = product.docs.map(product => ({
         image: product.image_url, // Assuming you want the URL of the image
         id: product.id,
@@ -214,8 +214,8 @@ export const mediaController = {
         uploadCloudinary(file.path)
           .then((async response => {
             if (response !== undefined) {
-              console.log("imGE aLATERED1", response);
-              await productService.updateProductByProductId(productId, { name, price, description, link, code, pid, image_url: response });
+             ;
+              await productService.updateProductByProductId(productId, { response ,name, price, description, link, code, pid, image_url: response });
               new Image(file as Express.Multer.File).deleteFile();
               return response;
             }

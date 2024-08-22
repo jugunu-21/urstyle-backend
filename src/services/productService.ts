@@ -48,7 +48,7 @@ export const productService = {
 
   updateProductByProductId: async (
     productId: string,
-    { name, price, description, code, link, pid, image_url }: {
+    { name, price, description, code, link, pid, image_url,response }: {
       pid: number,
       name: string,
       code: string,
@@ -56,6 +56,7 @@ export const productService = {
       price: string,
       image_url: string
       description: string
+      response?:string
     },
     session?: ClientSession
   ) => {
@@ -65,7 +66,7 @@ export const productService = {
       if (!product) {
         throw new Error('Product not found'); // Throw an error if the product does not exist
       }
-      if(image_url){
+      if(response){
         await deleteFromCloudinaryWithUrl(product.image_url)
       }
       
