@@ -29,8 +29,8 @@ export const userService = {
   getById: (userId: ObjectId) => User.findById(userId),
 
   getByEmail: (email: string) => User.findOne({ email }),
-  getByphone_number: (phone_number: string) => User.findOne({ phone_number }),
-  // isExistByEmail: (email: string) => User.exists({ email }),
+  getByphone_number: (phone_number: string) => User.findOne({phone_number }),
+
   isExistByphone_number: (phone_number: string) => User.exists({ phone_number }),
   updatePasswordByUserId: (
     userId: ObjectId,

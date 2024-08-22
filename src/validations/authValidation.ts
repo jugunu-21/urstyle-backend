@@ -25,25 +25,7 @@ export const authValidation = {
           status: StatusCodes.BAD_REQUEST
         })
       }
-      // let phonenumber = req.body.phone_number
-     
-      // let normalizedEmail =
-      //   req.body.email && validator.normalizeEmail(req.body.email)
-      // if (normalizedEmail) {
-      //   normalizedEmail = validator.trim(normalizedEmail)
-      // }
-
-      // if (
-      //   !normalizedEmail ||
-      //   !validator.isEmail(normalizedEmail, { allow_utf8_local_part: false })
-      // ) {
-      //   return res.status(StatusCodes.BAD_REQUEST).json({
-      //     message: ReasonPhrases.BAD_REQUEST,
-      //     status: StatusCodes.BAD_REQUEST
-      //   })
-      // }
-
-      // Object.assign(req.body, { phone_number: phonenumber })
+   
 console.log("has the phone number for validtaion ")
       return next()
     } catch (error) {

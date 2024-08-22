@@ -3,7 +3,7 @@ import { ClientSession, ObjectId } from 'mongoose'
 import { Product } from '@/models'
 import { error } from 'console'
 import { ok } from 'assert'
-import { uploadFileToCloudinary, deleteFromCloudinaryWithUrl } from '../utils/cloudinary'
+import { deleteFromCloudinaryWithUrl } from '../utils/cloudinary'
 export const productService = {
   create: (
     {
@@ -65,7 +65,10 @@ export const productService = {
       if (!product) {
         throw new Error('Product not found'); // Throw an error if the product does not exist
       }
-      await deleteFromCloudinaryWithUrl(product.image_url)
+      if(image_url){
+        await deleteFromCloudinaryWithUrl(product.image_url)
+      }
+      
       const data = [{ _id: productId }, { name, price, description, link, code, pid, image_url }]
 
       let params = null
@@ -105,11 +108,11 @@ export const productService = {
   
   // },
   getProductsByUserForPagination: async (userId: ObjectId, session: ClientSession, limit: number, page: number) => {
-    console.log("iteman limit",limit)
-    console.log("iteman page",page)
+    // console.log("iteman limit",limit)
+    // console.log("iteman page",page)
     return Product.paginate({}, { page, limit })
       .then((result) => {
-     console.log("result",result)
+    //  console.log("result",result)
         return result; // This returns the docs from the resolved promise
       })
       .catch((err) => {

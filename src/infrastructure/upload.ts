@@ -6,19 +6,17 @@ import { mbToBytes } from '@/utils/maths'
 import { joinRelativeToMainPath } from '@/utils/paths'
 
 const fileFilter = (
-  _: Request,
+  req: Request,
   file: Express.Multer.File,
   cb: FileFilterCallback
 ) => {
-  // console.log("filesss",file)
-  const mimetypes: string[] = Object.values(Mimetype)
-
-  if (!mimetypes.includes(file.mimetype)) {
-    console.log("fileeee",)
-    return cb(new Error(`Only ${mimetypes} files are allowed.`))
+  
+  if (/^data:image\/jpeg;base64,.*/.test(file.buffer.toString())) {
+    console.log('sucess')
+    return cb(null, true)
   }
-  // console.log("fileeeemm",)
-  cb(null, true)
+  console.log('sucess')
+  return cb(new Error(`Only files are allowed.`))
 }
 
 const upload = multer({
@@ -27,5 +25,5 @@ const upload = multer({
   // fileFilter
 })
 console.log("upload",upload)
-export const uploadMultipleImages = upload.array('file', 10) 
+export const uploadMultipleImages = upload.array('image', 10) 
 export const uploadSingleImage = upload.single('files')

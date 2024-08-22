@@ -53,10 +53,10 @@ export class Image {
 
   public async deleteFile() {
     try {
-      console.log("OKEE")
-      console.log("OKEEe",this.image.path)
+      // console.log("OKEE")
+      // console.log("OKEEe",this.image.path)
       if (await this.isFileExist(this.image.path)) {
-        console.log("OKEEe")
+        // console.log("OKEEe")
         await fs.unlink(this.image.path)
       }
 
@@ -78,7 +78,7 @@ export class Image {
         })
 
       await Promise.all(promises)
-      console.log("OKEE")
+      // console.log("OKEE")
     } catch {
       return null
     }

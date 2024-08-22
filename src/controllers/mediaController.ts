@@ -27,7 +27,8 @@ import {
 } from '@/contracts/request'
 import fs from 'fs';
 import { uploadCloudinary } from '../utils/cloudinary'
-import { uploadFileToCloudinary,deleteFromCloudinaryWithUrl } from '../utils/cloudinary'
+import { uploadFileToCloudinary } from '../utils/cloudinary'
+import multer from 'multer'
 export const mediaController = {
   imageUpload: async (
     { file }: IContextRequest<IUserRequest>,
@@ -67,49 +68,79 @@ export const mediaController = {
       })
     }
   },
-  
+
   productUpload: async (
     //  { context: { user } },{ body: { name, price, code,id,image,description,link } }: IContextandBodyRequest<IUserRequest,ProductPayload>,
-    request: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
+    req: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
     res: Response
   ) => {
     console.log("control")
-    const { user } = request.context;
-    const { name, price, code, pid, image, description, link } = request.body;
-    // console.log("req.body",request.body)
-    const session = await startSession()
+
+    const session = await startSession();
+    session.startTransaction()
     try {
-      session.startTransaction()
-      const product = await productService.create(
-        {
-          name,
-          price,
-          code,
-          pid,
-          image_url: image,
-          description,
-          link,
-          userId: user.id
-        },
-        session
-      )
-      console.log("product saved in db", product)
+      const { user } = req.context;
+      const { name, price, code, pid, description, link, image } = req.body;
+      // const productId = req.params.id;
+      const files = req.files as Express.Multer.File[];
+      if (files['0']) {
+        const file = files['0'];
+        uploadCloudinary(file.path)
+          .then((async response => {
+            if (response !== undefined) {
+              console.log("imGE aLATERED1", response);
+              await productService.create(
+                {
+                  name,
+                  price,
+                  code,
+                  pid,
+                  image_url: response,
+                  description,
+                  link,
+                  userId: user.id
+                },
+                session
+              )
+              new Image(file as Express.Multer.File).deleteFile();
+              return response;
+            }
+          }))
+
+      }
+      else {
+        await productService.create(
+          {
+            name,
+            price,
+            code,
+            pid,
+            image_url: image,
+            description,
+            link,
+            userId: user.id
+          },
+          session
+        )
+      }
+
+      // console.log("product saved in db", product)
       await session.commitTransaction()
       session.endSession()
-      const tokendata = {
-        id: product.id
-      }
-      const accessToken = jwt.sign(tokendata, process.env.JWT_SECRET, {
-        expiresIn: '1h'
-      })
+      // const tokendata = {
+      //   id: product.id
+      // }
+      // const accessToken = jwt.sign(tokendata, process.env.JWT_SECRET, {
+      //   expiresIn: '7h'
+      // })
       const response = res.status(StatusCodes.OK).json({
-        data: accessToken,
+        // data: accessToken,
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       })
       return response
     } catch (error) {
-      // console.log(' error saved in db')
+
       console.log(error)
       winston.error(error)
       if (session.inTransaction()) {
@@ -126,13 +157,15 @@ export const mediaController = {
     req: IContextandBodyRequestforProducts<IUserRequestwithid>,
     res: Response
   ) => {
+    const session = await startSession();
+    session.startTransaction()
     try {
-      const session = await startSession();
-      const page = parseInt(req.query.page as string) ||1 ;
+
+      const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 6;
       const { user } = req.context;
       const id = user.id;
-      const product = await productService. getProductsByUserForPagination(id, session,limit,page,);
+      const product = await productService.getProductsByUserForPagination(id, session, limit, page,);
       // const products = await productService.getProductsByUser(id, session);
       // console.log("productraw", product )
       const simplifiedProducts = product.docs.map(product => ({
@@ -146,15 +179,24 @@ export const mediaController = {
         review: product.review,
         description: product.description
       }));
-      // console.log("products", simplifiedProducts)
+      await session.abortTransaction();
+      session.endSession();
       return res.status(StatusCodes.OK).json({
-        data: {simplifiedProducts,totalDocs:product.totalDocs},
+        data: { simplifiedProducts, totalDocs: product.totalDocs },
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       });
 
     }
     catch (error) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+        session.endSession();
+      }
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: ReasonPhrases.BAD_REQUEST,
+        status: StatusCodes.BAD_REQUEST
+      });
     }
   },
   productUpdate: async (
@@ -166,7 +208,27 @@ export const mediaController = {
     try {
       const { name, price, code, description, link, pid, image } = req.body;
       const productId = req.params.id;
-      await productService.updateProductByProductId(productId, { name, price, description, link, code, pid, image_url:image });
+      const files = req.files as Express.Multer.File[];
+      if (files['0']) {
+        const file = files['0'];
+        uploadCloudinary(file.path)
+          .then((async response => {
+            if (response !== undefined) {
+              console.log("imGE aLATERED1", response);
+              await productService.updateProductByProductId(productId, { name, price, description, link, code, pid, image_url: response });
+              new Image(file as Express.Multer.File).deleteFile();
+              return response;
+            }
+          }))
+
+      }
+      else {
+        await productService.updateProductByProductId(productId, { name, price, description, link, code, pid, image_url: image });
+      }
+
+
+
+
       console.log("Product is updated successfully");
       await session.commitTransaction()
       session.endSession()

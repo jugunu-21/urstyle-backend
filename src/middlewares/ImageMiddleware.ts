@@ -78,14 +78,14 @@ export const ImageMiddleware = (
       //   return url
       // }
       // );
-      if(files['0']){
-        const file=files['0']
-        const url = await uploadCloudinary(file.path)
-        req.body.image=url
-        await new Image(file as Express.Multer.File).deleteFile()
+      // if(files['0']){
+      //   const file=files['0']
+      //   const url = await uploadCloudinary(file.path)
+      //   req.body.image=url
+      //   await new Image(file as Express.Multer.File).deleteFile()
 
-        return next()
-      }
+      //   return next()
+      // }
       return next()
     })
   } catch (error) {

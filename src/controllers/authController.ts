@@ -33,37 +33,21 @@ import { redis } from '@/dataSources'
 export const authController = {
   signIn: async (
     { body: { phone_number } }: IBodyRequest<SignInPayload>,
-    // { body: { email, password, phone_number } }: IBodyRequest<SignInPayload>,
     res: Response
   ) => {
     try {
-      // const user = await userService.getByEmail(email)
+      console.log("user")
       const userbyphonenumber = await userService.getByphone_number(
         phone_number
       ) 
-      console.log("fetching the phone number ")
-      // const comparePassword = user?.comparePassword(password)
+    
       if (!userbyphonenumber) {
-        // if (!user || !comparePassword || !userbyphonenumber) {
-
+        console.log("error")
         return res.status(StatusCodes.NOT_FOUND).json({
           message: ReasonPhrases.NOT_FOUND,
           status: StatusCodes.NOT_FOUND
         })
       }
-      // const phoneNumber = `+${phone_number}`;
-
-      // Replace with the phone number you want to check
-      // const isAssociated = await checkPhoneNumber(phoneNumber);
-      //  if (!isAssociated) {
-      //   return res.status(StatusCodes.CONFLICT).json({
-      //   message: 'The phone number is not  associated with a user account.',
-      //   status: StatusCodes.CONFLICT
-      //   });
-      // }
-      // console.log(isAssociated)
-
-      // const { accessToken } = jwtSign(user.id)
       const tokendata = {
         id: userbyphonenumber.id
       }
@@ -75,14 +59,6 @@ export const authController = {
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       })
-      // res.cookie('accessToken', accessToken, {
-      //   domain: 'localhost',
-      //   httpOnly: true,
-      //   sameSite: 'none',
-      //   secure: false
-      // })
-      // res.cookie("accessToken", accessToken, { domain: 'urtsyle.vercel.app', httpOnly: true, sameSite: 'none', secure: true });
-
       return response
     } catch (error) {
       winston.error(error)
