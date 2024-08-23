@@ -41,3 +41,4 @@ export type ProductPayload = Pick<
   IProductinitial,
   'name' | 'price' | 'code' | 'pid' | 'link' | 'image' | 'description'
 >
+
