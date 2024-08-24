@@ -56,11 +56,19 @@ export const collectionController = {
       console.log("collection", collection)
       await session.commitTransaction()
       session.endSession()
+      const tokendata = {
+        id: collection.id
+      }
+      const accessToken = jwt.sign(tokendata, process.env.JWT_SECRET, {
+        expiresIn: '7h'
+      })
+      
       const response = res.status(StatusCodes.OK).json({
-        data: collection.id,
+        data: accessToken,
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       })
+  
       return response
     } catch (error) {
       winston.error(error)
