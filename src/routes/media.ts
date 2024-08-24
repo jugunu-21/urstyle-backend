@@ -16,40 +16,4 @@ export const media = (router: Router): void => {
     ImageMiddleware,
     mediaController.imageUpload
   )
-
-  // router.post('', authGuard.isAuth, mediaController.imageUpload)
-
-  router.post(
-    '/media/product/upload',
-    authGuard.isAuth,
-    ImageMiddleware,
-    mediaController.productUpload
-  )
-  router.post(
-    '/media/product/fetch',
-    authGuard.isAuth,
-    mediaController.productFetch
-  )
-  router.post(
-    '/media/product/update/:id',
-    authGuard.isAuth,
-    ImageMiddleware,
-    mediaController.productUpdate
-  )
-  router.post(
-    '/media/collection/upload',
-    authGuard.isAuth,
-    // ImageMiddleware,
-    mediaController.collectionUpload
-  )
-  // router.post(
-  //   '/media/productImage/update/:id',
-  //   authGuard.isAuth,
-  //   mediaController.productImageUpdate
-  // )
-  router.post(
-    '/media/product/delete/:id',
-    authGuard.isAuth,
-    mediaController.productDelete
-  )
 }
