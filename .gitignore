@@ -4,5 +4,5 @@ public
 *.log
 .DS_Store
 storage/public
-/yarn.lock
-/api-logs.log
+yarn.lock
+api-logs.log

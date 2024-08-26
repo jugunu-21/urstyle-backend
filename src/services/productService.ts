@@ -48,7 +48,7 @@ export const productService = {
 
   updateProductByProductId: async (
     productId: string,
-    { name, price, description, code, link, pid, image_url,response }: {
+    { name, price, description, code, link, pid, image_url, response }: {
       pid: number,
       name: string,
       code: string,
@@ -56,7 +56,7 @@ export const productService = {
       price: string,
       image_url: string
       description: string
-      response?:string
+      response?: string
     },
     session?: ClientSession
   ) => {
@@ -66,10 +66,10 @@ export const productService = {
       if (!product) {
         throw new Error('Product not found'); // Throw an error if the product does not exist
       }
-      if(response){
+      if (response) {
         await deleteFromCloudinaryWithUrl(product.image_url)
       }
-      
+
       const data = [{ _id: productId }, { name, price, description, link, code, pid, image_url }]
 
       let params = null
@@ -95,54 +95,16 @@ export const productService = {
       throw error;
     }
   },
- 
-  // getProductsByUserForPagination: async (userId: ObjectId, session: ClientSession,limit:number,page:number) => {
-  //   try {
-  //     const products = await Product.find({ userId }).session(session)
-  //       .skip((page - 1) * limit)
-  //       .limit(limit);
-  
-  //       return products;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  
-  // },
   getProductsByUserForPagination: async (userId: ObjectId, session: ClientSession, limit: number, page: number) => {
-    // console.log("iteman limit",limit)
-    // console.log("iteman page",page)
-    return Product.paginate({}, { page, limit })
+    return Product.paginate({ userId }, { page, limit, session })
       .then((result) => {
-    //  console.log("result",result)
-        return result; // This returns the docs from the resolved promise
+        return result;
       })
       .catch((err) => {
-       
-        throw err; // Ensure you're throwing the caught error to handle it properly in the calling code
+        throw err;
       });
   },
-  // updateProductImageByProductId: async (
-  //   productId: string,
-  //   image_url: string,
-  //   session?: ClientSession
-  // ) => {
-  //   try {
-  //     const product = await Product.findById(productId)
-  //     if (!product) {
-  //       throw new Error('Product not found');
-  //     }
-  //     const data = [{ _id: productId }, { image_url: image_url }]
-  //     let params = null
-  //     if (session) {
-  //       params = [...data, { session }]
-  //     } else {
-  //       params = data
-  //     }
-  //     return Product.updateOne(...params)
-  //   } catch { error }
-  //   console.error('Error updating product:', error);
-  //   throw error;
-  // },
+
   deleteById: async (userId: string, session?: ClientSession) => {
     try {
       const product = await Product.findById(userId)
