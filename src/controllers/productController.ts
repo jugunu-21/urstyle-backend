@@ -126,8 +126,8 @@ export const productController = {
     session.startTransaction()
     try {
 
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 6;
+      const page =  Number(req.query.page as string) || 1;
+      const limit =  Number(req.query.limit as string) || 6;
       const { user } = req.context;
       const id = user.id;
       const product = await productService.getProductsByUserForPagination(id, session, limit, page,);
@@ -171,6 +171,7 @@ export const productController = {
     session.startTransaction()
     try {
       const { name, price, code, description, link, pid, image } = req.body;
+      // const productId = Number(req.params.id)
       const productId = req.params.id;
       const files = req.files as Express.Multer.File[];
       if (files['0']) {
