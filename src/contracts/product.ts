@@ -7,7 +7,7 @@ export interface IProduct {
   link: string
   image_url:string
   price: string
-  review:  ObjectId[];
+  review:  ObjectId;
   description: string
   userId:ObjectId
 }

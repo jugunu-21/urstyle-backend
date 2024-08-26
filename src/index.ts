@@ -22,24 +22,17 @@ app.use(
   join('/', process.env.STORAGE_PATH),
   express.static(join(__dirname, process.env.STORAGE_PATH))
 )
-// app.get("/", (req, res) => {
-//   res.json({ message: "hello welcome" });
-// });
-
 app.use
 (
- 
   express.json({ limit: '10mb' }),
   express.urlencoded({ limit: '10mb', extended: true }),
   corsMiddleware,
   i18nextHttpMiddleware.handle(i18next),
-  // uploadSingleImageMiddleware,
-  // upload.none(),
   authMiddleware,
   router,
   notFoundMiddleware
 )
 
-const port = process.env.APP_PORT || 443 ; // Recommended default for development
+const port = process.env.APP_PORT || 443 ; 
 
 app.listen(port, () => console.log(`Server listening on port ${port}`));
