@@ -87,48 +87,58 @@ export const collectionController = {
     res: Response
   ) => {
     const session = await startSession();
-    session.startTransaction()
+    session.startTransaction();
     try {
       const { user } = req.context;
       const id = user.id;
-      const collection = await collectionService.getCollectionByUser(id, session);
-      const ids = collection[0].Ids;
-      const collectionProducts: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
-      const transformedproducts = ids.map(async (id) => {
-        const product = await productService.getByIdWithString(id);
-        if (product) {
-          const simplifiedProduct = {
-            image: product.image_url, // Assuming you want the URL of the image
-            id: product.id,
-            pid: product.pid,
-            name: product.name,
-            code: product.code,
-            price: product.price,
-            link: product.link,
-            review: product.review,
-            description: product.description
-          };
-          collectionProducts.push(simplifiedProduct);
+      const collections = await collectionService.getCollectionByUser(id, session);
+  
+      const transformedCollectionProducts: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+      const TransfomedCollections: Array<{ name: string;collectionId:string, description: string; products: typeof transformedCollectionProducts }> = [];
+  
+      for (const collection of collections) {
+        const transformedCollectionProductsNew: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+  
+        for (const id of collection.Ids) {
+          const product = await productService.getByIdWithString(id);
+          if (product) {
+            const simplifiedProduct = {
+              image: product.image_url,
+              id: product.id,
+              pid: product.pid,
+              name: product.name,
+              code: product.code,
+              price: product.price,
+              link: product.link,
+              review: Array.isArray(product.review) ? product.review : [],
+              description: product.description
+            };
+            transformedCollectionProductsNew.push(simplifiedProduct);
+          }
         }
-        return null
-
-      });
-
-      const result = await Promise.all(transformedproducts);
-      const simplifiedCollection = {
-        name: collection[0].name,
-        description: collection[0].description,
-        products: collectionProducts
+  
+        const simplifiedCollection = {
+          name: collection.name,
+          description: collection.description,
+          products: transformedCollectionProductsNew,
+          collectionId:collection.id
+        };
+  
+        TransfomedCollections.push(simplifiedCollection);
       }
   
       await session.commitTransaction();
       session.endSession();
+  
       const response = {
-        data: { simplifiedCollection },
+        data: TransfomedCollections,
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
-      }
-      console.log("productfetch success")
+      };
+  
+      console.log("response", response);
+      console.log("productfetch success");
+  
       return res.status(StatusCodes.OK).json(response);
     } catch (error) {
       if (session.inTransaction()) {
@@ -140,5 +150,5 @@ export const collectionController = {
         status: StatusCodes.BAD_REQUEST
       });
     }
-  }
+  },
 }
