@@ -44,8 +44,8 @@ export const productService = {
       verified
     }).save({ session }),
 
-  getById: (userId: ObjectId) => Product.findById(userId),
-
+  getById: (productId: ObjectId) => Product.findById(productId),
+  getByIdWithString: async(productId: string) => await Product.findById(productId),
   updateProductByProductId: async (
     productId: string,
     { name, price, description, code, link, pid, image_url, response }: {
@@ -62,18 +62,15 @@ export const productService = {
   ) => {
     try {
       const product = await Product.findById(productId);
-
       if (!product) {
-        throw new Error('Product not found'); // Throw an error if the product does not exist
+        throw new Error('Product not found');
       }
       if (response) {
         await deleteFromCloudinaryWithUrl(product.image_url)
       }
 
       const data = [{ _id: productId }, { name, price, description, link, code, pid, image_url }]
-
       let params = null
-
       if (session) {
         params = [...data, { session }]
       } else {

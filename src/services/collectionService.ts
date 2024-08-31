@@ -41,6 +41,15 @@ export const collectionService = {
     console.error("doesnot exist any product with this id ")
     throw error;
   },
+  getCollectionByUser: async (userId: ObjectId, session: ClientSession) => {
+    try {
+      const products = await Collection.find({ userId }).session(session);
+      return products;
+    } catch (error) {
+      console.error('Error fetching products by user:', error);
+      throw error;
+    }
+  },
   //   getById: (userId: ObjectId) => Product.findById(userId),
 
   //   updateProductByProductId: async (

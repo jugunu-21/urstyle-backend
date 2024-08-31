@@ -32,7 +32,7 @@ import { uploadFileToCloudinary } from '../utils/cloudinary'
 import multer from 'multer'
 import { CollectionPayload } from '@/contracts/collection'
 export const productController = {
- 
+
   productUpload: async (
     //  { context: { user } },{ body: { name, price, code,id,image,description,link } }: IContextandBodyRequest<IUserRequest,ProductPayload>,
     req: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
@@ -64,8 +64,8 @@ export const productController = {
                   link,
                   userId: user.id,
 
-                },
-                session
+                }
+
               )
               new Image(file as Express.Multer.File).deleteFile();
               return response;
@@ -84,8 +84,8 @@ export const productController = {
             description,
             link,
             userId: user.id
-          },
-          session
+          }
+
         )
       }
 
@@ -125,13 +125,11 @@ export const productController = {
     const session = await startSession();
     session.startTransaction()
     try {
-
-      const page =  Number(req.query.page as string) || 1;
-      const limit =  Number(req.query.limit as string) || 6;
+      const page = Number(req.query.page as string) || 1;
+      const limit = Number(req.query.limit as string) || 6;
       const { user } = req.context;
       const id = user.id;
       const product = await productService.getProductsByUserForPagination(id, session, limit, page,);
-
       const simplifiedProducts = product.docs.map(product => ({
         image: product.image_url, // Assuming you want the URL of the image
         id: product.id,
@@ -257,7 +255,7 @@ export const productController = {
     }
 
   }
- 
+
 
 
 }
