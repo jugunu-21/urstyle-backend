@@ -1,5 +1,4 @@
 import { ClientSession, ObjectId } from 'mongoose'
-
 import { Collection } from '@/models'
 import { error } from 'console'
 import { ok } from 'assert'
@@ -41,6 +40,11 @@ export const collectionService = {
     console.error("doesnot exist any product with this id ")
     throw error;
   },
+  getCollectioById:async(collectionId:string,session?: ClientSession)=>{
+
+    const collection= await Collection.findById(collectionId)
+    return collection
+  },
   getCollectionByUser: async (userId: ObjectId, session: ClientSession) => {
     try {
       const products = await Collection.find({ userId }).session(session);
@@ -49,6 +53,41 @@ export const collectionService = {
       console.error('Error fetching products by user:', error);
       throw error;
     }
+  },
+  addLikeToCollection: async (
+    collectionId: string,
+    likeId: ObjectId,
+    session: any
+  ) => {
+    await Collection.findByIdAndUpdate(
+      collectionId,
+      { $push: { likes: likeId } },
+      { session }
+    );
+  },
+  
+  removeLikeFromCollection: async (
+    collectionId: string,
+    userId: string,
+    session: any
+  ) => {
+    await Collection.updateOne(
+      { _id: collectionId },
+      { $pull: { likes: { $in: [userId] } } },
+      { session }
+    );
+  },
+  
+  addDislikeToCollection: async (
+    collectionId: string,
+    userId: string,
+    session: any
+  ) => {
+    await Collection.updateOne(
+      { _id: collectionId },
+      { $addToSet: { dislikes: userId } },
+      { session }
+    );
   },
   //   getById: (userId: ObjectId) => Product.findById(userId),
 

@@ -1,11 +1,13 @@
 import { Model, ObjectId, isObjectIdOrHexString } from 'mongoose'
+import { ILike } from './like'
+import { IDislike } from './dislike'
 export interface ICollection {
-
   name: string
-  userId: ObjectId,
+  userId: ObjectId
   description: string
   Ids: string[]
-
+  likes?: Array<ILike>
+  dislikes?: Array<IDislike>
 }
 export type CollectionPayload = Pick<
   ICollection,

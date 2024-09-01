@@ -4,9 +4,11 @@ import winston from 'winston'
 import { startSession } from 'mongoose'
 // import { productService } from '@/services'
 import { Image } from '@/infrastructure/image'
-
+import { Collection } from '@/models/collection';
+import { Like } from '@/models/like';
+import { Dislike } from '@/models/dislike';
 import { appUrl, joinRelativeToMainPath } from '@/utils/paths'
-import { productService, collectionService } from '@/services'
+import { productService, collectionService, likeandUnlikeService } from '@/services'
 import { ProductPayload } from '../contracts/product'
 import jwt from 'jsonwebtoken'
 import { Params } from 'express-serve-static-core'
@@ -92,13 +94,10 @@ export const collectionController = {
       const { user } = req.context;
       const id = user.id;
       const collections = await collectionService.getCollectionByUser(id, session);
-  
       const transformedCollectionProducts: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
-      const TransfomedCollections: Array<{ name: string;collectionId:string, description: string; products: typeof transformedCollectionProducts }> = [];
-  
+      const TransfomedCollections: Array<{ name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
       for (const collection of collections) {
         const transformedCollectionProductsNew: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
-  
         for (const id of collection.Ids) {
           const product = await productService.getByIdWithString(id);
           if (product) {
@@ -116,29 +115,59 @@ export const collectionController = {
             transformedCollectionProductsNew.push(simplifiedProduct);
           }
         }
-  
         const simplifiedCollection = {
           name: collection.name,
           description: collection.description,
           products: transformedCollectionProductsNew,
-          collectionId:collection.id
+          collectionId: collection.id
         };
-  
+
         TransfomedCollections.push(simplifiedCollection);
       }
-  
       await session.commitTransaction();
       session.endSession();
-  
       const response = {
         data: TransfomedCollections,
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
-  
       console.log("response", response);
       console.log("productfetch success");
-  
+      return res.status(StatusCodes.OK).json(response);
+    } catch (error) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+        session.endSession();
+      }
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: ReasonPhrases.BAD_REQUEST,
+        status: StatusCodes.BAD_REQUEST
+      });
+    }
+  },
+  collectionLikeanUnlike: async (
+    req: IContextandBodyRequest<IUserRequestwithid, CollectionPayload>,
+    res: Response
+  ) => {
+    const session = await startSession();
+    session.startTransaction();
+    try {
+      const { user } = req.context;
+      const id = user.id;
+      const collectionId = req.params.collectionId;
+      const collection = await collectionService.getCollectioById(collectionId, session);
+      const likeexist = await likeandUnlikeService.isExistByUserIdCollectionId({ userId: id, collectionId: collection?.id })
+      if (likeexist) {
+        await likeandUnlikeService.deleteLike({ userId: id, collectionId: collection?.id })
+      } else {
+        likeandUnlikeService.createLike({ userId: id, collectionId: collection?.id });
+      }
+      await session.commitTransaction();
+      session.endSession();
+      const response = {
+        message: ReasonPhrases.OK,
+        status: StatusCodes.OK
+      };
       return res.status(StatusCodes.OK).json(response);
     } catch (error) {
       if (session.inTransaction()) {
