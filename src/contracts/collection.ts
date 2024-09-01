@@ -8,8 +8,9 @@ export interface ICollection {
   Ids: string[]
   likes?: Array<ILike>
   dislikes?: Array<IDislike>
+  category:string[]
 }
 export type CollectionPayload = Pick<
   ICollection,
-  'name' | 'description' | 'Ids'
+  'name' | 'description' | 'Ids'|'category'
 >

@@ -294,50 +294,6 @@ export const mediaController = {
     }
 
   },
-  collectionUpload: async (
-    req: IContextandBodyRequest<IUserRequestwithid, CollectionPayload>,
-    res: Response
-  ) => {
-    console.log("collectionUpload")
-    const session = await startSession();
-    session.startTransaction()
-    try {
-      const { user } = req.context;
-      console.log("input", user.id)
-      const { name, description, Ids } = req.body;
-     
-      console.log("input2", user.id)
-      console.log("Ids", Ids)
-      const collection = await collectionService.create(
-        {
-          name,
-          description,
-          Ids,
-          userId: user.id
-        },
-        session
-      )
-      console.log("collection", collection)
-      await session.commitTransaction()
-      session.endSession()
-      const response = res.status(StatusCodes.OK).json({
-        data: collection.id,
-        message: ReasonPhrases.OK,
-        status: StatusCodes.OK
-      })
-      return response
-    } catch (error) {
-      winston.error(error)
-      if (session.inTransaction()) {
-        await session.abortTransaction()
-        session.endSession()
-      }
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        message: ReasonPhrases.BAD_REQUEST,
-        status: StatusCodes.BAD_REQUEST
-      })
-    }
-  },
-
+ 
 
 }

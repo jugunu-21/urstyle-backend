@@ -42,7 +42,7 @@ export const collectionController = {
     try {
       const { user } = req.context;
       console.log("input", user.id)
-      const { name, description, Ids } = req.body;
+      const { name, description, Ids,category } = req.body;
 
       console.log("input2", user.id)
       console.log("Ids", Ids)
@@ -51,7 +51,8 @@ export const collectionController = {
           name,
           description,
           Ids,
-          userId: user.id
+          userId: user.id,
+          category
         },
         session
       )

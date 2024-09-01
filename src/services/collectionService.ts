@@ -10,10 +10,12 @@ export const collectionService = {
       Ids,
       description,
       userId,
+      category,
       verified = false
     }: {
       name: string
       description: string
+      category:string[]
       userId: ObjectId
       Ids: string[]
       verified?: boolean
@@ -24,6 +26,7 @@ export const collectionService = {
       name,
       Ids,
       description,
+      category,
       userId,
       verified
     }).save({ session }),

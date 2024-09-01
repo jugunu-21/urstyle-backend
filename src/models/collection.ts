@@ -11,6 +11,10 @@ const schema = new Schema<ICollection>(
       type: String,
       required: true
     },
+    category: [{
+      type: String,
+      required: true
+    }],
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
