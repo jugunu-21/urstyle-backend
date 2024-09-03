@@ -52,7 +52,7 @@ export const authController = {
         id: userbyphonenumber.id
       }
       const accessToken = jwt.sign(tokendata, process.env.JWT_SECRET, {
-        expiresIn: '7h'
+        expiresIn: '48h'
       })
       const response = res.status(StatusCodes.OK).json({
         data: accessToken,
@@ -139,7 +139,7 @@ export const authController = {
         id: user.id
       }
       const accessToken = jwt.sign(tokendata, process.env.JWT_SECRET, {
-        expiresIn: '7h'
+        expiresIn: '48h'
       })
 
       // const userMail = new UserMail()

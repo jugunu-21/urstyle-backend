@@ -30,6 +30,7 @@ import {
 } from '@/contracts/request'
 
 import { CollectionPayload } from '@/contracts/collection'
+import { stringify } from 'querystring'
 export const collectionController = {
 
   collectionUpload: async (
@@ -63,7 +64,7 @@ export const collectionController = {
         id: collection.id
       }
       const accessToken = jwt.sign(tokendata, process.env.JWT_SECRET, {
-        expiresIn: '7h'
+        expiresIn: '48h'
       })
 
       const response = res.status(StatusCodes.OK).json({
@@ -92,9 +93,20 @@ export const collectionController = {
     const session = await startSession();
     session.startTransaction();
     try {
-      const { user } = req.context;
-      const id = user.id;
-      const collections = await collectionService.getCollectionByUser(id, session);
+      // const { user } = req.context;
+      const catgeoryquery = (req.query.categoryQuery as string);
+      // console.log("catgeoryquery",catgeoryquery)
+      // const id = user.id;
+      // const collections = await collectionService.getCollectionByUser(id, session);
+      let collections;
+
+      if (!catgeoryquery) {
+        // If categoryQuery is null or empty, use getCollectionByUser
+        collections = await collectionService.getCollectionByUser( session);
+      } else {
+        // Otherwise, use getCollectionByUserandQuery
+        collections = await collectionService.getCollectionByUserandQuery(catgeoryquery, session);
+      }
       const transformedCollectionProducts: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
       const TransfomedCollections: Array<{ name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
       for (const collection of collections) {
@@ -132,8 +144,8 @@ export const collectionController = {
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
-      console.log("response", response);
-      console.log("productfetch success");
+      // console.log("response", response);
+      // console.log("productfetch success");
       return res.status(StatusCodes.OK).json(response);
     } catch (error) {
       if (session.inTransaction()) {

@@ -15,7 +15,7 @@ export const collectionService = {
     }: {
       name: string
       description: string
-      category:string[]
+      category: string[]
       userId: ObjectId
       Ids: string[]
       verified?: boolean
@@ -43,15 +43,35 @@ export const collectionService = {
     console.error("doesnot exist any product with this id ")
     throw error;
   },
-  getCollectioById:async(collectionId:string,session?: ClientSession)=>{
+  getCollectioById: async (collectionId: string, session?: ClientSession) => {
 
-    const collection= await Collection.findById(collectionId)
+    const collection = await Collection.findById(collectionId)
     return collection
   },
-  getCollectionByUser: async (userId: ObjectId, session: ClientSession) => {
+  getCollectionByUser: async ( session: ClientSession) => {
     try {
-      const products = await Collection.find({ userId }).session(session);
+      const products = await Collection.find({}).session(session);
       return products;
+    } catch (error) {
+      console.error('Error fetching products by user:', error);
+      throw error;
+    }
+  },
+  getCollectionByUserandQuery: async ( categoryQuery: string, session: ClientSession) => {
+    try {
+      const collections = await Collection.find({}).session(session);
+      
+      // Filter collections based on category query
+      const filteredCollections = collections.filter(collection => 
+        collection.category && collection.category.includes(categoryQuery)
+      );
+  
+      // Return the filtered collections
+      // if(filteredCollections.length==0){
+      //   return collections
+      // }
+   
+      return filteredCollections;
     } catch (error) {
       console.error('Error fetching products by user:', error);
       throw error;
@@ -68,7 +88,7 @@ export const collectionService = {
       { session }
     );
   },
-  
+
   removeLikeFromCollection: async (
     collectionId: string,
     userId: string,
@@ -80,7 +100,7 @@ export const collectionService = {
       { session }
     );
   },
-  
+
   addDislikeToCollection: async (
     collectionId: string,
     userId: string,
