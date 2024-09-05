@@ -22,6 +22,7 @@ app.use(
   join('/', process.env.STORAGE_PATH),
   express.static(join(__dirname, process.env.STORAGE_PATH))
 )
+
 app.use
 (
   express.json({ limit: '10mb' }),
