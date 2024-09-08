@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { authGuard } from '@/guards'
 import { collectionController } from '@/controllers'
-import { uploadSingleImageMiddleware, ImageMiddleware } from '@/middlewares' 
+import { uploadSingleImageMiddleware, ImageMiddleware } from '@/middlewares'
 export const collection = (router: Router): void => {
   router.post(
     '/collection/upload',
@@ -11,8 +11,9 @@ export const collection = (router: Router): void => {
   )
   router.post(
     '/collection/fetch',
-    
     collectionController.collectionFetch
   )
-  router.post('/collection/Like/:collectionId',authGuard.isAuth,collectionController.collectionLikeanUnlike)
+  router.post('/collection/Like/:collectionId',
+    authGuard.isAuth,
+    collectionController.collectionLikeUnlike)
 }

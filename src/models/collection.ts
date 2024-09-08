@@ -24,14 +24,8 @@ const schema = new Schema<ICollection>(
       type: String,
       required: true
     }],
-    likes: [{
-       type: Schema.Types.ObjectId, 
-       ref: 'Like' 
-      }],
-    dislikes: [{
-       type: Schema.Types.ObjectId, 
-       ref: 'Dislike'
-       }]
+    likes: [{ type: Schema.Types.ObjectId,  ref: 'Like' }],
+    dislikes: [{type: Schema.Types.ObjectId,  ref: 'Dislike' }]
   },
   { timestamps: true }
 ) 

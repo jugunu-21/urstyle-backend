@@ -158,21 +158,25 @@ export const collectionController = {
       });
     }
   },
-  collectionLikeanUnlike: async (
+  collectionLikeUnlike: async (
     req: IContextandBodyRequest<IUserRequestwithid, CollectionPayload>,
     res: Response
   ) => {
     const session = await startSession();
     session.startTransaction();
     try {
+      console.log("hhh")
       const { user } = req.context;
       const id = user.id;
       const collectionId = req.params.collectionId;
+      console.log("collectionId",collectionId)
       const collection = await collectionService.getCollectioById(collectionId, session);
       const likeexist = await likeandUnlikeService.isExistByUserIdCollectionId({ userId: id, collectionId: collection?.id })
       if (likeexist) {
+        console.log("EXSIST")
         await likeandUnlikeService.deleteLike({ userId: id, collectionId: collection?.id })
       } else {
+        console.log("doesnotexsist")
         likeandUnlikeService.createLike({ userId: id, collectionId: collection?.id });
       }
       await session.commitTransaction();
@@ -181,7 +185,9 @@ export const collectionController = {
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
+      console.log("hhhhhhhhhhhhhhhhhhh",response)
       return res.status(StatusCodes.OK).json(response);
+
     } catch (error) {
       if (session.inTransaction()) {
         await session.abortTransaction();

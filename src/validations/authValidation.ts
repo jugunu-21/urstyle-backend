@@ -26,7 +26,7 @@ export const authValidation = {
         })
       }
    
-console.log("has the phone number for validtaion ")
+
       return next()
     } catch (error) {
       winston.error(error)

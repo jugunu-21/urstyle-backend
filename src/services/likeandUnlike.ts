@@ -5,9 +5,9 @@ export const likeandUnlikeService = {
         userId: ObjectId, collectionId: ObjectId
     }, session?: ClientSession) => {
         new Like({ userId, collectionId }).save({ session })
-
+        console.log("like created")
     },
-    isExistByUserIdCollectionId: async({ userId, collectionId }: {
+    isExistByUserIdCollectionId: async ({ userId, collectionId }: {
         userId: ObjectId, collectionId: ObjectId
     }, session?: ClientSession) => {
         const existingLike = await Like.findOne({ userId, collectionId }, {}, { session });
@@ -22,10 +22,8 @@ export const likeandUnlikeService = {
     deleteLikeById: async ({ likeId }: {
         likeId: ObjectId
     }, session?: ClientSession) => {
-        try { await Like.deleteOne({_id: likeId}, { session }); }
+        try { await Like.deleteOne({ _id: likeId }, { session }); }
         catch (error) { return null }
     }
-
-
 }
 

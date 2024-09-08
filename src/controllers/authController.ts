@@ -36,7 +36,7 @@ export const authController = {
     res: Response
   ) => {
     try {
-      console.log("user")
+      
       const userbyphonenumber = await userService.getByphone_number(
         phone_number
       ) 
@@ -59,6 +59,7 @@ export const authController = {
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       })
+      console.log("user")
       return response
     } catch (error) {
       winston.error(error)

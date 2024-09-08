@@ -27,7 +27,7 @@ export const authGuard = {
     next: NextFunction
   ) => {
     if (!user) {
-      console.log("user is a guest")
+      // console.log("user is a guest")
       return next()
     }
 
