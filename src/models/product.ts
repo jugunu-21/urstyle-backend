@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import { IProduct } from '@/contracts/product'
 import { Document } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
-
 const schema = new Schema<IProduct>(
   {
     pid: {
@@ -58,5 +57,6 @@ interface ProductDocument extends Document {
   userId: string;
 }
 schema.plugin(paginate);
-export const Product = model<IProduct, mongoose.PaginateModel<ProductDocument>>('Product', schema)
+// export const Product = model<IProduct, mongoose.PaginateModel<ProductDocument>>('Product', schema)
+export const Product = model<IProduct>('Product', schema)
 export type productPayload = Pick<IProduct, 'name'>
