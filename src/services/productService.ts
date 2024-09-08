@@ -92,15 +92,15 @@ export const productService = {
       throw error;
     }
   },
-  getProductsByUserForPagination: async (userId: ObjectId, session: ClientSession, limit: number, page: number) => {
-    return Product.paginate({ userId }, { page, limit, session })
-      .then((result) => {
-        return result;
-      })
-      .catch((err) => {
-        throw err;
-      });
-  },
+  // getProductsByUserForPagination: async (userId: ObjectId, session: ClientSession, limit: number, page: number) => {
+  //   return Product.paginate({ userId }, { page, limit, session })
+  //     .then((result) => {
+  //       return result;
+  //     })
+  //     .catch((err) => {
+  //       throw err;
+  //     });
+  // },
 
   deleteById: async (userId: string, session?: ClientSession) => {
     try {
