@@ -2,7 +2,6 @@ import { Response } from 'express'
 import { startSession } from 'mongoose'
 import { StatusCodes, ReasonPhrases } from 'http-status-codes'
 import winston from 'winston'
-import { checkPhoneNumber } from '@/authutils'
 import { ExpiresInDays } from '@/constants'
 import {
   NewPasswordPayload,
