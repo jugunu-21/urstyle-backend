@@ -70,8 +70,8 @@ app.use(
   // notFoundMiddleware
 )
 
-const port = process.env.APP_PORT || 8080;
-   
+
+const port = process.env.APP_PORT || 8000;
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
