@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { authGuard } from '@/guards'
 import { productController } from '@/controllers'
-import { uploadSingleImageMiddleware, ImageMiddleware } from '@/middlewares'
+import { ImageMiddleware } from '@/middlewares'
 
 export const product = (router: Router): void => {
   router.post(

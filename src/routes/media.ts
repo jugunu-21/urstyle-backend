@@ -1,13 +1,13 @@
 import { Router } from 'express'
 import { authGuard } from '@/guards'
 import { mediaController } from '@/controllers'
-import { uploadSingleImageMiddleware, ImageMiddleware } from '@/middlewares'
+import { ImageMiddleware } from '@/middlewares'
 
 export const media = (router: Router): void => {
   router.post(
     '/media/image/upload',
     authGuard.isAuth,
-    uploadSingleImageMiddleware,
+    ImageMiddleware,
     mediaController.imageUpload
   )
   router.post(

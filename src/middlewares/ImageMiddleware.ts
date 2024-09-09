@@ -2,8 +2,8 @@ import { join } from 'path'
 import { NextFunction, Request, Response } from 'express'
 import { StatusCodes, ReasonPhrases } from 'http-status-codes'
 
-// import { uploadSingleImage, uploadMultipleImages } from '@/infrastructure/upload'
 import { uploadMultipleImages } from '@/infrastructure/upload'
+
 import { uploadCloudinary } from '@/utils/cloudinary'
 import { cloudUrlId } from '@/utils/paths'
 import { Image, Images } from '@/infrastructure/image'
