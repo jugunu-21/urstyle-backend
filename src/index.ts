@@ -70,3 +70,4 @@ app.use(
   // notFoundMiddleware
 )
 app.listen(process.env.APP_PORT)
+export default app
