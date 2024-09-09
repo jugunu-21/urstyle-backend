@@ -57,6 +57,6 @@ interface ProductDocument extends Document {
   userId: string;
 }
 schema.plugin(paginate);
-// export const Product = model<IProduct, mongoose.PaginateModel<ProductDocument>>('Product', schema)
-export const Product = model<IProduct>('Product', schema)
+export const Product = model<IProduct, mongoose.PaginateModel<ProductDocument>>('Product', schema)
+// export const Product = model<IProduct>('Product', schema)
 export type productPayload = Pick<IProduct, 'name'>

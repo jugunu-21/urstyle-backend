@@ -129,23 +129,23 @@ export const productController = {
       const limit = Number(req.query.limit as string) || 6;
       const { user } = req.context;
       const id = user.id;
-      // const product = await productService.getProductsByUserForPagination(id, session, limit, page,);
-      // const simplifiedProducts = product.docs.map(product => ({
-      //   image: product.image_url, // Assuming you want the URL of the image
-      //   id: product.id,
-      //   pid: product.pid,
-      //   name: product.name,
-      //   code: product.code,
-      //   price: product.price,
-      //   link: product.link,
-      //   review: product.review,
-      //   description: product.description
-      // }));
+      const product = await productService.getProductsByUserForPagination(id, session, limit, page,);
+      const simplifiedProducts = product.docs.map(product => ({
+        image: product.image_url, // Assuming you want the URL of the image
+        id: product.id,
+        pid: product.pid,
+        name: product.name,
+        code: product.code,
+        price: product.price,
+        link: product.link,
+        review: product.review,
+        description: product.description
+      }));
       await session.abortTransaction();
       session.endSession();
       return res.status(StatusCodes.OK).json({
-        // data: { simplifiedProducts, totalDocs: product.totalDocs },
-        data: "hey",
+        data: { simplifiedProducts, totalDocs: product.totalDocs },
+        // data: "hey",
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       });
