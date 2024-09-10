@@ -54,7 +54,9 @@ mongoose.run()
 redis.run()
 
 const app: Express = express()
-
+app.use('/', (req, res) => {
+  res.send('Welcome to URSTYLE Backend API');
+});
 app.use(
   join('/', process.env.STORAGE_PATH),
   express.static(join(__dirname, process.env.STORAGE_PATH))
@@ -63,11 +65,16 @@ app.use(
 app.use(
   express.json({ limit: '10mb' }),
   express.urlencoded({ limit: '10mb', extended: true }),
-  // corsMiddleware,
-  // i18nextHttpMiddleware.handle(i18next),
-  // authMiddleware,
+  corsMiddleware,
+  i18nextHttpMiddleware.handle(i18next),
+  authMiddleware,
   router,
-  // notFoundMiddleware
+  notFoundMiddleware
 )
-app.listen(process.env.APP_PORT)
+
+const PORT =process.env.APP_PORT;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+// console.log(process.env.APP_PORT,app)
 export default app
