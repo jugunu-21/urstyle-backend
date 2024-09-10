@@ -39,7 +39,6 @@
 import express, { Express } from 'express'
 import { join } from 'path'
 import 'dotenv/config'
-
 import '@/infrastructure/logger'
 import { mongoose, redis } from '@/dataSources'
 import {
@@ -49,19 +48,16 @@ import {
 } from '@/middlewares'
 import { router } from '@/routes'
 import { i18next, i18nextHttpMiddleware } from '@/i18n'
-
 mongoose.run()
 redis.run()
-
 const app: Express = express()
-app.use('/', (req, res) => {
-  res.send('Welcome to URSTYLE Backend API');
-});
+// app.use('/', (req, res) => {
+//   res.send('Welcome to URSTYLE Backend API');
+// });
 app.use(
   join('/', process.env.STORAGE_PATH),
   express.static(join(__dirname, process.env.STORAGE_PATH))
 )
-
 app.use(
   express.json({ limit: '10mb' }),
   express.urlencoded({ limit: '10mb', extended: true }),
@@ -71,10 +67,8 @@ app.use(
   router,
   notFoundMiddleware
 )
-
 const PORT =process.env.APP_PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-// console.log(process.env.APP_PORT,app)
 export default app
