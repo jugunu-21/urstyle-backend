@@ -62,14 +62,14 @@ app.use(
   express.static(join(__dirname, process.env.STORAGE_PATH))
 )
 
-app.use(
-  express.json({ limit: '10mb' }),
-  express.urlencoded({ limit: '10mb', extended: true }),
-  // corsMiddleware,
-  // i18nextHttpMiddleware.handle(i18next),
-  // authMiddleware,
-  router,
-  // notFoundMiddleware
-)
+// app.use(
+//   express.json({ limit: '10mb' }),
+//   express.urlencoded({ limit: '10mb', extended: true }),
+//   // corsMiddleware,
+//   // i18nextHttpMiddleware.handle(i18next),
+//   // authMiddleware,
+//   router,
+//   // notFoundMiddleware
+// )
 app.listen(process.env.APP_PORT)
 export default app
