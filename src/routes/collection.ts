@@ -10,7 +10,9 @@ export const collection = (router: Router): void => {
     collectionController.collectionUpload
   )
   router.post(
+    
     '/collection/fetch',
+    // authGuard.isAuth,
     collectionController.collectionFetch
   )
   router.post('/collection/Like/:collectionId',

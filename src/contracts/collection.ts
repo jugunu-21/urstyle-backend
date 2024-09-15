@@ -1,4 +1,4 @@
-import { Model, ObjectId, isObjectIdOrHexString } from 'mongoose'
+import {ObjectId,} from 'mongoose'
 import { ILike } from './like'
 import { IDislike } from './dislike'
 export interface ICollection {
@@ -12,5 +12,5 @@ export interface ICollection {
 }
 export type CollectionPayload = Pick<
   ICollection,
-  'name' | 'description' | 'Ids'|'category'
+  'name' | 'description' | 'Ids' |'category'
 >

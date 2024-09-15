@@ -1,8 +1,7 @@
-import { Response, Request } from 'express'
+import { Response } from 'express'
 import { ReasonPhrases, StatusCodes } from 'http-status-codes'
 import winston from 'winston'
 import { startSession } from 'mongoose'
-// import { productService } from '@/services'
 import { Image } from '@/infrastructure/image'
 import { Collection } from '@/models/collection';
 import { Like } from '@/models/like';
@@ -12,7 +11,6 @@ import { productService, collectionService, likeandUnlikeService } from '@/servi
 import { ProductPayload } from '../contracts/product'
 import jwt from 'jsonwebtoken'
 import { Params } from 'express-serve-static-core'
-// import { ObjectId } from 'mongoose';
 import { ObjectId } from 'mongoose';
 import mongoose from 'mongoose';
 import { Schema } from 'mongoose';
@@ -28,9 +26,10 @@ import {
   IUserRequestwithid,
   IContextandBodyRequestforProducts
 } from '@/contracts/request'
-
+import { ILike } from '@/contracts/like'
 import { CollectionPayload } from '@/contracts/collection'
 import { stringify } from 'querystring'
+import { error } from 'console'
 export const collectionController = {
 
   collectionUpload: async (
@@ -43,7 +42,7 @@ export const collectionController = {
     try {
       const { user } = req.context;
       console.log("input", user.id)
-      const { name, description, Ids,category } = req.body;
+      const { name, description, Ids, category } = req.body;
 
       console.log("input2", user.id)
       console.log("Ids", Ids)
@@ -92,23 +91,20 @@ export const collectionController = {
   ) => {
     const session = await startSession();
     session.startTransaction();
+    const { user } = req.context;
+    // const id = user.id;
+    // console.log("checkuser", user)
     try {
-      // const { user } = req.context;
       const catgeoryquery = (req.query.categoryQuery as string);
-      // console.log("catgeoryquery",catgeoryquery)
-      // const id = user.id;
-      // const collections = await collectionService.getCollectionByUser(id, session);
       let collections;
-
       if (!catgeoryquery) {
-        // If categoryQuery is null or empty, use getCollectionByUser
-        collections = await collectionService.getCollectionByUser( session);
+        collections = await collectionService.getCollection(session);
       } else {
-        // Otherwise, use getCollectionByUserandQuery
-        collections = await collectionService.getCollectionByUserandQuery(catgeoryquery, session);
+        collections = await collectionService.getCollectionByQuery(catgeoryquery, session);
       }
+      const likeInitial: Array<ILike> = [];
       const transformedCollectionProducts: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
-      const TransfomedCollections: Array<{ name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
+      const TransfomedCollections: Array<{ likestatus?: boolean, name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
       for (const collection of collections) {
         const transformedCollectionProductsNew: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
         for (const id of collection.Ids) {
@@ -125,27 +121,41 @@ export const collectionController = {
               review: Array.isArray(product.review) ? product.review : [],
               description: product.description
             };
+
             transformedCollectionProductsNew.push(simplifiedProduct);
           }
         }
+
+        // const exsistedLike = await likeandUnlikeService.likeByUserIdCollectionId({ userId: id, collectionId: collection?.id })
+        const existsLike = user ? (
+          await likeandUnlikeService.IslikeByUserIdCollectionIdExsist({
+            userId: user.id,
+            collectionId: collection?.id
+          })
+        ) : null;
+
+
         const simplifiedCollection = {
           name: collection.name,
           description: collection.description,
           products: transformedCollectionProductsNew,
-          collectionId: collection.id
+          collectionId: collection.id,
+          ...(existsLike!=null &&  {likestatus:existsLike})
         };
 
+        // console.log("simplifiedCollection", simplifiedCollection);
         TransfomedCollections.push(simplifiedCollection);
       }
       await session.commitTransaction();
       session.endSession();
+      // console.log("TransfomedCollections",TransfomedCollections);
       const response = {
         data: TransfomedCollections,
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
-      // console.log("response", response);
-      // console.log("productfetch success");
+
+
       return res.status(StatusCodes.OK).json(response);
     } catch (error) {
       if (session.inTransaction()) {
@@ -165,19 +175,21 @@ export const collectionController = {
     const session = await startSession();
     session.startTransaction();
     try {
-      console.log("hhh")
+      // console.log("hhh")
       const { user } = req.context;
       const id = user.id;
       const collectionId = req.params.collectionId;
-      console.log("collectionId",collectionId)
+      // console.log("collectionId", collectionId)
       const collection = await collectionService.getCollectioById(collectionId, session);
-      const likeexist = await likeandUnlikeService.isExistByUserIdCollectionId({ userId: id, collectionId: collection?.id })
-      if (likeexist) {
-        console.log("EXSIST")
+      const exsistedLike = await likeandUnlikeService.likeByUserIdCollectionId({ userId: id, collectionId: collection?.id })
+      if (exsistedLike) {
+        // console.log("EXSIST")
         await likeandUnlikeService.deleteLike({ userId: id, collectionId: collection?.id })
+        await collectionService.removeLikeFromCollection(collection?.id, exsistedLike.id, session)
       } else {
-        console.log("doesnotexsist")
-        likeandUnlikeService.createLike({ userId: id, collectionId: collection?.id });
+        // console.log("doesnotexsist")
+        const createdLike = await likeandUnlikeService.createLike({ userId: id, collectionId: collection?.id });
+        await collectionService.addLikeToCollection({ collectionId: collection?.id, createdLikeId: createdLike.id })
       }
       await session.commitTransaction();
       session.endSession();
@@ -185,7 +197,7 @@ export const collectionController = {
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
-      console.log("hhhhhhhhhhhhhhhhhhh",response)
+      // console.log("hhh", response)
       return res.status(StatusCodes.OK).json(response);
 
     } catch (error) {

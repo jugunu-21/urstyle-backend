@@ -10,11 +10,10 @@ export const authGuard = {
     next: NextFunction
   ) => {
     if (user) {
-      // console.log("user is accessiblein authguard",user)
-      // console.log('user is logged in')
+
       return next()
     }
-    console.log('no user')
+    // console.log('no user')
     return res.status(StatusCodes.UNAUTHORIZED).json({
       message: ReasonPhrases.UNAUTHORIZED,
       status: StatusCodes.UNAUTHORIZED
