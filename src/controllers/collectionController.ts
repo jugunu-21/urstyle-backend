@@ -7,7 +7,7 @@ import { Collection } from '@/models/collection';
 import { Like } from '@/models/like';
 import { Dislike } from '@/models/dislike';
 import { appUrl, joinRelativeToMainPath } from '@/utils/paths'
-import { productService, collectionService, likeandUnlikeService } from '@/services'
+import { productService, collectionService, likeandUnlikeService, userService } from '@/services'
 import { ProductPayload } from '../contracts/product'
 import jwt from 'jsonwebtoken'
 import { Params } from 'express-serve-static-core'
@@ -96,6 +96,10 @@ export const collectionController = {
     // console.log("checkuser", user)
     try {
       const catgeoryquery = (req.query.categoryQuery as string);
+      // if (user.likes) {
+      //   const collectionsIds = await likeandUnlikeService.getCollectionsIdsFromLikeId({likes: user.likes})
+      //   console.log("coolections...", collectionsIds)
+      // }
       let collections;
       if (!catgeoryquery) {
         collections = await collectionService.getCollection(session);
@@ -140,7 +144,7 @@ export const collectionController = {
           description: collection.description,
           products: transformedCollectionProductsNew,
           collectionId: collection.id,
-          ...(existsLike!=null &&  {likestatus:existsLike})
+          ...(existsLike != null && { likestatus: existsLike })
         };
 
         // console.log("simplifiedCollection", simplifiedCollection);
@@ -151,6 +155,90 @@ export const collectionController = {
       // console.log("TransfomedCollections",TransfomedCollections);
       const response = {
         data: TransfomedCollections,
+        message: ReasonPhrases.OK,
+        status: StatusCodes.OK
+      };
+
+
+      return res.status(StatusCodes.OK).json(response);
+    } catch (error) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+        session.endSession();
+      }
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: ReasonPhrases.BAD_REQUEST,
+        status: StatusCodes.BAD_REQUEST
+      });
+    }
+  },
+  LikedCollectionFetch: async (
+    req: IContextandBodyRequest<IUserRequestwithid, CollectionPayload>,
+    res: Response
+  ) => {
+    const session = await startSession();
+    session.startTransaction();
+    const { user } = req.context;
+    let collectionIds: object[] = []
+    if (user.likes) {
+      const havecollectionsIds = await likeandUnlikeService.getCollectionsIdsFromLikeId({ likes: user.likes })
+      collectionIds = havecollectionsIds.map(item => item.collectionId);
+
+    }
+    try {
+      const collections = await collectionService.getCollectionByCollectiIds({ collectionIds, session });
+      const transformedCollectionProducts: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+      const TransfomedCollections: Array<{ likestatus?: boolean, name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
+      for (const collection of collections) {
+        const transformedCollectionProductsNew: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+        for (const id of collection.Ids) {
+          const product = await productService.getByIdWithString(id);
+          if (product) {
+            const simplifiedProduct = {
+              image: product.image_url,
+              id: product.id,
+              pid: product.pid,
+              name: product.name,
+              code: product.code,
+              price: product.price,
+              link: product.link,
+              review: Array.isArray(product.review) ? product.review : [],
+              description: product.description
+            };
+
+            transformedCollectionProductsNew.push(simplifiedProduct);
+          }
+        }
+
+        // const exsistedLike = await likeandUnlikeService.likeByUserIdCollectionId({ userId: id, collectionId: collection?.id })
+        const existsLike = user ? (
+          await likeandUnlikeService.IslikeByUserIdCollectionIdExsist({
+            userId: user.id,
+            collectionId: collection?.id
+          })
+        ) : null;
+
+
+        const simplifiedCollection = {
+          name: collection.name,
+          description: collection.description,
+          products: transformedCollectionProductsNew,
+          collectionId: collection.id,
+          ...(existsLike != null && { likestatus: existsLike })
+        };
+
+        // console.log("simplifiedCollection", simplifiedCollection);
+        TransfomedCollections.push(simplifiedCollection);
+      }
+      await session.commitTransaction();
+      session.endSession();
+      // console.log("TransfomedCollections",TransfomedCollections);
+
+      const response = {
+        data: {
+          PhoneNumber: user.phone_number,
+          TransfomedCollections: TransfomedCollections
+        },
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
@@ -186,10 +274,13 @@ export const collectionController = {
         // console.log("EXSIST")
         await likeandUnlikeService.deleteLike({ userId: id, collectionId: collection?.id })
         await collectionService.removeLikeFromCollection(collection?.id, exsistedLike.id, session)
+        await userService.removeLikeFromUser(user?.id, exsistedLike.id, session)
       } else {
         // console.log("doesnotexsist")
         const createdLike = await likeandUnlikeService.createLike({ userId: id, collectionId: collection?.id });
         await collectionService.addLikeToCollection({ collectionId: collection?.id, createdLikeId: createdLike.id })
+        await userService.addLikeToUser({ userId: user?.id, createdLikeId: createdLike.id })
+
       }
       await session.commitTransaction();
       session.endSession();
@@ -211,4 +302,5 @@ export const collectionController = {
       });
     }
   },
+
 }

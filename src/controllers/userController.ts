@@ -18,6 +18,7 @@ import {
   VerificationRequestPayload
 } from '@/contracts/user'
 import {
+  likeandUnlikeService,
   mediaService,
   resetPasswordService,
   userService,
@@ -39,23 +40,16 @@ export const userController = {
   ) => {
     if (!user) {
       return res.status(StatusCodes.NOT_FOUND).json({
+
         message: ReasonPhrases.NOT_FOUND,
         status: StatusCodes.NOT_FOUND
       })
     }
+ 
 
-    // const media = await mediaService.findOneByRef({
-    //   refType: MediaRefType.User,
-    //   refId: user.id
-    // })
-
-    // let image
-    // if (media) {
-    //   image = appUrl(await new Image(media).sharp({ width: 150, height: 150 }))
-    // }
-
+    const phone_number = user.phone_number
     return res.status(StatusCodes.OK).json({
-      data: { ...user.toJSON() },
+      data: phone_number,
       message: ReasonPhrases.OK,
       status: StatusCodes.OK
     })
@@ -425,11 +419,11 @@ export const userController = {
   deleteProfile: async (
     {
       context: {
-        user: {  id,phone_number},
-       
+        user: { id, phone_number },
+
       },
-      body:{phone_number: bodyPhoneNumber}
-     
+      body: { phone_number: bodyPhoneNumber }
+
     }: ICombinedRequest<IUserRequestwithId, DeleteProfilePayload>,
     res: Response
   ) => {

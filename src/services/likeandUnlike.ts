@@ -1,5 +1,6 @@
 import { ClientSession, ObjectId } from 'mongoose'
 import { Like } from "@/models/like"
+import { ILike } from '@/contracts/like'
 export const likeandUnlikeService = {
     createLike: ({ userId, collectionId }: {
         userId: ObjectId, collectionId: ObjectId
@@ -13,6 +14,20 @@ export const likeandUnlikeService = {
     }, session?: ClientSession) => {
         const existingLike = await Like.findOne({ userId, collectionId }, {}, { session });
         return existingLike;
+    },
+    likeByUserId: async ({ userId }: {
+        userId: ObjectId
+    }, session?: ClientSession) => {
+        const existingLike = await Like.find({ userId}, {}, { session });
+        return existingLike;
+    },
+    getCollectionsIdsFromLikeId: async ({ likes }: {
+        likes: ILike[]
+    }, session?: ClientSession) => {
+        const existingLikes = await Like.find({
+            _id: { $in: likes }
+        }, { collectionId: 1 }, { session });
+        return existingLikes;
     },
     IslikeByUserIdCollectionIdExsist: async ({ userId, collectionId }: {
         userId: ObjectId, collectionId: ObjectId

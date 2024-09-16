@@ -27,7 +27,24 @@ export const userService = {
 
 
   getById: (userId: ObjectId) => User.findById(userId),
+  // addLikeToUser:()=>{},
+  addLikeToUser: async ({userId,createdLikeId}:{userId: ObjectId, createdLikeId: ObjectId}) => await User.findByIdAndUpdate(
+    userId,
+    { $push: { likes: createdLikeId } },
+    { new: true }
+  ),
 
+  removeLikeFromUser: async (
+    collectionId: string,
+    likeId: string,
+    session: any
+  ) => {
+    await User.findOneAndUpdate(
+      { _id: collectionId },
+      { $pull: { likes: { $in: [likeId] } } },
+      { session }
+    );
+  },
   getByEmail: (email: string) => User.findOne({ email }),
   getByphone_number: (phone_number: string) => User.findOne({phone_number }),
 

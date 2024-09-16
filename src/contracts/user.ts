@@ -1,5 +1,6 @@
 import { Model, ObjectId, isObjectIdOrHexString } from 'mongoose'
-
+import { ILike } from './like'
+import { IDislike } from './dislike'
 export interface IVerification {
   email: string
   accessToken: string
@@ -15,11 +16,12 @@ export interface IResetPassword {
 }
 
 export interface IUser {
+  likes?: Array<ILike>
+  dislikes?: Array<IDislike>
   id: ObjectId
   phone_number: string
-  // otp:string
-  email: string
-  password: string
+  email?: string
+  password?: string
   firstName?: string
   lastName?: string
   verified: boolean

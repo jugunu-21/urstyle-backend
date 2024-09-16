@@ -45,6 +45,17 @@ export const productService = {
     }).save({ session }),
 
   getById: (productId: ObjectId) => Product.findById(productId),
+  getByIdHavingSomeFields: ({productId}:{productId: ObjectId}) => Product.findById(productId).select({
+    image_url: 1,
+    id: 1,
+    pid: 1,
+    name: 1,
+    code: 1,
+    price: 1,
+    link: 1,
+    review: 1,
+    description: 1
+  }),
   getByIdWithString: async(productId: string) => await Product.findById(productId),
   updateProductByProductId: async (
     productId: string,

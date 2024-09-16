@@ -3,7 +3,7 @@ import { compareSync } from 'bcrypt'
 
 import { IUser, IUserMethods, UserModel } from '@/contracts/user'
 
-const schema = new Schema<IUser, UserModel, IUserMethods>(
+const schema = new Schema<IUser>(
   {
    
     phone_number: String,
@@ -13,6 +13,8 @@ const schema = new Schema<IUser, UserModel, IUserMethods>(
       type: Boolean,
       default: false
     },
+    likes: [{ type: Schema.Types.ObjectId,  ref: 'Like' }],
+    dislikes: [{type: Schema.Types.ObjectId,  ref: 'Dislike' }],
     verifications: [{ type: Schema.Types.ObjectId, ref: 'Verification' }],
     resetPasswords: [{ type: Schema.Types.ObjectId, ref: 'ResetPassword' }]
   },

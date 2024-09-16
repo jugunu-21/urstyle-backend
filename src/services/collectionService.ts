@@ -48,6 +48,33 @@ export const collectionService = {
     const collection = await Collection.findById(collectionId)
     return collection
   },
+  getCollectioByobjcetId: async (collectionId: object, session?: ClientSession) => {
+
+    const collection = await Collection.findById(collectionId)
+    return collection
+  },
+  getCollectioByIdHavingFields: async (collectionId: string, session?: ClientSession) => {
+
+    const collection = await Collection.findById(collectionId).select({
+
+    })
+    return collection
+  },
+  getMultipleCollectionsByIds: async (collectionIds: string[], session?: ClientSession) => {
+    try {
+      const collections = await Collection.find({
+        _id: { $in: collectionIds }
+      }, {
+       
+
+      }, { session });
+      
+      return collections;
+    } catch (error) {
+      console.error('Error fetching collections:', error);
+      throw error;
+    }
+  },
   addLikeToCollection: async ({collectionId,createdLikeId}:{collectionId: ObjectId, createdLikeId: ObjectId}) => await Collection.findByIdAndUpdate(
     collectionId,
     { $push: { likes: createdLikeId } },
@@ -59,6 +86,21 @@ export const collectionService = {
       return products;
     } catch (error) {
       console.error('Error fetching products by user:', error);
+      throw error;
+    }
+  },
+  getCollectionByCollectiIds: async ({collectionIds, session}:{   collectionIds: object[],
+    session?: ClientSession}
+ 
+  ) => {
+    try {
+      const collections = await Collection.find({
+        _id: { $in: collectionIds }
+      }, {}, { session });
+  
+      return collections;
+    } catch (error) {
+      console.error('Error fetching collections:', error);
       throw error;
     }
   },
@@ -105,12 +147,12 @@ export const collectionService = {
 
   removeLikeFromCollection: async (
     collectionId: string,
-    userId: string,
+    likId: string,
     session: any
   ) => {
     await Collection.findOneAndUpdate(
       { _id: collectionId },
-      { $pull: { likes: { $in: [userId] } } },
+      { $pull: { likes: { $in: [likId] } } },
       { session }
     );
   },

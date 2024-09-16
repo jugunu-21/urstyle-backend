@@ -70,7 +70,7 @@ export interface IUserRequest
 }
 export interface IUserRequestwithid 
 {
-  user: Omit<IUser, 'phone_number'> & Document
+  user: Omit<IUser, 'phone_number'& 'likes'> & Document
   accessToken: string
 }
 export interface IUserRequestwithId 

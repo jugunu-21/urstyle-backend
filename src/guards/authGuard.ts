@@ -1,8 +1,6 @@
 import { NextFunction, Response } from 'express'
 import { StatusCodes, ReasonPhrases } from 'http-status-codes'
-
 import { IContextRequest, IUserRequest } from '@/contracts/request'
-
 export const authGuard = {
   isAuth: (
     { context: { user } }: IContextRequest<IUserRequest>,
@@ -10,10 +8,8 @@ export const authGuard = {
     next: NextFunction
   ) => {
     if (user) {
-
       return next()
     }
-    // console.log('no user')
     return res.status(StatusCodes.UNAUTHORIZED).json({
       message: ReasonPhrases.UNAUTHORIZED,
       status: StatusCodes.UNAUTHORIZED
