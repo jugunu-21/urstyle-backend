@@ -11,18 +11,13 @@ export const auth = (router: Router): void => {
     authValidation.signIn,
     authController.signIn
   )
-
   router.post(
     '/auth/sign-up',
     authGuard.isGuest,
     authValidation.signUp,
     authController.signUp
   )
- 
-
   router.get('/auth/sign-out', authGuard.isAuth, authController.signOut)
-
- 
 }
 
 

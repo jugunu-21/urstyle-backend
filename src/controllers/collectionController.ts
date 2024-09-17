@@ -1,4 +1,4 @@
-import { Response } from 'express'
+import { NextFunction, Response } from 'express'
 import { ReasonPhrases, StatusCodes } from 'http-status-codes'
 import winston from 'winston'
 import { startSession } from 'mongoose'
@@ -87,19 +87,23 @@ export const collectionController = {
   },
   collectionFetch: async (
     req: IContextandBodyRequest<IUserRequestwithid, CollectionPayload>,
-    res: Response
+    res: Response,
+    next: NextFunction
   ) => {
     const session = await startSession();
     session.startTransaction();
     const { user } = req.context;
-    // const id = user.id;
-    // console.log("checkuser", user)
     try {
       const catgeoryquery = (req.query.categoryQuery as string);
-      // if (user.likes) {
-      //   const collectionsIds = await likeandUnlikeService.getCollectionsIdsFromLikeId({likes: user.likes})
-      //   console.log("coolections...", collectionsIds)
-      // }
+      const likedQuery = (req.query.likedQuery as string);
+      const LIKED="user"
+      if(likedQuery === LIKED){
+        console.log("likedQuery",likedQuery)
+        console.log("catgeoryquery",catgeoryquery)
+        return next()
+      }
+      console.log("likedQueryyyyyyyy",likedQuery)
+      console.log("catgeoryqueryyyyyyyyy",catgeoryquery)
       let collections;
       if (!catgeoryquery) {
         collections = await collectionService.getCollection(session);
@@ -137,8 +141,6 @@ export const collectionController = {
             collectionId: collection?.id
           })
         ) : null;
-
-
         const simplifiedCollection = {
           name: collection.name,
           description: collection.description,
@@ -146,20 +148,15 @@ export const collectionController = {
           collectionId: collection.id,
           ...(existsLike != null && { likestatus: existsLike })
         };
-
-        // console.log("simplifiedCollection", simplifiedCollection);
         TransfomedCollections.push(simplifiedCollection);
       }
       await session.commitTransaction();
       session.endSession();
-      // console.log("TransfomedCollections",TransfomedCollections);
       const response = {
         data: TransfomedCollections,
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
-
-
       return res.status(StatusCodes.OK).json(response);
     } catch (error) {
       if (session.inTransaction()) {
@@ -235,10 +232,7 @@ export const collectionController = {
       // console.log("TransfomedCollections",TransfomedCollections);
 
       const response = {
-        data: {
-          PhoneNumber: user.phone_number,
-          TransfomedCollections: TransfomedCollections
-        },
+        data: TransfomedCollections,
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
