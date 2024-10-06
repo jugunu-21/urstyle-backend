@@ -15,7 +15,7 @@ interface ServiceAccountConfig {
  }
  
  // Construct the service account configuration object
- export const serviceAccount: ServiceAccountConfig = {
+ export const serviceAccount: ServiceAccountConfig = {  
   type: process.env.TYPE!,
   project_id: process.env.PROJECT_ID!,
   private_key_id: process.env.PRIVATE_KEY_ID!,
