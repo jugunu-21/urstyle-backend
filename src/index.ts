@@ -33,7 +33,7 @@
 //   notFoundMiddleware
 // )
 
-// const port = process.env.APP_PORT || 8000 ; 
+// const port = process.env.PORT || 8000 ; 
 
 // app.listen(port, () => console.log(`Server listening on port ${port}`));
 import express, { Express } from 'express'
@@ -67,7 +67,7 @@ app.use(
   router,
   notFoundMiddleware
 )
-const PORT =process.env.APP_PORT;
+const PORT =process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

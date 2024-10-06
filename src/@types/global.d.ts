@@ -7,7 +7,7 @@ export declare global {
 
   namespace NodeJS {
     interface ProcessEnv {
-      APP_PORT: number
+      PORT: number
       APP_URL: string
       CLIENT_URL: string
       MONGODB_URI: string
