@@ -250,6 +250,88 @@ export const collectionController = {
       });
     }
   },
+  collectionbyColletionId: async (
+    req: IContextandBodyRequest<IUserRequestwithid, CollectionPayload>,
+    res: Response
+  ) => {
+    const session = await startSession();
+    session.startTransaction();
+    console.log("in collectioId")
+    // const  collectionId  = (req.query.collectionId as string)
+    const collectionId = req.params.collectionId;
+    console.log("in collectioId",collectionId)
+    try {
+      const collection = await collectionService.getCollectioById(collectionId, session );
+      const transformedCollectionProducts: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+      const TransfomedCollections: Array<{ name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
+        const transformedCollectionProductsNew: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+        
+        if (collection?.Ids) {
+          for (const id of collection?.Ids) {
+            const product = await productService.getByIdWithString(id);
+            if (product) {
+              const simplifiedProduct = {
+                image: product.image_url,
+                id: product.id,
+                pid: product.pid,
+                name: product.name,
+                code: product.code,
+                price: product.price,
+                link: product.link,
+                review: Array.isArray(product.review) ? product.review : [],
+                description: product.description
+              };
+  
+              transformedCollectionProductsNew.push(simplifiedProduct);
+            }
+          }
+        } else {
+      
+          console.warn('No IDs found for this collection');
+        }
+        // const exsistedLike = await likeandUnlikeService.likeByUserIdCollectionId({ userId: id, collectionId: collection?.id })
+        // const existsLike = user ? (
+        //   await likeandUnlikeService.IslikeByUserIdCollectionIdExsist({
+        //     userId: user.id,
+        //     collectionId: collection?.id
+        //   })
+        // ) : null;
+
+
+        const simplifiedCollection = {
+          name: collection?.name,
+          description: collection?.description,
+          products: transformedCollectionProductsNew,
+          collectionId: collection?.id,
+          
+        };
+
+        // console.log("simplifiedCollection", simplifiedCollection);
+  
+    
+      await session.commitTransaction();
+      session.endSession();
+      // console.log("TransfomedCollections",TransfomedCollections);
+
+      const response = {
+        data: simplifiedCollection,
+        message: ReasonPhrases.OK,
+        status: StatusCodes.OK
+      };
+
+
+      return res.status(StatusCodes.OK).json(response);
+    } catch (error) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+        session.endSession();
+      }
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: ReasonPhrases.BAD_REQUEST,
+        status: StatusCodes.BAD_REQUEST
+      });
+    }
+  },
   collectionLikeUnlike: async (
     req: IContextandBodyRequest<IUserRequestwithid, CollectionPayload>,
     res: Response
