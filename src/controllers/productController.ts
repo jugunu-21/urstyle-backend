@@ -162,6 +162,51 @@ export const productController = {
       });
     }
   },
+  productFetchById: async (
+    req: IContextandBodyRequestforProducts<IUserRequestwithid>,
+    res: Response
+  ) => {
+    const session = await startSession();
+    session.startTransaction()
+    try {
+      const productId =req.params.productId
+      console.log("productIdiss  ",productId )
+      // const { user } = req.context;
+      // const id = user.id;
+      const product = await productService.getByIdWithString(productId);
+      const simplifiedProducts = {
+        image: product?.image_url, // Assuming you want the URL of the image
+        id: product?.id,
+        pid: product?.pid,
+        name: product?.name,
+        code: product?.code,
+        price: product?.price,
+        link: product?.link,
+        review: product?.review,
+        description: product?.description
+      };
+      console.log("simplifiedProducts",simplifiedProducts)
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(StatusCodes.OK).json({
+        data: { simplifiedProducts},
+        // data: "hey",
+        message: ReasonPhrases.OK,
+        status: StatusCodes.OK
+      });
+
+    }
+    catch (error) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+        session.endSession();
+      }
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: ReasonPhrases.BAD_REQUEST,
+        status: StatusCodes.BAD_REQUEST
+      });
+    }
+  },
   productUpdate: async (
     req: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
     res: Response,

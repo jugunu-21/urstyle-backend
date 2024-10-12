@@ -27,4 +27,9 @@ export const product = (router: Router): void => {
     authGuard.isAuth,
     productController.productDelete
   )
+  router.post(
+    '/product/fetch/:productId',
+
+    productController.productFetchById
+  )
 }
