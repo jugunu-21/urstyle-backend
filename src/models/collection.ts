@@ -11,7 +11,7 @@ const schema = new Schema<ICollection>(
       type: String,
       required: true
     },
-    category: [{
+    collectionCategory: [{
       type: String,
       required: true
     }],

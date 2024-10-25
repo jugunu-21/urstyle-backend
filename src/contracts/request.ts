@@ -31,8 +31,8 @@ export interface IProductBodyRequestRaw<T> extends Omit<Request, 'body'> {
   body: T & {
     name: string,
     price: string,
-    code: string,
-    pid: number,
+    subCategory: string,
+    category: string,
     link: string,
     image: string,
     description: string

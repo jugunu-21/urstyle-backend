@@ -10,12 +10,12 @@ export const collectionService = {
       Ids,
       description,
       userId,
-      category,
+      collectionCategory,
       verified = false
     }: {
       name: string
       description: string
-      category: string[]
+      collectionCategory: string[]
       userId: ObjectId
       Ids: string[]
       verified?: boolean
@@ -26,7 +26,7 @@ export const collectionService = {
       name,
       Ids,
       description,
-      category,
+      collectionCategory,
       userId,
       verified
     }).save({ session }),
@@ -119,14 +119,8 @@ export const collectionService = {
 
       // Filter collections based on category query
       const filteredCollections = collections.filter(collection =>
-        collection.category && collection.category.includes(categoryQuery)
+        collection.collectionCategory && collection.collectionCategory.includes(categoryQuery)
       );
-
-      // Return the filtered collections
-      // if(filteredCollections.length==0){
-      //   return collections
-      // }
-
       return filteredCollections;
     } catch (error) {
       console.error('Error fetching products by user:', error);

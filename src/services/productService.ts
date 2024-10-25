@@ -7,9 +7,9 @@ import { deleteFromCloudinaryWithUrl } from '../utils/cloudinary'
 export const productService = {
   create: (
     {
-      pid,
+      category,
       name,
-      code,
+      subCategory,
       link,
       image_url,
       price,
@@ -18,8 +18,8 @@ export const productService = {
       userId,
       verified = false
     }: {
-      pid?: number
-      code: string
+      category?: string
+      subCategory: string
       link?: string
       image_url?: string
       price: string
@@ -32,9 +32,9 @@ export const productService = {
     session?: ClientSession
   ) =>
     new Product({
-      pid,
+      category,
       name,
-      code,
+      subCategory,
       link,
       image_url,
       price,
@@ -48,9 +48,9 @@ export const productService = {
   getByIdHavingSomeFields: ({productId}:{productId: ObjectId}) => Product.findById(productId).select({
     image_url: 1,
     id: 1,
-    pid: 1,
+    category: 1,
     name: 1,
-    code: 1,
+    subCategory: 1,
     price: 1,
     link: 1,
     review: 1,
@@ -59,10 +59,10 @@ export const productService = {
   getByIdWithString: async(productId: string) => await Product.findById(productId),
   updateProductByProductId: async (
     productId: string,
-    { name, price, description, code, link, pid, image_url, response }: {
-      pid: number,
+    { name, price, description, subCategory, link, category, image_url, response }: {
+      category: string,
       name: string,
-      code: string,
+      subCategory: string,
       link: string,
       price: string,
       image_url: string
@@ -80,7 +80,7 @@ export const productService = {
         await deleteFromCloudinaryWithUrl(product.image_url)
       }
 
-      const data = [{ _id: productId }, { name, price, description, link, code, pid, image_url }]
+      const data = [{ _id: productId }, { name, price, description, link, subCategory, category, image_url }]
       let params = null
       if (session) {
         params = [...data, { session }]

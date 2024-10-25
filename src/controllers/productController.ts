@@ -44,7 +44,7 @@ export const productController = {
     session.startTransaction()
     try {
       const { user } = req.context;
-      const { name, price, code, pid, description, link, image } = req.body;
+      const { name, price, subCategory, category, description, link, image } = req.body;
       // const productId = req.params.id;
       const files = req.files as Express.Multer.File[];
       if (files['0']) {
@@ -57,8 +57,8 @@ export const productController = {
                 {
                   name,
                   price,
-                  code,
-                  pid,
+                  subCategory,
+                  category,
                   image_url: response,
                   description,
                   link,
@@ -78,8 +78,8 @@ export const productController = {
           {
             name,
             price,
-            code,
-            pid,
+            subCategory,
+            category,
             image_url: image,
             description,
             link,
@@ -133,9 +133,9 @@ export const productController = {
       const simplifiedProducts = product.docs.map(product => ({
         image: product.image_url, // Assuming you want the URL of the image
         id: product.id,
-        pid: product.pid,
+        category: product.category,
         name: product.name,
-        code: product.code,
+        subCategory: product.subCategory,
         price: product.price,
         link: product.link,
         review: product.review,
@@ -143,9 +143,9 @@ export const productController = {
       }));
       await session.abortTransaction();
       session.endSession();
+      console.log("simplifiedProducts",simplifiedProducts)
       return res.status(StatusCodes.OK).json({
         data: { simplifiedProducts, totalDocs: product.totalDocs },
-        // data: "hey",
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       });
@@ -177,9 +177,9 @@ export const productController = {
       const simplifiedProducts = {
         image: product?.image_url, // Assuming you want the URL of the image
         id: product?.id,
-        pid: product?.pid,
+        category: product?.category,
         name: product?.name,
-        code: product?.code,
+        subCategory: product?.subCategory,
         price: product?.price,
         link: product?.link,
         review: product?.review,
@@ -214,7 +214,7 @@ export const productController = {
     const session = await startSession();
     session.startTransaction()
     try {
-      const { name, price, code, description, link, pid, image } = req.body;
+      const { name, price, subCategory, description, link, category, image } = req.body;
       // const productId = Number(req.params.id)
       const productId = req.params.id;
       const files = req.files as Express.Multer.File[];
@@ -224,7 +224,7 @@ export const productController = {
           .then((async response => {
             if (response !== undefined) {
               ;
-              await productService.updateProductByProductId(productId, { response, name, price, description, link, code, pid, image_url: response });
+              await productService.updateProductByProductId(productId, { response, name, price, description, link, subCategory, category, image_url: response });
               new Image(file as Express.Multer.File).deleteFile();
               return response;
             }
@@ -232,7 +232,7 @@ export const productController = {
 
       }
       else {
-        await productService.updateProductByProductId(productId, { name, price, description, link, code, pid, image_url: image });
+        await productService.updateProductByProductId(productId, { name, price, description, link, subCategory, category, image_url: image });
       }
 
 

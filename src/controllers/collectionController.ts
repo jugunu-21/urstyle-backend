@@ -42,7 +42,7 @@ export const collectionController = {
     try {
       const { user } = req.context;
       console.log("input", user.id)
-      const { name, description, Ids, category } = req.body;
+      const { name, description, Ids, collectionCategory } = req.body;
 
       console.log("input2", user.id)
       console.log("Ids", Ids)
@@ -52,7 +52,7 @@ export const collectionController = {
           description,
           Ids,
           userId: user.id,
-          category
+          collectionCategory
         },
         session
       )
@@ -102,8 +102,7 @@ export const collectionController = {
         console.log("catgeoryquery",catgeoryquery)
         return next()
       }
-      console.log("likedQueryyyyyyyy",likedQuery)
-      console.log("catgeoryqueryyyyyyyyy",catgeoryquery)
+
       let collections;
       if (!catgeoryquery) {
         collections = await collectionService.getCollection(session);
@@ -111,19 +110,19 @@ export const collectionController = {
         collections = await collectionService.getCollectionByQuery(catgeoryquery, session);
       }
       const likeInitial: Array<ILike> = [];
-      const transformedCollectionProducts: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+      const transformedCollectionProducts: Array<{ image: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
       const TransfomedCollections: Array<{ likestatus?: boolean, name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
       for (const collection of collections) {
-        const transformedCollectionProductsNew: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+        const transformedCollectionProductsNew: Array<{ image: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
         for (const id of collection.Ids) {
           const product = await productService.getByIdWithString(id);
           if (product) {
             const simplifiedProduct = {
               image: product.image_url,
               id: product.id,
-              pid: product.pid,
+              category: product.category,
               name: product.name,
-              code: product.code,
+              subCategory: product.subCategory,
               price: product.price,
               link: product.link,
               review: Array.isArray(product.review) ? product.review : [],
@@ -184,19 +183,19 @@ export const collectionController = {
     }
     try {
       const collections = await collectionService.getCollectionByCollectiIds({ collectionIds, session });
-      const transformedCollectionProducts: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+      const transformedCollectionProducts: Array<{ image: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
       const TransfomedCollections: Array<{ likestatus?: boolean, name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
       for (const collection of collections) {
-        const transformedCollectionProductsNew: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+        const transformedCollectionProductsNew: Array<{ image: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
         for (const id of collection.Ids) {
           const product = await productService.getByIdWithString(id);
           if (product) {
             const simplifiedProduct = {
               image: product.image_url,
               id: product.id,
-              pid: product.pid,
+              category: product.category,
               name: product.name,
-              code: product.code,
+              subCategory: product.subCategory,
               price: product.price,
               link: product.link,
               review: Array.isArray(product.review) ? product.review : [],
@@ -262,10 +261,7 @@ export const collectionController = {
     console.log("in collectioId",collectionId)
     try {
       const collection = await collectionService.getCollectioById(collectionId, session );
-      const transformedCollectionProducts: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
-      const TransfomedCollections: Array<{ name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
-        const transformedCollectionProductsNew: Array<{ image: string; id: any; pid: number; name: string; code: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
-        
+        const transformedCollectionProductsNew: Array<{ image: string; id: any; category: string; name: string;subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
         if (collection?.Ids) {
           for (const id of collection?.Ids) {
             const product = await productService.getByIdWithString(id);
@@ -273,9 +269,9 @@ export const collectionController = {
               const simplifiedProduct = {
                 image: product.image_url,
                 id: product.id,
-                pid: product.pid,
+                category: product.category,
                 name: product.name,
-                code: product.code,
+                subCategory: product.subCategory,
                 price: product.price,
                 link: product.link,
                 review: Array.isArray(product.review) ? product.review : [],
@@ -289,14 +285,6 @@ export const collectionController = {
       
           console.warn('No IDs found for this collection');
         }
-        // const exsistedLike = await likeandUnlikeService.likeByUserIdCollectionId({ userId: id, collectionId: collection?.id })
-        // const existsLike = user ? (
-        //   await likeandUnlikeService.IslikeByUserIdCollectionIdExsist({
-        //     userId: user.id,
-        //     collectionId: collection?.id
-        //   })
-        // ) : null;
-
 
         const simplifiedCollection = {
           name: collection?.name,
@@ -305,14 +293,8 @@ export const collectionController = {
           collectionId: collection?.id,
           
         };
-
-        // console.log("simplifiedCollection", simplifiedCollection);
-  
-    
-      await session.commitTransaction();
+     await session.commitTransaction();
       session.endSession();
-      // console.log("TransfomedCollections",TransfomedCollections);
-
       const response = {
         data: simplifiedCollection,
         message: ReasonPhrases.OK,

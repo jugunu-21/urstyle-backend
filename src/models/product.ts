@@ -5,15 +5,15 @@ import { Document } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
 const schema = new Schema<IProduct>(
   {
-    pid: {
-      type: Number,
+    category: {
+      type: String,
       required: true
     },
     name: {
       type: String,
       required: true
     },
-    code: {
+    subCategory: {
       type: String,
       required: true
     },
@@ -46,9 +46,9 @@ const schema = new Schema<IProduct>(
   { timestamps: true }
 )
 interface ProductDocument extends Document {
-  pid: number;
+  category: string;
   name: string;
-  code: string;
+  subCategory: string;
   link: string;
   image_url: string;
   price: string;
