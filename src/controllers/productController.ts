@@ -44,7 +44,7 @@ export const productController = {
     session.startTransaction()
     try {
       const { user } = req.context;
-      const { name, price, subCategory, category, description, link, image } = req.body;
+      const { name, price, subCategory, category, description, link, image, webLink } = req.body;
       // const productId = req.params.id;
       const files = req.files as Express.Multer.File[];
       if (files['0']) {
@@ -62,6 +62,7 @@ export const productController = {
                   image_url: response,
                   description,
                   link,
+                  webLink,
                   userId: user.id,
 
                 }
@@ -77,6 +78,7 @@ export const productController = {
         await productService.create(
           {
             name,
+            webLink,
             price,
             subCategory,
             category,
@@ -138,12 +140,13 @@ export const productController = {
         subCategory: product.subCategory,
         price: product.price,
         link: product.link,
+        webLink: product.webLink,
         review: product.review,
         description: product.description
       }));
       await session.abortTransaction();
       session.endSession();
-      console.log("simplifiedProducts",simplifiedProducts)
+      console.log("simplifiedProducts", simplifiedProducts)
       return res.status(StatusCodes.OK).json({
         data: { simplifiedProducts, totalDocs: product.totalDocs },
         message: ReasonPhrases.OK,
@@ -169,14 +172,16 @@ export const productController = {
     const session = await startSession();
     session.startTransaction()
     try {
-      const productId =req.params.productId
-      console.log("productIdiss  ",productId )
+      const productId = req.params.productId
+      console.log("productIdiss  ", productId)
       // const { user } = req.context;
       // const id = user.id;
       const product = await productService.getByIdWithString(productId);
+
       const simplifiedProducts = {
         image: product?.image_url, // Assuming you want the URL of the image
         id: product?.id,
+        webLink: product?.webLink,
         category: product?.category,
         name: product?.name,
         subCategory: product?.subCategory,
@@ -185,12 +190,11 @@ export const productController = {
         review: product?.review,
         description: product?.description
       };
-      console.log("simplifiedProducts",simplifiedProducts)
+      console.log("simplifiedProducts", simplifiedProducts)
       await session.abortTransaction();
       session.endSession();
       return res.status(StatusCodes.OK).json({
-        data: { simplifiedProducts},
-        // data: "hey",
+        data: { simplifiedProducts },
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       });
@@ -214,7 +218,7 @@ export const productController = {
     const session = await startSession();
     session.startTransaction()
     try {
-      const { name, price, subCategory, description, link, category, image } = req.body;
+      const { name, price, subCategory, description, link, webLink, category, image } = req.body;
       // const productId = Number(req.params.id)
       const productId = req.params.id;
       const files = req.files as Express.Multer.File[];
@@ -224,7 +228,7 @@ export const productController = {
           .then((async response => {
             if (response !== undefined) {
               ;
-              await productService.updateProductByProductId(productId, { response, name, price, description, link, subCategory, category, image_url: response });
+              await productService.updateProductByProductId(productId, { response, name, price, description, link, subCategory, category, webLink, image_url: response });
               new Image(file as Express.Multer.File).deleteFile();
               return response;
             }
@@ -232,7 +236,7 @@ export const productController = {
 
       }
       else {
-        await productService.updateProductByProductId(productId, { name, price, description, link, subCategory, category, image_url: image });
+        await productService.updateProductByProductId(productId, { name, price, description, link, subCategory, webLink, category, image_url: image });
       }
 
 

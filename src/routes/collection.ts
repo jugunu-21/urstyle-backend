@@ -25,6 +25,6 @@ export const collection = (router: Router): void => {
     collectionController.collectionLikeUnlike)
 
   router.post('/collection/collectionById/:collectionId',
-     
-      collectionController.collectionbyColletionId)
+
+    collectionController.collectionbyColletionId)
 }

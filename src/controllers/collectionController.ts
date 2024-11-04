@@ -96,10 +96,10 @@ export const collectionController = {
     try {
       const catgeoryquery = (req.query.categoryQuery as string);
       const likedQuery = (req.query.likedQuery as string);
-      const LIKED="user"
-      if(likedQuery === LIKED){
-        console.log("likedQuery",likedQuery)
-        console.log("catgeoryquery",catgeoryquery)
+      const LIKED = "user"
+      if (likedQuery === LIKED) {
+        console.log("likedQuery", likedQuery)
+        console.log("catgeoryquery", catgeoryquery)
         return next()
       }
 
@@ -110,10 +110,10 @@ export const collectionController = {
         collections = await collectionService.getCollectionByQuery(catgeoryquery, session);
       }
       const likeInitial: Array<ILike> = [];
-      const transformedCollectionProducts: Array<{ image: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+      const transformedCollectionProducts: Array<{ image: string; webLink: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
       const TransfomedCollections: Array<{ likestatus?: boolean, name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
       for (const collection of collections) {
-        const transformedCollectionProductsNew: Array<{ image: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+        const transformedCollectionProductsNew: Array<{ image: string; id: any; category: string; name: string; subCategory: string; webLink: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
         for (const id of collection.Ids) {
           const product = await productService.getByIdWithString(id);
           if (product) {
@@ -122,6 +122,7 @@ export const collectionController = {
               id: product.id,
               category: product.category,
               name: product.name,
+              webLink: product.webLink,
               subCategory: product.subCategory,
               price: product.price,
               link: product.link,
@@ -258,42 +259,42 @@ export const collectionController = {
     console.log("in collectioId")
     // const  collectionId  = (req.query.collectionId as string)
     const collectionId = req.params.collectionId;
-    console.log("in collectioId",collectionId)
+    console.log("in collectioId", collectionId)
     try {
-      const collection = await collectionService.getCollectioById(collectionId, session );
-        const transformedCollectionProductsNew: Array<{ image: string; id: any; category: string; name: string;subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
-        if (collection?.Ids) {
-          for (const id of collection?.Ids) {
-            const product = await productService.getByIdWithString(id);
-            if (product) {
-              const simplifiedProduct = {
-                image: product.image_url,
-                id: product.id,
-                category: product.category,
-                name: product.name,
-                subCategory: product.subCategory,
-                price: product.price,
-                link: product.link,
-                review: Array.isArray(product.review) ? product.review : [],
-                description: product.description
-              };
-  
-              transformedCollectionProductsNew.push(simplifiedProduct);
-            }
-          }
-        } else {
-      
-          console.warn('No IDs found for this collection');
-        }
+      const collection = await collectionService.getCollectioById(collectionId, session);
+      const transformedCollectionProductsNew: Array<{ image: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+      if (collection?.Ids) {
+        for (const id of collection?.Ids) {
+          const product = await productService.getByIdWithString(id);
+          if (product) {
+            const simplifiedProduct = {
+              image: product.image_url,
+              id: product.id,
+              category: product.category,
+              name: product.name,
+              subCategory: product.subCategory,
+              price: product.price,
+              link: product.link,
+              review: Array.isArray(product.review) ? product.review : [],
+              description: product.description
+            };
 
-        const simplifiedCollection = {
-          name: collection?.name,
-          description: collection?.description,
-          products: transformedCollectionProductsNew,
-          collectionId: collection?.id,
-          
-        };
-     await session.commitTransaction();
+            transformedCollectionProductsNew.push(simplifiedProduct);
+          }
+        }
+      } else {
+
+        console.warn('No IDs found for this collection');
+      }
+
+      const simplifiedCollection = {
+        name: collection?.name,
+        description: collection?.description,
+        products: transformedCollectionProductsNew,
+        collectionId: collection?.id,
+
+      };
+      await session.commitTransaction();
       session.endSession();
       const response = {
         data: simplifiedCollection,

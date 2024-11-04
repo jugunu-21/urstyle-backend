@@ -21,6 +21,10 @@ const schema = new Schema<IProduct>(
       type: String,
       required: true
     },
+    webLink: {
+      type: String,
+      required: true
+    },
     image_url: {
       type: String,
       required: true
@@ -49,6 +53,7 @@ interface ProductDocument extends Document {
   category: string;
   name: string;
   subCategory: string;
+  webLink: string;
   link: string;
   image_url: string;
   price: string;

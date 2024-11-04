@@ -10,6 +10,7 @@ export const productService = {
       category,
       name,
       subCategory,
+      webLink,
       link,
       image_url,
       price,
@@ -24,6 +25,7 @@ export const productService = {
       image_url?: string
       price: string
       name: string
+      webLink: string
       review?: string
       description?: string
       userId?: ObjectId
@@ -39,31 +41,34 @@ export const productService = {
       image_url,
       price,
       review,
+      webLink,
       description,
       userId,
       verified
     }).save({ session }),
 
   getById: (productId: ObjectId) => Product.findById(productId),
-  getByIdHavingSomeFields: ({productId}:{productId: ObjectId}) => Product.findById(productId).select({
+  getByIdHavingSomeFields: ({ productId }: { productId: ObjectId }) => Product.findById(productId).select({
     image_url: 1,
     id: 1,
     category: 1,
     name: 1,
     subCategory: 1,
     price: 1,
+    webLink: 1,
     link: 1,
     review: 1,
     description: 1
   }),
-  getByIdWithString: async(productId: string) => await Product.findById(productId),
+  getByIdWithString: async (productId: string) => await Product.findById(productId),
   updateProductByProductId: async (
     productId: string,
-    { name, price, description, subCategory, link, category, image_url, response }: {
+    { name, price, description, subCategory, webLink, link, category, image_url, response }: {
       category: string,
       name: string,
       subCategory: string,
       link: string,
+      webLink: string,
       price: string,
       image_url: string
       description: string
@@ -80,7 +85,7 @@ export const productService = {
         await deleteFromCloudinaryWithUrl(product.image_url)
       }
 
-      const data = [{ _id: productId }, { name, price, description, link, subCategory, category, image_url }]
+      const data = [{ _id: productId }, { webLink, name, price, description, link, subCategory, category, image_url }]
       let params = null
       if (session) {
         params = [...data, { session }]

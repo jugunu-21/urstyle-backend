@@ -5,17 +5,19 @@ export interface IProduct {
   name: string
   subCategory: string
   link: string
-  image_url:string
+  image_url: string
   price: string
-  review:  ObjectId;
+  webLink: string
+  review: ObjectId;
   description: string
-  userId:ObjectId
+  userId: ObjectId
 }
 export interface IProductinitial {
   category: string
   name: string
   subCategory: string
   link: string
+  webLink: string
   image: string
   price: string
   review: ObjectId
@@ -39,6 +41,6 @@ export interface IPairing {
 }
 export type ProductPayload = Pick<
   IProductinitial,
-  'name' | 'price' | 'subCategory' | 'category' | 'link' | 'image' | 'description'
+  'name' | 'price' | 'subCategory' | 'category' | 'link' | 'webLink' | 'image' | 'description'
 >
 
