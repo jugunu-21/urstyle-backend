@@ -21,7 +21,7 @@ export const product = (router: Router): void => {
     ImageMiddleware,
     productController.productUpdate
   )
- 
+
   router.post(
     '/product/delete/:id',
     authGuard.isAuth,

@@ -96,7 +96,7 @@ export const collectionController = {
     try {
       const catgeoryquery = (req.query.categoryQuery as string);
       const likedQuery = (req.query.likedQuery as string);
-      const LIKED = "user"
+      const LIKED = "likedCollection"
       if (likedQuery === LIKED) {
         console.log("likedQuery", likedQuery)
         console.log("catgeoryquery", catgeoryquery)
@@ -184,10 +184,10 @@ export const collectionController = {
     }
     try {
       const collections = await collectionService.getCollectionByCollectiIds({ collectionIds, session });
-      const transformedCollectionProducts: Array<{ image: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+      const transformedCollectionProducts: Array<{ image: string; id: any; category: string; name: string; webLink: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
       const TransfomedCollections: Array<{ likestatus?: boolean, name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
       for (const collection of collections) {
-        const transformedCollectionProductsNew: Array<{ image: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+        const transformedCollectionProductsNew: Array<{ image: string; webLink: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
         for (const id of collection.Ids) {
           const product = await productService.getByIdWithString(id);
           if (product) {
@@ -198,6 +198,7 @@ export const collectionController = {
               name: product.name,
               subCategory: product.subCategory,
               price: product.price,
+              webLink: product.webLink,
               link: product.link,
               review: Array.isArray(product.review) ? product.review : [],
               description: product.description
