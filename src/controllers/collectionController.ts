@@ -257,13 +257,10 @@ export const collectionController = {
   ) => {
     const session = await startSession();
     session.startTransaction();
-    console.log("in collectioId")
-    // const  collectionId  = (req.query.collectionId as string)
     const collectionId = req.params.collectionId;
-    console.log("in collectioId", collectionId)
     try {
       const collection = await collectionService.getCollectioById(collectionId, session);
-      const transformedCollectionProductsNew: Array<{ image: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+      const transformedCollectionProductsNew: Array<{ image: string; id: any; category: string; name: string; webLink: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
       if (collection?.Ids) {
         for (const id of collection?.Ids) {
           const product = await productService.getByIdWithString(id);
@@ -275,6 +272,7 @@ export const collectionController = {
               name: product.name,
               subCategory: product.subCategory,
               price: product.price,
+              webLink: product.webLink,
               link: product.link,
               review: Array.isArray(product.review) ? product.review : [],
               description: product.description
