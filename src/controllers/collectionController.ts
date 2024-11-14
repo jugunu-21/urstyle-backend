@@ -94,22 +94,18 @@ export const collectionController = {
     session.startTransaction();
     const { user } = req.context;
     try {
-      const catgeoryquery = (req.query.categoryQuery as string);
+      const catgeoryQuery = (req.query.categoryQuery as string);
       const likedQuery = (req.query.likedQuery as string);
       const LIKED = "likedCollection"
       if (likedQuery === LIKED) {
-        console.log("likedQuery", likedQuery)
-        console.log("catgeoryquery", catgeoryquery)
         return next()
       }
-
       let collections;
-      if (!catgeoryquery) {
+      if (!catgeoryQuery) {
         collections = await collectionService.getCollection(session);
       } else {
-        collections = await collectionService.getCollectionByQuery(catgeoryquery, session);
+        collections = await collectionService.getCollectionByQuery(catgeoryQuery, session);
       }
-      const likeInitial: Array<ILike> = [];
       const transformedCollectionProducts: Array<{ image: string; webLink: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
       const TransfomedCollections: Array<{ likestatus?: boolean, name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
       for (const collection of collections) {
@@ -129,18 +125,18 @@ export const collectionController = {
               review: Array.isArray(product.review) ? product.review : [],
               description: product.description
             };
-
             transformedCollectionProductsNew.push(simplifiedProduct);
           }
-        }
 
-        // const exsistedLike = await likeandUnlikeService.likeByUserIdCollectionId({ userId: id, collectionId: collection?.id })
+        }
         const existsLike = user ? (
           await likeandUnlikeService.IslikeByUserIdCollectionIdExsist({
             userId: user.id,
             collectionId: collection?.id
           })
         ) : null;
+
+
         const simplifiedCollection = {
           name: collection.name,
           description: collection.description,
@@ -157,6 +153,7 @@ export const collectionController = {
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
+      console.log("response", response)
       return res.status(StatusCodes.OK).json(response);
     } catch (error) {
       if (session.inTransaction()) {
@@ -180,7 +177,6 @@ export const collectionController = {
     if (user.likes) {
       const havecollectionsIds = await likeandUnlikeService.getCollectionsIdsFromLikeId({ likes: user.likes })
       collectionIds = havecollectionsIds.map(item => item.collectionId);
-
     }
     try {
       const collections = await collectionService.getCollectionByCollectiIds({ collectionIds, session });
@@ -207,16 +203,12 @@ export const collectionController = {
             transformedCollectionProductsNew.push(simplifiedProduct);
           }
         }
-
-        // const exsistedLike = await likeandUnlikeService.likeByUserIdCollectionId({ userId: id, collectionId: collection?.id })
         const existsLike = user ? (
           await likeandUnlikeService.IslikeByUserIdCollectionIdExsist({
             userId: user.id,
             collectionId: collection?.id
           })
         ) : null;
-
-
         const simplifiedCollection = {
           name: collection.name,
           description: collection.description,
@@ -224,21 +216,15 @@ export const collectionController = {
           collectionId: collection.id,
           ...(existsLike != null && { likestatus: existsLike })
         };
-
-        // console.log("simplifiedCollection", simplifiedCollection);
         TransfomedCollections.push(simplifiedCollection);
       }
       await session.commitTransaction();
       session.endSession();
-      // console.log("TransfomedCollections",TransfomedCollections);
-
       const response = {
         data: TransfomedCollections,
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
-
-
       return res.status(StatusCodes.OK).json(response);
     } catch (error) {
       if (session.inTransaction()) {
@@ -264,6 +250,7 @@ export const collectionController = {
       if (collection?.Ids) {
         for (const id of collection?.Ids) {
           const product = await productService.getByIdWithString(id);
+
           if (product) {
             const simplifiedProduct = {
               image: product.image_url,
@@ -277,12 +264,10 @@ export const collectionController = {
               review: Array.isArray(product.review) ? product.review : [],
               description: product.description
             };
-
             transformedCollectionProductsNew.push(simplifiedProduct);
           }
         }
       } else {
-
         console.warn('No IDs found for this collection');
       }
 
@@ -291,7 +276,6 @@ export const collectionController = {
         description: collection?.description,
         products: transformedCollectionProductsNew,
         collectionId: collection?.id,
-
       };
       await session.commitTransaction();
       session.endSession();
@@ -300,8 +284,6 @@ export const collectionController = {
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
-
-
       return res.status(StatusCodes.OK).json(response);
     } catch (error) {
       if (session.inTransaction()) {

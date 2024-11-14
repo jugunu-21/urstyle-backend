@@ -53,7 +53,6 @@ export const ImageMiddleware = (
   next: NextFunction,
 ) => {
   try {
-    console.log("heyy")
     uploadMultipleImages(req, res, async err => {
       const files = req.files as Express.Multer.File[];
       if (err || !files) {
@@ -70,27 +69,10 @@ export const ImageMiddleware = (
 
         }
       })
-      console.log("heyyuu", req.file)
-      // const pathsUrl = files.map(async (file) =>{
-      //   console.log("file",file)
-      //   const url = await uploadCloudinary(file.path)
-      //   console.log("url",url)
-      //   await new Image(file as Express.Multer.File).deleteFile()
-      //   return url
-      // }
-      // );
-      // if(files['0']){
-      //   const file=files['0']
-      //   const url = await uploadCloudinary(file.path)
-      //   req.body.image=url
-      //   await new Image(file as Express.Multer.File).deleteFile()
-
-      //   return next()
-      // }
       return next()
     })
   } catch (error) {
-    console.log("hhheee")
+
     return res.status(StatusCodes.BAD_REQUEST).json({
       message: ReasonPhrases.BAD_REQUEST,
       status: StatusCodes.BAD_REQUEST

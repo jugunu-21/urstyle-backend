@@ -53,17 +53,12 @@ export class Image {
 
   public async deleteFile() {
     try {
-      // console.log("OKEE")
-      // console.log("OKEEe",this.image.path)
       if (await this.isFileExist(this.image.path)) {
-        // console.log("OKEEe")
         await fs.unlink(this.image.path)
       }
-
       const conversionsPath = join(this.image.destination, 'conversions')
       const conversionsFullPath = joinRelativeToMainPath(conversionsPath)
       const files = await fs.readdir(conversionsPath)
-
       const promises = files
         .filter(file => {
           const fileFullPath = join(conversionsFullPath, file)
@@ -78,7 +73,6 @@ export class Image {
         })
 
       await Promise.all(promises)
-      // console.log("OKEE")
     } catch {
       return null
     }

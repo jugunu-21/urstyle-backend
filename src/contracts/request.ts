@@ -18,13 +18,11 @@ export interface IBodyRequest<T> extends Omit<Request, 'body'> {
   body: T & { phone_number?: string };
 }
 
-export interface IContextandBodyRequest<T,S>extends Omit<Request, 'context'&'body'> 
-{
+export interface IContextandBodyRequest<T, S> extends Omit<Request, 'context' & 'body'> {
   context: T,
   body: S
 }
-export interface IContextandBodyRequestforProducts<T>extends Omit<Request, 'context'> 
-{
+export interface IContextandBodyRequestforProducts<T> extends Omit<Request, 'context'> {
   context: T
 }
 export interface IProductBodyRequestRaw<T> extends Omit<Request, 'body'> {
@@ -32,6 +30,7 @@ export interface IProductBodyRequestRaw<T> extends Omit<Request, 'body'> {
     name: string,
     price: string,
     subCategory: string,
+    webLink: string,
     category: string,
     link: string,
     image: string,
@@ -54,27 +53,23 @@ export interface ICombinedRequest<
   Params = Record<string, unknown>,
   Query = Record<string, unknown>
 > extends Pick<IContextRequest<Context>, 'context'>,
-    Pick<IBodyRequest<Body>, 'body'>,
-    Pick<IParamsRequest<Params>, 'params'>,
-    Pick<IQueryRequest<Query>, 'query'> {}
+  Pick<IBodyRequest<Body>, 'body'>,
+  Pick<IParamsRequest<Params>, 'params'>,
+  Pick<IQueryRequest<Query>, 'query'> { }
 
-export interface IUserRequest
- {
+export interface IUserRequest {
   user: Omit<IUser, 'id'> & Document
   accessToken: string
 }
-export interface IUserRequest
- {
+export interface IUserRequest {
   user: Omit<IUser, 'id'> & Document
   accessToken: string
 }
-export interface IUserRequestwithid 
-{
-  user: Omit<IUser, 'phone_number'& 'likes'> & Document
+export interface IUserRequestwithid {
+  user: Omit<IUser, 'phone_number' & 'likes'> & Document
   accessToken: string
 }
-export interface IUserRequestwithId 
-{
-  user:IUser & Document
+export interface IUserRequestwithId {
+  user: IUser & Document
   accessToken: string
 }

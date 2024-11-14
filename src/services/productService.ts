@@ -118,14 +118,14 @@ export const productService = {
       });
   },
 
-  deleteById: async (userId: string, session?: ClientSession) => {
+  deleteByProductId: async (productId: string, session?: ClientSession) => {
     try {
-      const product = await Product.findById(userId)
+      const product = await Product.findById(productId)
       if (!product) {
         throw new Error('Product not found');
       }
       await deleteFromCloudinaryWithUrl(product.image_url)
-      return Product.deleteOne({ user: userId }, { session })
+      return Product.deleteOne({ id: productId }, { session })
     }
     catch { error }
     console.error("doesnot exist any product with this id ")

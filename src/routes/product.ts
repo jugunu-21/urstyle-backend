@@ -22,14 +22,13 @@ export const product = (router: Router): void => {
     productController.productUpdate
   )
 
-  router.post(
-    '/product/delete/:id',
+  router.delete(
+    '/product/delete/:productId',
     authGuard.isAuth,
     productController.productDelete
   )
   router.post(
     '/product/fetch/:productId',
-
     productController.productFetchById
   )
 }

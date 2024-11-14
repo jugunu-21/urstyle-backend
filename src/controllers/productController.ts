@@ -34,7 +34,6 @@ import { CollectionPayload } from '@/contracts/collection'
 export const productController = {
 
   productUpload: async (
-    //  { context: { user } },{ body: { name, price, code,id,image,description,link } }: IContextandBodyRequest<IUserRequest,ProductPayload>,
     req: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
     res: Response
   ) => {
@@ -45,14 +44,12 @@ export const productController = {
     try {
       const { user } = req.context;
       const { name, price, subCategory, category, description, link, image, webLink } = req.body;
-      // const productId = req.params.id;
       const files = req.files as Express.Multer.File[];
       if (files['0']) {
         const file = files['0'];
         uploadCloudinary(file.path)
           .then((async response => {
             if (response !== undefined) {
-              // console.log("imGE aLATERED1", response);
               await productService.create(
                 {
                   name,
@@ -64,15 +61,12 @@ export const productController = {
                   link,
                   webLink,
                   userId: user.id,
-
                 }
-
               )
               new Image(file as Express.Multer.File).deleteFile();
               return response;
             }
           }))
-
       }
       else {
         await productService.create(
@@ -90,16 +84,8 @@ export const productController = {
 
         )
       }
-
-      // console.log("product saved in db", product)
       await session.commitTransaction()
       session.endSession()
-      // const tokendata = {
-      //   id: product.id
-      // }
-      // const accessToken = jwt.sign(tokendata, process.env.JWT_SECRET, {
-      //   expiresIn: '7h'
-      // })
       const response = res.status(StatusCodes.OK).json({
         // data: accessToken,
         message: ReasonPhrases.OK,
@@ -107,8 +93,6 @@ export const productController = {
       })
       return response
     } catch (error) {
-
-      // console.log(error)
       winston.error(error)
       if (session.inTransaction()) {
         await session.abortTransaction()
@@ -133,7 +117,7 @@ export const productController = {
       const id = user.id;
       const product = await productService.getProductsByUserForPagination(id, session, limit, page,);
       const simplifiedProducts = product.docs.map(product => ({
-        image: product.image_url, // Assuming you want the URL of the image
+        image: product.image_url,
         id: product.id,
         category: product.category,
         name: product.name,
@@ -146,13 +130,12 @@ export const productController = {
       }));
       await session.abortTransaction();
       session.endSession();
-      console.log("simplifiedProducts", simplifiedProducts)
+
       return res.status(StatusCodes.OK).json({
         data: { simplifiedProducts, totalDocs: product.totalDocs },
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       });
-
     }
     catch (error) {
       if (session.inTransaction()) {
@@ -173,11 +156,7 @@ export const productController = {
     session.startTransaction()
     try {
       const productId = req.params.productId
-      console.log("productIdiss  ", productId)
-      // const { user } = req.context;
-      // const id = user.id;
       const product = await productService.getByIdWithString(productId);
-
       const simplifiedProducts = {
         image: product?.image_url, // Assuming you want the URL of the image
         id: product?.id,
@@ -266,37 +245,32 @@ export const productController = {
   },
 
   productDelete: async (
-    req: IContextandBodyRequest<IUserRequestwithid, ProductPayload>,
+    req: IContextandBodyRequestforProducts<IUserRequestwithid>,
     res: Response,
   ) => {
     const session = await startSession();
     try {
-      const { user } = req.context
-      const id = req.params.id;
-      if (!id) {
-        return res.status(401).json({ message: 'Unauthorized' });
+      const productId = req.params.productId;
+      // console.log("dellet")
+      if (!productId) {
+        return res.status(401).json({ message: 'Unauthorized', status: StatusCodes.BAD_REQUEST });
       }
-      // Verify JWT token
-
-      await productService.deleteById(id, session)
+      console.log("idcgghbjh", productId)
+      await productService.deleteByProductId(productId, session)
+      await collectionService.checkProductsInCollectionsByProductId({ productId: productId, session: session })
       session.endSession()
       return res.status(StatusCodes.OK).json({
         message: ReasonPhrases.OK,
-        Status: StatusCodes.OK
+        status: StatusCodes.OK
       })
     }
     catch (error) {
-
       console.log('Error while deleting the  product:', error);
       winston.error(error);
-
-      // Handle transaction rollback if needed
       if (session.inTransaction()) {
         await session.abortTransaction();
         session.endSession();
       }
-
-      // Send error response
       return res.status(StatusCodes.BAD_REQUEST).json({
         message: ReasonPhrases.BAD_REQUEST,
         status: StatusCodes.BAD_REQUEST

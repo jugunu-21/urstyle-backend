@@ -36,7 +36,6 @@ export const collectionService = {
       if (!product) {
         throw new Error('Product not found');
       }
-
       return Collection.deleteOne({ user: userId }, { session })
     }
     catch { error }
@@ -44,19 +43,15 @@ export const collectionService = {
     throw error;
   },
   getCollectioById: async (collectionId: string, session?: ClientSession) => {
-
     const collection = await Collection.findById(collectionId)
     return collection
   },
   getCollectioByobjcetId: async (collectionId: object, session?: ClientSession) => {
-
     const collection = await Collection.findById(collectionId)
     return collection
   },
   getCollectioByIdHavingFields: async (collectionId: string, session?: ClientSession) => {
-
     const collection = await Collection.findById(collectionId).select({
-
     })
     return collection
   },
@@ -65,17 +60,14 @@ export const collectionService = {
       const collections = await Collection.find({
         _id: { $in: collectionIds }
       }, {
-       
-
       }, { session });
-      
       return collections;
     } catch (error) {
       console.error('Error fetching collections:', error);
       throw error;
     }
   },
-  addLikeToCollection: async ({collectionId,createdLikeId}:{collectionId: ObjectId, createdLikeId: ObjectId}) => await Collection.findByIdAndUpdate(
+  addLikeToCollection: async ({ collectionId, createdLikeId }: { collectionId: ObjectId, createdLikeId: ObjectId }) => await Collection.findByIdAndUpdate(
     collectionId,
     { $push: { likes: createdLikeId } },
     { new: true }
@@ -89,15 +81,16 @@ export const collectionService = {
       throw error;
     }
   },
-  getCollectionByCollectiIds: async ({collectionIds, session}:{   collectionIds: object[],
-    session?: ClientSession}
- 
+  getCollectionByCollectiIds: async ({ collectionIds, session }: {
+    collectionIds: object[],
+    session?: ClientSession
+  }
   ) => {
     try {
       const collections = await Collection.find({
         _id: { $in: collectionIds }
       }, {}, { session });
-  
+
       return collections;
     } catch (error) {
       console.error('Error fetching collections:', error);
@@ -113,11 +106,38 @@ export const collectionService = {
       throw error;
     }
   },
+  checkProductsInCollectionsByProductId: async ({ productId, session }: { productId: string, session: ClientSession }) => {
+    try {
+      const collections = await Collection.find(
+        {
+          Ids: { $in: productId }
+        }
+      ).session(session);
+      console.log('collections', collections)
+      for (let i = 0; i < collections.length; i++) {
+        const indCollection = collections[i];
+        if (indCollection.Ids.length === 1) {
+          console.log('indCollection', indCollection)
+          indCollection.deleteOne()
+          console.log(`dleetd collectio collections`);
+        }
+        else {
+          console.log('indCollectionupdatee', indCollection)
+          await Collection.updateOne(
+            { Ids: { $in: productId } },
+            { $pull: { Ids: productId } }
+          ).session(session);
+          console.log(`Updated collections`);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching collections by product ID:', error);
+      throw error;
+    }
+  },
   getCollectionByQuery: async (categoryQuery: string, session: ClientSession) => {
     try {
       const collections = await Collection.find({}).session(session);
-
-      // Filter collections based on category query
       const filteredCollections = collections.filter(collection =>
         collection.collectionCategory && collection.collectionCategory.includes(categoryQuery)
       );
@@ -127,18 +147,6 @@ export const collectionService = {
       throw error;
     }
   },
-  // addLikeToCollection: async (
-  //   collectionId: ObjectId,
-  //   createdLikeId: ObjectId,
-  //   session: any
-  // ) => {
-  //   await Collection.findByIdAndUpdate(
-  //     collectionId,
-  //     { $push: { likes: createdLikeId } },
-  //     { session }
-  //   );
-  // },
-
   removeLikeFromCollection: async (
     collectionId: string,
     likId: string,
