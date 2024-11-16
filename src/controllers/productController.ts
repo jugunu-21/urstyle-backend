@@ -251,13 +251,13 @@ export const productController = {
     const session = await startSession();
     try {
       const productId = req.params.productId;
-      // console.log("dellet")
       if (!productId) {
         return res.status(401).json({ message: 'Unauthorized', status: StatusCodes.BAD_REQUEST });
       }
       console.log("idcgghbjh", productId)
-      await productService.deleteByProductId(productId, session)
       await collectionService.checkProductsInCollectionsByProductId({ productId: productId, session: session })
+      await productService.deleteByProductId(productId, session)
+
       session.endSession()
       return res.status(StatusCodes.OK).json({
         message: ReasonPhrases.OK,

@@ -109,29 +109,29 @@ export const collectionService = {
   checkProductsInCollectionsByProductId: async ({ productId, session }: { productId: string, session: ClientSession }) => {
     try {
       const collections = await Collection.find(
-        {
-          Ids: { $in: productId }
-        }
+        { Ids: { $in: [productId] } }
       ).session(session);
-      console.log('collections', collections)
-      for (let i = 0; i < collections.length; i++) {
-        const indCollection = collections[i];
-        if (indCollection.Ids.length === 1) {
-          console.log('indCollection', indCollection)
-          indCollection.deleteOne()
-          console.log(`dleetd collectio collections`);
-        }
-        else {
-          console.log('indCollectionupdatee', indCollection)
+
+      for (const collection of collections) {
+        const idsLength = collection.Ids.length;
+        console.log(`Processing collection with ${idsLength} IDs`);
+
+        if (idsLength === 1) {
+          console.log('Deleting single-IDs collection');
+          await Collection.deleteOne({ _id: collection._id }).session(session);
+          console.log('Deleting single-IDs collection', collection);
+        } else {
+          console.log('Updating multi-IDs collection');
           await Collection.updateOne(
-            { Ids: { $in: productId } },
+            { _id: collection._id },
             { $pull: { Ids: productId } }
           ).session(session);
-          console.log(`Updated collections`);
+          console.log('Updating multi-IDs collection', collection);
         }
       }
+
     } catch (error) {
-      console.error('Error fetching collections by product ID:', error);
+      console.error('Error checking collections by product ID:', error);
       throw error;
     }
   },

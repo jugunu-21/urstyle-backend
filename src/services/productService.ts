@@ -124,8 +124,11 @@ export const productService = {
       if (!product) {
         throw new Error('Product not found');
       }
+
       await deleteFromCloudinaryWithUrl(product.image_url)
-      return Product.deleteOne({ id: productId }, { session })
+
+      return Product.deleteOne({ _id: productId }, { session })
+
     }
     catch { error }
     console.error("doesnot exist any product with this id ")
