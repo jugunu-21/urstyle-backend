@@ -18,9 +18,17 @@ export const collection = (router: Router): void => {
     collectionController.collectionbyUserId,
 
   )
+  router.post('/collection/update/:collectionId',
+    authGuard.isAuth,
+    collectionController.collectionUpdate,
+
+  )
   router.post('/collection/Like/:collectionId',
     authGuard.isAuth,
     collectionController.collectionLikeUnlike)
+  router.delete('/collection/delete/:collectionId',
+    authGuard.isAuth,
+    collectionController.deletecollection)
   router.post('/collection/collectionByCollectionId/:collectionId',
     collectionController.collectionbyColletionId)
 }

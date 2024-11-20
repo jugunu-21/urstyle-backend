@@ -30,11 +30,87 @@ export const collectionService = {
       userId,
       verified
     }).save({ session }),
+  updateCollection: async ({
+    name,
+    Ids,
+    description,
+    collectionId,
+    collectionCategory,
+    userId,
+    session,
+  }:
+    {
 
+      name: string
+
+      userId: string
+
+      collectionId: string
+
+      description: string
+
+      collectionCategory: string[]
+
+      Ids: string[]
+
+      verified?: boolean
+
+      session?: ClientSession
+
+    }
+  ) => {
+    try {
+      console.log("collectionId", collectionId)
+      const collection = await Collection.findById(collectionId);
+
+      if (!collection) {
+        throw new Error('Collection not found');
+      }
+      const updateData = {
+        name,
+        Ids,
+        description,
+        collectionCategory,
+      };
+
+      const filter = { id: collectionId };
+      const options = session ? { session } : {};
+
+      const result = await Collection.updateOne(filter, updateData, options);
+
+      if (result.modifiedCount === 0) {
+        // Handle the case where no documents were updated
+        console.warn('No documents were updated.');
+      }
+
+      return result;
+    } catch (error) {
+      console.error('Error updating collection:', error);
+      throw error;
+    }
+  },
   getCollectioById: async (collectionId: string, session?: ClientSession) => {
     const collection = await Collection.findById(collectionId)
     return collection
   },
+  deleteCollectioById: async (collectionId: string, session?: ClientSession) => {
+
+    try {
+      const collection = await Collection.findById(collectionId)
+      if (!collection) {
+        throw new Error('collection not found');
+      }
+
+
+
+      return Collection.deleteOne({ _id: collectionId }, { session })
+
+    }
+    catch { error }
+    console.error("doesnot exist any product with this id ")
+    throw error;
+  },
+
   getCollectioByUserId: async (userId: string, session?: ClientSession) => {
     const collection = await Collection.findById({ userId })
     return collection

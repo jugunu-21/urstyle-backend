@@ -296,6 +296,86 @@ export const collectionController = {
       });
     }
   },
+  deletecollection: async (
+    req: IContextandBodyRequest<IUserRequestwithid, CollectionPayload>,
+    res: Response
+  ) => {
+    const session = await startSession();
+    session.startTransaction();
+    const collectionId = req.params.collectionId;
+    try {
+      console.log("responsesucessfull")
+      await collectionService.deleteCollectioById(collectionId, session);
+      await session.commitTransaction();
+      session.endSession();
+      const response = {
+        data: "sucessfully deletec colletion",
+        message: ReasonPhrases.OK,
+        status: StatusCodes.OK
+      };
+      console.log("responsesucessfull")
+      return res.status(StatusCodes.OK).json(response);
+    } catch (error) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+        session.endSession();
+      }
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: ReasonPhrases.BAD_REQUEST,
+        status: StatusCodes.BAD_REQUEST
+      });
+    }
+  },
+
+  collectionUpdate: async (
+    req: IContextandBodyRequest<IUserRequestwithid, CollectionPayload>,
+    res: Response
+  ) => {
+
+    console.log("collectionUpload")
+    const session = await startSession();
+    session.startTransaction()
+    try {
+      const collectionId = req.params.collectionId;
+      const { user } = req.context
+      const userId = user.id
+      const { name, description, Ids, collectionCategory } = req.body;
+      const collection = await collectionService.updateCollection(
+        {
+          name,
+          description,
+          Ids,
+          userId,
+          collectionCategory,
+          collectionId,
+          session
+        },
+
+      )
+      console.log("collection", collection)
+      await session.commitTransaction()
+      session.endSession()
+
+
+      const response = res.status(StatusCodes.OK).json({
+        data: "collection updated",
+        message: ReasonPhrases.OK,
+        status: StatusCodes.OK
+      })
+
+      return response
+    } catch (error) {
+      winston.error(error)
+      if (session.inTransaction()) {
+        await session.abortTransaction()
+        session.endSession()
+      }
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: ReasonPhrases.BAD_REQUEST,
+        status: StatusCodes.BAD_REQUEST
+      })
+    }
+  },
   collectionbyUserId: async (
     req: IContextandBodyRequest<IUserRequestwithid, CollectionPayload>,
     res: Response
@@ -318,7 +398,7 @@ export const collectionController = {
       const collections = await collectionService.getCollectionByUserIdforPagination(userId, limit, page, session,);
 
       const transformedCollectionProducts: Array<{ image: string; webLink: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
-      const TransfomedCollections: Array<{ likestatus?: boolean, name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
+      const TransfomedCollections: Array<{ likestatus?: boolean, categories: string[], name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
       for (const collection of collections.docs) {
         const transformedCollectionProductsNew: Array<{ image: string; id: any; category: string; name: string; subCategory: string; webLink: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
         for (const id of collection.Ids) {
@@ -350,6 +430,7 @@ export const collectionController = {
 
         const simplifiedCollection = {
           name: collection.name,
+          categories: collection.collectionCategory,
           description: collection.description,
           products: transformedCollectionProductsNew,
           collectionId: collection.id,
