@@ -30,21 +30,21 @@ export const collectionService = {
       userId,
       verified
     }).save({ session }),
-  deleteById: async (userId: string, session?: ClientSession) => {
-    try {
-      const product = await Collection.findById(userId)
-      if (!product) {
-        throw new Error('Product not found');
-      }
-      return Collection.deleteOne({ user: userId }, { session })
-    }
-    catch { error }
-    console.error("doesnot exist any product with this id ")
-    throw error;
-  },
+
   getCollectioById: async (collectionId: string, session?: ClientSession) => {
     const collection = await Collection.findById(collectionId)
     return collection
+  },
+  getCollectioByUserId: async (userId: string, session?: ClientSession) => {
+    const collection = await Collection.findById({ userId })
+    return collection
+  },
+  getCollectionByUserIdforPagination: async (userId: string, limit: number, page: number, session?: ClientSession,) => {
+    return Collection.paginate({ userId }, { page, limit, session }).then((result) => {
+      return result;
+    }).catch((err) => {
+      throw err;
+    })
   },
   getCollectioByobjcetId: async (collectionId: object, session?: ClientSession) => {
     const collection = await Collection.findById(collectionId)
@@ -97,7 +97,7 @@ export const collectionService = {
       throw error;
     }
   },
-  getCollectionByUser: async (session: ClientSession) => {
+  getCollectionByUserId: async (session: ClientSession) => {
     try {
       const products = await Collection.find({}).session(session);
       return products;

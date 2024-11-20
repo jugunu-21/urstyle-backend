@@ -13,6 +13,11 @@ export const collection = (router: Router): void => {
     collectionController.collectionFetch,
     collectionController.LikedCollectionFetch
   )
+  router.post('/collection/admincollectionfetch',
+    authGuard.isAuth,
+    collectionController.collectionbyUserId,
+
+  )
   router.post('/collection/Like/:collectionId',
     authGuard.isAuth,
     collectionController.collectionLikeUnlike)

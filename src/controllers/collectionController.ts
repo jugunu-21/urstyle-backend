@@ -185,7 +185,7 @@ export const collectionController = {
       for (const collection of collections) {
         const transformedCollectionProductsNew: Array<{ image: string; webLink: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
         for (const id of collection.Ids) {
-          const product = await productService.getByIdWithString(id);
+          const product = await productService.getProductByProductId({ productId: id });
           if (product) {
             const simplifiedProduct = {
               image: product.image_url,
@@ -268,7 +268,7 @@ export const collectionController = {
           }
         }
       } else {
-        console.warn('No IDs found for this collection');
+        console.warn('error');
       }
 
       const simplifiedCollection = {
@@ -284,6 +284,88 @@ export const collectionController = {
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
+      return res.status(StatusCodes.OK).json(response);
+    } catch (error) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+        session.endSession();
+      }
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: ReasonPhrases.BAD_REQUEST,
+        status: StatusCodes.BAD_REQUEST
+      });
+    }
+  },
+  collectionbyUserId: async (
+    req: IContextandBodyRequest<IUserRequestwithid, CollectionPayload>,
+    res: Response
+  ) => {
+    const session = await startSession();
+    session.startTransaction();
+    const { user } = req.context;
+    const userId = user.id;
+    const page = Number(req.query.page as string) || 1;
+    const limit = Number(req.query.limit as string) || 6;
+
+    try {
+      const catgeoryQuery = (req.query.categoryQuery as string);
+      const likedQuery = (req.query.likedQuery as string);
+      const page = Number(req.query.page as string) || 1;
+      const limit = Number(req.query.limit as string) || 6;
+      const { user } = req.context;
+      const userId = user.id;
+
+      const collections = await collectionService.getCollectionByUserIdforPagination(userId, limit, page, session,);
+
+      const transformedCollectionProducts: Array<{ image: string; webLink: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+      const TransfomedCollections: Array<{ likestatus?: boolean, name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
+      for (const collection of collections.docs) {
+        const transformedCollectionProductsNew: Array<{ image: string; id: any; category: string; name: string; subCategory: string; webLink: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
+        for (const id of collection.Ids) {
+          const product = await productService.getByIdWithString(id);
+          if (product) {
+            const simplifiedProduct = {
+              image: product.image_url,
+              id: product.id,
+              category: product.category,
+              name: product.name,
+              webLink: product.webLink,
+              subCategory: product.subCategory,
+              price: product.price,
+              link: product.link,
+              review: Array.isArray(product.review) ? product.review : [],
+              description: product.description
+            };
+            transformedCollectionProductsNew.push(simplifiedProduct);
+          }
+
+        }
+        const existsLike = user ? (
+          await likeandUnlikeService.IslikeByUserIdCollectionIdExsist({
+            userId: user.id,
+            collectionId: collection?.id
+          })
+        ) : null;
+
+
+        const simplifiedCollection = {
+          name: collection.name,
+          description: collection.description,
+          products: transformedCollectionProductsNew,
+          collectionId: collection.id,
+          ...(existsLike != null && { likestatus: existsLike })
+        };
+        TransfomedCollections.push(simplifiedCollection);
+      }
+      await session.commitTransaction();
+      session.endSession();
+
+      const response = {
+        data: { simplifiedCollection: TransfomedCollections, totalDocs: collections.totalDocs },
+        message: ReasonPhrases.OK,
+        status: StatusCodes.OK
+      };
+      console.log("response", response)
       return res.status(StatusCodes.OK).json(response);
     } catch (error) {
       if (session.inTransaction()) {

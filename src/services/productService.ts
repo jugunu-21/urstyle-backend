@@ -61,6 +61,7 @@ export const productService = {
     description: 1
   }),
   getByIdWithString: async (productId: string) => await Product.findById(productId),
+  getProductByProductId: async (productId: object) => await Product.findById(productId),
   updateProductByProductId: async (
     productId: string,
     { name, price, description, subCategory, webLink, link, category, image_url, response }: {
