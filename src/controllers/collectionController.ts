@@ -127,7 +127,6 @@ export const collectionController = {
             };
             transformedCollectionProductsNew.push(simplifiedProduct);
           }
-
         }
         const existsLike = user ? (
           await likeandUnlikeService.IslikeByUserIdCollectionIdExsist({
@@ -135,8 +134,6 @@ export const collectionController = {
             collectionId: collection?.id
           })
         ) : null;
-
-
         const simplifiedCollection = {
           name: collection.name,
           description: collection.description,
@@ -153,7 +150,7 @@ export const collectionController = {
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
-      console.log("response", response)
+      // console.log("response", response)
       return res.status(StatusCodes.OK).json(response);
     } catch (error) {
       if (session.inTransaction()) {
@@ -177,15 +174,17 @@ export const collectionController = {
     if (user.likes) {
       const havecollectionsIds = await likeandUnlikeService.getCollectionsIdsFromLikeId({ likes: user.likes })
       collectionIds = havecollectionsIds.map(item => item.collectionId);
+
     }
     try {
       const collections = await collectionService.getCollectionByCollectiIds({ collectionIds, session });
+
       const transformedCollectionProducts: Array<{ image: string; id: any; category: string; name: string; webLink: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
       const TransfomedCollections: Array<{ likestatus?: boolean, name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
       for (const collection of collections) {
         const transformedCollectionProductsNew: Array<{ image: string; webLink: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
         for (const id of collection.Ids) {
-          const product = await productService.getProductByProductId({ productId: id });
+          const product = await productService.getByIdWithString(id);
           if (product) {
             const simplifiedProduct = {
               image: product.image_url,
@@ -225,6 +224,7 @@ export const collectionController = {
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
+      console.log("responserrrrrttrt", response)
       return res.status(StatusCodes.OK).json(response);
     } catch (error) {
       if (session.inTransaction()) {

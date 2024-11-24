@@ -19,14 +19,14 @@ export const authValidation = {
   ) => {
     try {
       // if (!req.body.email || !req.body.password || !req.body.phone_number) {
-        if ( !req.body.phone_number) {
+      if (!req.body.phone_number) {
         return res.status(StatusCodes.BAD_REQUEST).json({
           message: ReasonPhrases.BAD_REQUEST,
           status: StatusCodes.BAD_REQUEST
         })
       }
-   
 
+      console.log("next")
       return next()
     } catch (error) {
       winston.error(error)
@@ -45,7 +45,7 @@ export const authValidation = {
   ) => {
     try {
       if (
-       
+
         !req.body.phone_number
       ) {
         return res.status(StatusCodes.BAD_REQUEST).json({
@@ -53,7 +53,7 @@ export const authValidation = {
           status: StatusCodes.BAD_REQUEST
         });
       }
-  
+
       // if (
       //   !req.body.email ||
       //   !req.body.password ||
@@ -65,8 +65,8 @@ export const authValidation = {
       //     status: StatusCodes.BAD_REQUEST
       //   });
       // }
-   
-    
+
+
       // let normalizedEmail =
       //   req.body.email && validator.normalizeEmail(req.body.email)
       //   // console.log('hurreeee',req.body.email,' ',req.body.password,' ',normalizedEmail)
@@ -74,23 +74,23 @@ export const authValidation = {
       //   normalizedEmail = validator.trim(normalizedEmail)
       //   // console.log('hurreeee11',req.body.email,' ',req.body.password,' ',normalizedEmail)
       // } 
-     
+
       // if (
       //   !normalizedEmail ||
       //   !validator.isEmail(normalizedEmail, { allow_utf8_local_part: false })
       // ) {
-    
+
       //   return res.status(StatusCodes.BAD_REQUEST).json({
       //     message: ReasonPhrases.BAD_REQUEST,
       //     status: StatusCodes.BAD_REQUEST
       //   })
       // }
-     
+
       // Object.assign(req.body, { email: normalizedEmail })
       // console.log('hurreeee4442',req.body.email,' ',req.body.password,' ',normalizedEmail)
       return next()
     } catch (error) {
-   
+
       winston.error(error)
 
       return res.status(StatusCodes.BAD_REQUEST).json({
