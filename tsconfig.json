@@ -16,15 +16,27 @@
     "removeComments": true,
     "noImplicitAny": true,
     "paths": {
-      "@/*": ["*"]
+      "@/*": [
+        "*"
+      ]
     },
     "baseUrl": "./src",
     "rootDir": "./src",
     "outDir": "./public",
-    "lib": ["ESNext"],
-    "types": ["node"],
-    "typeRoots": ["./node_modules/@types"]
+    "lib": [
+      "ESNext"
+    ],
+    "types": [
+      "node"
+    ],
+    "typeRoots": [
+      "./node_modules/@types"
+    ]
   },
-  "include": ["src/**/*","/api/*.ts/"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
