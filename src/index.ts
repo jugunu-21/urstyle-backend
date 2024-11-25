@@ -18,12 +18,9 @@ redis.run()
 
 const app: Express = express()
 app.use('/', (req, res) => {
-  res.send('Welcome to URSTYLE Backend API');
+  res.json({ message: 'Welcome to URSTYLE Backend API' });
 });
-app.use(
-  join('/', process.env.STORAGE_PATH),
-  express.static(join(__dirname, process.env.STORAGE_PATH))
-)
+
 
 // app.use(
 //   express.json({ limit: '10mb' }),
@@ -34,5 +31,6 @@ app.use(
 //   router,
 //   // notFoundMiddleware
 // )
-// app.listen(process.env.APP_PORT)
-export default app
+app.listen('9000', () => {
+  console.log("dfcgvhbjnkmememmem")
+})
