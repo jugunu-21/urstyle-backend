@@ -2,7 +2,7 @@
   "name": "express-mongodb-rest-api-boilerplate",
   "version": "1.0.3",
   "description": "A boilerplate for Node.js apps / Rest API / Authentication from scratch - express, mongodb (mongoose).",
-  "main": "./src",
+  "main": "./public/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/watscho/express-mongodb-rest-api-boilerplate"
