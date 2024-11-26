@@ -48,26 +48,26 @@ import {
 } from '@/middlewares'
 import { router } from '@/routes'
 import { i18next, i18nextHttpMiddleware } from '@/i18n'
-mongoose.run()
-redis.run()
+// mongoose.run()
+// redis.run()
 const app: Express = express()
-// app.use('/', (req, res) => {
-//   res.send('Welcome to URSTYLE Backend API');
-// });
+app.use('/', (req, res) => {
+  res.send('Welcome to URSTYLE Backend API');
+});
 app.use(
   join('/', process.env.STORAGE_PATH),
   express.static(join(__dirname, process.env.STORAGE_PATH))
 )
-app.use(
-  express.json({ limit: '10mb' }),
-  express.urlencoded({ limit: '10mb', extended: true }),
-  corsMiddleware,
-  i18nextHttpMiddleware.handle(i18next),
-  authMiddleware,
-  router,
-  notFoundMiddleware
-)
-const PORT =process.env.PORT||4000;
+// app.use(
+//   express.json({ limit: '10mb' }),
+//   express.urlencoded({ limit: '10mb', extended: true }),
+//   corsMiddleware,
+//   i18nextHttpMiddleware.handle(i18next),
+//   authMiddleware,
+//   router,
+//   notFoundMiddleware
+// )
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
