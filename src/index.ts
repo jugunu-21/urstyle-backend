@@ -48,8 +48,8 @@ import {
 } from '@/middlewares'
 import { router } from '@/routes'
 import { i18next, i18nextHttpMiddleware } from '@/i18n'
-mongoose.run()
-redis.run()
+// mongoose.run()
+// redis.run()
 const app: Express = express()
 app.use('/', (req, res) => {
   res.send('Welcome to URSTYLE Backend API');
@@ -67,7 +67,7 @@ app.use('/', (req, res) => {
 //   router,
 //   notFoundMiddleware
 // )
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
