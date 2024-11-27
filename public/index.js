@@ -7,6 +7,9 @@ const express_1 = __importDefault(require("express"));
 const path_1 = require("path");
 require("dotenv/config");
 require("./infrastructure/logger");
+const dataSources_1 = require("./dataSources");
+dataSources_1.mongoose.run();
+dataSources_1.redis.run();
 const app = (0, express_1.default)();
 app.use('/', (req, res) => {
     res.send('Welcome to URSTYLE Backend APIdfghjklfghj its me ');
