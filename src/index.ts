@@ -52,7 +52,7 @@ import { i18next, i18nextHttpMiddleware } from '@/i18n'
 // redis.run()
 const app: Express = express()
 app.use('/', (req, res) => {
-  res.send('Welcome to URSTYLE Backend APIdfghjklfghj');
+  res.send('Welcome to URSTYLE Backend APIdfghjklfghj its me ');
 });
 app.use(
   join('/', process.env.STORAGE_PATH),
