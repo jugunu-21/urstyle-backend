@@ -12,7 +12,7 @@ dataSources_1.mongoose.run();
 dataSources_1.redis.run();
 const app = (0, express_1.default)();
 app.use('/', (req, res) => {
-    res.send('Welcome to URSTYLE Backend APIdfghjklfghj its me ');
+    res.send('Welcome to URSTYLE Backend APIdfghjklfghj its me public');
 });
 app.use((0, path_1.join)('/', process.env.STORAGE_PATH), express_1.default.static((0, path_1.join)(__dirname, process.env.STORAGE_PATH)));
 const PORT = process.env.PORT || 4000;
