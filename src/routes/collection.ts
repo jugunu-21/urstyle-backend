@@ -8,7 +8,7 @@ export const collection = (router: Router): void => {
     authGuard.isAuth,
     collectionController.collectionUpload
   )
-  router.post(
+  router.get(
     '/collection/fetch',
     collectionController.collectionFetch,
     collectionController.LikedCollectionFetch
