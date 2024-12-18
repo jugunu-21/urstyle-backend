@@ -23,9 +23,9 @@
     "rest"
   ],
   "scripts": {
-    "build": "npm run rm:public && cross-env NODE_ENV=production tsc && tsc-alias && npm run copy:files",
-    "rm:public": "rimraf ./public",
-    "copy:files": "cp .env ./public/.env && cp -R ./src/templates ./public",
+    "build": "npm run rm:dist && cross-env NODE_ENV=production tsc && tsc-alias && npm run copy:files",
+    "rm:dist": "rimraf ./dist",
+    "copy:files": "cp .env ./dist/.env && cp -R ./src/templates ./dist",
     "seed": "ts-node --files -r tsconfig-paths/register ./src/seeds",
     "lint": "eslint --debug ./src",
     "lint:write": "eslint --debug ./src --fix",
