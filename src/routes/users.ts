@@ -17,11 +17,10 @@ export const users = (router: Router): void => {
   )
   // Add this route after line 12 in your users.ts file
 
-  router.post(
+  router.get(
     '/user/dummy-message',
-    authGuard.isAuth,
     async (req, res) => {
-      res.status(200).json({ message: 'This is a dummy response!' });
+      res.send('Welcome to URSTYLE Backend API');;
     }
   );
 }

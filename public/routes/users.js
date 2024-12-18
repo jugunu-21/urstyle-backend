@@ -7,5 +7,9 @@ const validations_1 = require("../validations");
 const users = (router) => {
     router.get('/me', guards_1.authGuard.isAuth, controllers_1.userController.me);
     router.post('/user/delete', guards_1.authGuard.isAuth, validations_1.userValidation.deleteProfile, controllers_1.userController.deleteProfile);
+    router.get('/user/dummy-message', async (req, res) => {
+        res.send('Welcome to URSTYLE Backend API');
+        ;
+    });
 };
 exports.users = users;
