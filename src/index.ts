@@ -52,7 +52,7 @@ mongoose.run()
 redis.run()
 const app: Express = express()
 app.use('/', (req, res) => {
-  res.send('Welcome to URSTYLE Backend APIIIII');
+  res.send('Welcome to URSTYLE Backend AP');
 });
 // app.use(
 //   join('/', process.env.STORAGE_PATH),
