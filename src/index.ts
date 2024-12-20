@@ -51,7 +51,7 @@ import { i18next, i18nextHttpMiddleware } from '@/i18n'
 mongoose.run()
 redis.run()
 const app: Express = express()
-app.use('/mee', (req, res) => {
+app.use('/', (req, res) => {
   res.send('Welcome to URSTYLE Backend APIIIII');
 });
 // app.use(

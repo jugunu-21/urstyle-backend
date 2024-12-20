@@ -10,7 +10,7 @@ const dataSources_1 = require("./dataSources");
 dataSources_1.mongoose.run();
 dataSources_1.redis.run();
 const app = (0, express_1.default)();
-app.use('/mee', (req, res) => {
+app.use('/', (req, res) => {
     res.send('Welcome to URSTYLE Backend APIIIII');
 });
 const PORT = process.env.PORT || 4000;

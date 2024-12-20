@@ -23,8 +23,7 @@
     "rest"
   ],
   "scripts": {
-    "build": "npm run rm:public && tsc && tsc-alias && npm run copy:files",
-    "start": "node public/index.js",
+    "start": "npm run rm:public && tsc && tsc-alias && npm run copy:files &&  node ./public/index.js",
     "rm:public": "rimraf ./public",
     "copy:files": "cp .env ./public/.env && cp -R ./src/templates ./public",
     "seed": "ts-node --files -r tsconfig-paths/register ./src/seeds",
