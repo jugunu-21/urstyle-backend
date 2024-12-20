@@ -54,10 +54,10 @@ const app: Express = express()
 app.use('/', (req, res) => {
   res.send('Welcome to URSTYLE Backend API');
 });
-app.use(
-  join('/', process.env.STORAGE_PATH),
-  express.static(join(__dirname, process.env.STORAGE_PATH))
-)
+// app.use(
+//   join('/', process.env.STORAGE_PATH),
+//   express.static(join(__dirname, process.env.STORAGE_PATH))
+// )
 app.use(
   express.json({ limit: '10mb' }),
   express.urlencoded({ limit: '10mb', extended: true }),
