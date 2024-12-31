@@ -42,12 +42,12 @@ router.post(
     authValidation.signIn,
     authController.signIn
 );
-router.post(
-    '/auth/sign-up',
-    authGuard.isGuest,
-    authValidation.signUp,
-    authController.signUp
-);
+// router.post(
+//     '/auth/sign-up',
+//     authGuard.isGuest,
+//     authValidation.signUp,
+//     authController.signUp
+// );
 // router.post(
 //     '/collection/fetch',
 //     collectionController.collectionFetch,
