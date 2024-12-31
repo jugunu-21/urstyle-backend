@@ -66,7 +66,7 @@ app.use(
   express.urlencoded({ limit: '10mb', extended: true }),
   corsMiddleware,
   i18nextHttpMiddleware.handle(i18next),
-  // authMiddleware,
+  authMiddleware,
   // router,
   // notFoundMiddleware
 )
