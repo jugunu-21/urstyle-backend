@@ -30,18 +30,19 @@ import { authController } from '@/controllers'
 import { authGuard } from '@/guards'
 import { authValidation } from '@/validations'
 const router: Router = Router();
-// router.get('/me', authGuard.isAuth, userController.me)
+router.get('/me', authGuard.isAuth, userController.me)
+router.get('/details', authGuard.isAuth, userController.me)
 // router.post(
 //     '/collection/upload',
 //     authGuard.isAuth,
 //     collectionController.collectionUpload
 // );
-router.post(
-    '/auth/sign-in',
-    authGuard.isGuest,
-    authValidation.signIn,
-    authController.signIn
-);
+// router.post(
+//     '/auth/sign-in',
+//     authGuard.isGuest,
+//     authValidation.signIn,
+//     authController.signIn
+// );
 // router.post(
 //     '/auth/sign-up',
 //     authGuard.isGuest,
