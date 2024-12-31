@@ -28,34 +28,34 @@ import { userController } from '@/controllers/userController';
 
 const router: Router = Router();
 router.get('/me', authGuard.isAuth, userController.me)
-router.post(
-    '/collection/upload',
-    authGuard.isAuth,
-    collectionController.collectionUpload
-)
-router.post(
-    '/collection/fetch',
-    collectionController.collectionFetch,
-    collectionController.LikedCollectionFetch
-)
-router.post('/collection/admincollectionfetch',
-    authGuard.isAuth,
-    collectionController.collectionbyUserId,
+// router.post(
+//     '/collection/upload',
+//     authGuard.isAuth,
+//     collectionController.collectionUpload
+// )
+// router.post(
+//     '/collection/fetch',
+//     collectionController.collectionFetch,
+//     collectionController.LikedCollectionFetch
+// )
+// router.post('/collection/admincollectionfetch',
+//     authGuard.isAuth,
+//     collectionController.collectionbyUserId,
 
-)
-router.post('/collection/update/:collectionId',
-    authGuard.isAuth,
-    collectionController.collectionUpdate,
+// )
+// router.post('/collection/update/:collectionId',
+//     authGuard.isAuth,
+//     collectionController.collectionUpdate,
 
-)
-router.post('/collection/Like/:collectionId',
-    authGuard.isAuth,
-    collectionController.collectionLikeUnlike)
-router.delete('/collection/delete/:collectionId',
-    authGuard.isAuth,
-    collectionController.deletecollection)
-router.post('/collection/collectionByCollectionId/:collectionId',
-    collectionController.collectionbyColletionId)
+// )
+// router.post('/collection/Like/:collectionId',
+//     authGuard.isAuth,
+//     collectionController.collectionLikeUnlike)
+// router.delete('/collection/delete/:collectionId',
+//     authGuard.isAuth,
+//     collectionController.deletecollection)
+// router.post('/collection/collectionByCollectionId/:collectionId',
+//     collectionController.collectionbyColletionId)
 // // Apply routes from each module
 // users(router)
 // auth(router)
