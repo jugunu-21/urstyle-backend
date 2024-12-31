@@ -31,7 +31,7 @@ import { authGuard } from '@/guards'
 import { authValidation } from '@/validations'
 const router: Router = Router();
 router.get('/me', authGuard.isAuth, userController.me)
-router.get('/details', authGuard.isAuth, userController.me)
+router.post('/details', authGuard.isAuth, userController.me)
 // router.post(
 //     '/collection/upload',
 //     authGuard.isAuth,
