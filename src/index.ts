@@ -176,7 +176,7 @@ app.use(
   router,
   notFoundMiddleware
 )
-
+console.log("router", router)
 
 const PORT = process.env.APP_PORT
 app.listen(PORT, () => {

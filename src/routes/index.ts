@@ -23,15 +23,30 @@ import { auth } from './auth';
 import { product } from './product';
 import { media } from './media';
 import { collection } from './collection';
-import { authGuard } from '@/guards/authGuard';
+
 import { userController } from '@/controllers/userController';
 
+import { authController } from '@/controllers'
+import { authGuard } from '@/guards'
+import { authValidation } from '@/validations'
 const router: Router = Router();
 router.get('/me', authGuard.isAuth, userController.me)
+// router.post(
+//     '/collection/upload',
+//     authGuard.isAuth,
+//     collectionController.collectionUpload
+// )
 router.post(
-    '/collection/upload',
-    authGuard.isAuth,
-    collectionController.collectionUpload
+    '/auth/sign-in',
+    authGuard.isGuest,
+    authValidation.signIn,
+    authController.signIn
+)
+router.post(
+    '/auth/sign-up',
+    authGuard.isGuest,
+    authValidation.signUp,
+    authController.signUp
 )
 // router.post(
 //     '/collection/fetch',
