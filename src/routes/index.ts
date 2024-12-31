@@ -7,7 +7,7 @@ import { collection } from './collection'
 const router: Router = Router()
 const routes: {
     [key: string]: (router: Router) => void
-} = { users, auth }
+} = { users, auth, product }
 
 for (const route in routes) {
     routes[route](router)
