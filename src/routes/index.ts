@@ -36,18 +36,18 @@ const router: Router = Router();
 //     authGuard.isAuth,
 //     collectionController.collectionUpload
 // );
-// router.post(
-//     '/auth/sign-in',
-//     authGuard.isGuest,
-//     authValidation.signIn,
-//     authController.signIn
-// );
 router.post(
-    '/auth/sign-up',
+    '/auth/sign-in',
     authGuard.isGuest,
-    authValidation.signUp,
-    authController.signUp
+    authValidation.signIn,
+    authController.signIn
 );
+// router.post(
+//     '/auth/sign-up',
+//     authGuard.isGuest,
+//     authValidation.signUp,
+//     authController.signUp
+// );
 // router.post(
 //     '/collection/fetch',
 //     collectionController.collectionFetch,
