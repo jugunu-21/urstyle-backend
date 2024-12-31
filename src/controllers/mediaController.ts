@@ -29,7 +29,7 @@ import {
 import fs from 'fs';
 import { uploadCloudinary } from '../utils/cloudinary'
 import { uploadFileToCloudinary } from '../utils/cloudinary'
-import multer from 'multer'
+
 import { CollectionPayload } from '@/contracts/collection'
 export const mediaController = {
   imageUpload: async (
