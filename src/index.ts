@@ -67,7 +67,9 @@ app.use(
   corsMiddleware,
   i18nextHttpMiddleware.handle(i18next),
   authMiddleware,
-  router,
+  router.get('/me', (req, res) => {
+    res.send('Welcome to URSTYLE Backend API');
+  }),
   notFoundMiddleware
 )
 const PORT = process.env.APP_PORT
