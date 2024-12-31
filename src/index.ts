@@ -67,7 +67,7 @@ app.use(
   router,
   notFoundMiddleware
 )
-const PORT = process.env.PORT
+const PORT = process.env.APP_PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
