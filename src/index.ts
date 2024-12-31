@@ -149,8 +149,10 @@ import {
 import { i18next, i18nextHttpMiddleware } from '@/i18n'
 import { authGuard } from './guards/authGuard'
 import { userController } from './controllers/userController'
-import { router } from './routes'
-// import { router } from './routes' 
+
+// import { router } from './routes'
+import { Router } from 'express'
+const router = Router();
 mongoose.run()
 redis.run()
 
@@ -160,7 +162,7 @@ const app: Express = express()
 // app.use('/', (req, res) => {
 //   res.send('Welcome to URSTYLE Backend API');
 // });
-
+router.get('/me', authGuard.isAuth, userController.me)
 app.use(
   join('/', process.env.STORAGE_PATH),
   express.static(join(__dirname, process.env.STORAGE_PATH))
