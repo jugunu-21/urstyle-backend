@@ -6,11 +6,11 @@
 // import { collection } from './collection'
 // const router: Router = Router()
 // const routes: {
-//   [key: string]: (router: Router) => void
+//     [key: string]: (router: Router) => void
 // } = { users, auth, product, collection }
 
 // for (const route in routes) {
-//   routes[route](router)
+//     routes[route](router)
 // }
 // export { router }
 
@@ -30,24 +30,24 @@ import { authController } from '@/controllers'
 import { authGuard } from '@/guards'
 import { authValidation } from '@/validations'
 const router: Router = Router();
-router.get('/me', authGuard.isAuth, userController.me)
+// router.get('/me', authGuard.isAuth, userController.me)
+router.post(
+    '/collection/upload',
+    authGuard.isAuth,
+    collectionController.collectionUpload
+);
 // router.post(
-//     '/collection/upload',
-//     authGuard.isAuth,
-//     collectionController.collectionUpload
-// )
-router.post(
-    '/auth/sign-in',
-    authGuard.isGuest,
-    authValidation.signIn,
-    authController.signIn
-)
-router.post(
-    '/auth/sign-up',
-    authGuard.isGuest,
-    authValidation.signUp,
-    authController.signUp
-)
+//     '/auth/sign-in',
+//     authGuard.isGuest,
+//     authValidation.signIn,
+//     authController.signIn
+// );
+// router.post(
+//     '/auth/sign-up',
+//     authGuard.isGuest,
+//     authValidation.signUp,
+//     authController.signUp
+// );
 // router.post(
 //     '/collection/fetch',
 //     collectionController.collectionFetch,
