@@ -68,7 +68,7 @@ app.use(
   i18nextHttpMiddleware.handle(i18next),
   authMiddleware,
   // router,
-  // notFoundMiddleware
+  notFoundMiddleware
 )
 const PORT = process.env.APP_PORT
 app.listen(PORT, () => {
