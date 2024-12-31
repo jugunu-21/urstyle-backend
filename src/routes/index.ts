@@ -28,11 +28,11 @@ import { userController } from '@/controllers/userController';
 
 const router: Router = Router();
 router.get('/me', authGuard.isAuth, userController.me)
-// router.post(
-//     '/collection/upload',
-//     authGuard.isAuth,
-//     collectionController.collectionUpload
-// )
+router.post(
+    '/collection/upload',
+    authGuard.isAuth,
+    collectionController.collectionUpload
+)
 // router.post(
 //     '/collection/fetch',
 //     collectionController.collectionFetch,
@@ -56,11 +56,6 @@ router.get('/me', authGuard.isAuth, userController.me)
 //     collectionController.deletecollection)
 // router.post('/collection/collectionByCollectionId/:collectionId',
 //     collectionController.collectionbyColletionId)
-// // Apply routes from each module
-// users(router)
-// auth(router)
-// product(router);
-// media(router);
-// collection(router);
+
 
 export { router };
