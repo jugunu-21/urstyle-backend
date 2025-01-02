@@ -21,7 +21,6 @@ export const collection = (router: Router): void => {
   router.post('/collection/update/:collectionId',
     authGuard.isAuth,
     collectionController.collectionUpdate,
-
   )
   router.post('/collection/Like/:collectionId',
     authGuard.isAuth,

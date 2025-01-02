@@ -15,6 +15,12 @@ import { ObjectId } from 'mongoose';
 import mongoose from 'mongoose';
 import { Schema } from 'mongoose';
 import { Types } from 'mongoose';
+interface transformedCollectionProducts {
+  image: string; webLink: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined
+}
+interface CollectionItem {
+  likestatus?: boolean, name: string; collectionId: string, description: string; products: transformedCollectionProducts[]
+}
 import {
   IProductBodyRequestRaw,
   IContextandBodyRequest,
@@ -100,57 +106,16 @@ export const collectionController = {
       if (likedQuery === LIKED) {
         return next()
       }
-      let collections;
-      if (!catgeoryQuery) {
-        collections = await collectionService.getCollection(session);
-      } else {
-        collections = await collectionService.getCollectionByQuery(catgeoryQuery, session);
-      }
-      const transformedCollectionProducts: Array<{ image: string; webLink: string; id: any; category: string; name: string; subCategory: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
-      const TransfomedCollections: Array<{ likestatus?: boolean, name: string; collectionId: string, description: string; products: typeof transformedCollectionProducts }> = [];
-      for (const collection of collections) {
-        const transformedCollectionProductsNew: Array<{ image: string; id: any; category: string; name: string; subCategory: string; webLink: string; price: string; link: string; review: string[]; description: string | undefined }> = [];
-        for (const id of collection.Ids) {
-          const product = await productService.getByIdWithString(id);
-          if (product) {
-            const simplifiedProduct = {
-              image: product.image_url,
-              id: product.id,
-              category: product.category,
-              name: product.name,
-              webLink: product.webLink,
-              subCategory: product.subCategory,
-              price: product.price,
-              link: product.link,
-              review: Array.isArray(product.review) ? product.review : [],
-              description: product.description
-            };
-            transformedCollectionProductsNew.push(simplifiedProduct);
-          }
-        }
-        const existsLike = user ? (
-          await likeandUnlikeService.IslikeByUserIdCollectionIdExsist({
-            userId: user.id,
-            collectionId: collection?.id
-          })
-        ) : null;
-        const simplifiedCollection = {
-          name: collection.name,
-          description: collection.description,
-          products: transformedCollectionProductsNew,
-          collectionId: collection.id,
-          ...(existsLike != null && { likestatus: existsLike })
-        };
-        TransfomedCollections.push(simplifiedCollection);
-      }
+
+      const aggregateCollection: CollectionItem[] = await collectionService.getCollections(session, user?.id);
       await session.commitTransaction();
       session.endSession();
       const response = {
-        data: TransfomedCollections,
+        data: aggregateCollection,
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
-      // console.log("response", response)
+      console.log("response", response.data)
       return res.status(StatusCodes.OK).json(response);
     } catch (error) {
       if (session.inTransaction()) {
@@ -163,6 +128,7 @@ export const collectionController = {
       });
     }
   },
+
   LikedCollectionFetch: async (
     req: IContextandBodyRequest<IUserRequestwithid, CollectionPayload>,
     res: Response
@@ -174,7 +140,6 @@ export const collectionController = {
     if (user.likes) {
       const havecollectionsIds = await likeandUnlikeService.getCollectionsIdsFromLikeId({ likes: user.likes })
       collectionIds = havecollectionsIds.map(item => item.collectionId);
-
     }
     try {
       const collections = await collectionService.getCollectionByCollectiIds({ collectionIds, session });

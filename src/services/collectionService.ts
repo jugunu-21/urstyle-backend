@@ -1,4 +1,4 @@
-import { ClientSession, ObjectId } from 'mongoose'
+import mongoose, { ClientSession, ObjectId } from 'mongoose'
 import { Collection } from '@/models'
 import { error } from 'console'
 import { ok } from 'assert'
@@ -150,13 +150,134 @@ export const collectionService = {
   ),
   getCollection: async (session: ClientSession) => {
     try {
-      const products = await Collection.find({}).session(session);
-      return products;
+      const collections = await Collection.find({}).session(session);
+      return collections;
     } catch (error) {
-      console.error('Error fetching products by user:', error);
+      console.error('Error fetching collection by user:', error);
       throw error;
     }
   },
+  getCollections: async (session: ClientSession,
+    userId?: string
+  ) => {
+    try {
+      const collections = await Collection.aggregate([
+        // Lookup for likes
+        {
+
+          $lookup: {
+            from: "Like", // Lookup the 'Like' collection
+            let: {
+              likesIds: "$likes" // The array of Like document IDs from the collection
+            },
+            pipeline: [
+              // {
+              //   $match: {
+              //     $expr: {
+              //       $in: ["$_id", "$$likesIds"] // Match Likes where the _id is in the likes array from the collection
+              //     }
+              //   }
+              // },
+              {
+                $match: {
+                  $expr: {
+                    // Match the userId in the Like document to the userId passed to the function
+                    $eq: [{ $toObjectId: "$userId" }, { $toObjectId: userId }]
+                  }
+                }
+              }
+            ],
+            as: "userLikes" // This will be an array of Likes where the userId matches the provided userId
+          }
+        },
+
+
+        // Add likestatus field based on whether userLikes array is not empty (user has liked the collection)
+        {
+          $addFields: {
+            likestatus: userId
+              ? { $gt: [{ $size: "$userLikes" }, 0] } // If userLikes is not empty, likestatus is true
+              : null // If userId is null, likestatus will be null
+          }
+        },
+        // Add likestatus field
+        {
+          $addFields: {
+            likestatus: userId
+              ? { $cond: { if: { $gt: [{ $size: "$userLikes" }, 0] }, then: true, else: false } }
+              : null // If userId is null, likestatus will be null or can be excluded
+          }
+        },
+
+        // Lookup for products
+        {
+          $lookup: {
+            from: "products",
+            let: { productIds: "$Ids" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $in: [
+                      "$_id",
+                      { $map: { input: "$$productIds", as: "id", in: { $toObjectId: "$$id" } } }
+                    ]
+                  }
+                }
+              }
+            ],
+            as: "products"
+          }
+        },
+
+        // Project the necessary fields
+        {
+          $project: {
+            _id: 0,
+            name: 1,
+            description: 1,
+            collectionId: "$_id",
+            // likestatus: 1,  // Includes likestatus field
+            userLikes: 1,  // Includes userLikes field (optional)
+            products: {
+              $map: {
+                input: "$products",
+                as: "product",
+                in: {
+                  image: "$$product.image_url",
+                  id: "$$product._id",
+                  category: "$$product.category",
+                  webLink: "$$product.webLink",
+                  link: "$$product.link",
+                  subCategory: "$$product.subCategory",
+                  description: "$$product.description",
+                  name: "$$product.name",
+                  price: "$$product.price",
+                  review: {
+                    $cond: {
+                      if: { $isArray: "$$product.review" },
+                      then: "$$product.review",
+                      else: []
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]).session(session);
+
+      return collections;
+    } catch (error) {
+      console.error('Error fetching collections:', error);
+      throw error;
+    }
+  }
+
+
+
+
+  ,
   getCollectionByCollectiIds: async ({ collectionIds, session }: {
     collectionIds: object[],
     session?: ClientSession
