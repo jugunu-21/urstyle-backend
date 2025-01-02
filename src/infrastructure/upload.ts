@@ -31,7 +31,7 @@ const fileFilter = (
 const upload = multer({
   dest: joinRelativeToMainPath(process.env.STORAGE_PATH),
   limits: { fileSize: mbToBytes(ImageSizeInMb.Ten) },
-  fileFilter
+  // fileFilter
 })
 console.log("upload", upload)
 export const uploadMultipleImages = upload.array('image', 10)
