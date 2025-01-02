@@ -100,14 +100,15 @@ export const collectionController = {
     session.startTransaction();
     const { user } = req.context;
     try {
-      const catgeoryQuery = (req.query.categoryQuery as string);
+      const categoryQuery = (req.query.categoryQuery as string);
       const likedQuery = (req.query.likedQuery as string);
       const LIKED = "likedCollection"
+
       if (likedQuery === LIKED) {
         return next()
       }
 
-      const aggregateCollection: CollectionItem[] = await collectionService.getCollections(session, user?.id);
+      const aggregateCollection: CollectionItem[] = await collectionService.getCollections(session, user?.id, categoryQuery, likedQuery);
       await session.commitTransaction();
       session.endSession();
       const response = {
@@ -115,7 +116,7 @@ export const collectionController = {
         message: ReasonPhrases.OK,
         status: StatusCodes.OK
       };
-      console.log("response", response.data)
+      // console.log("response", response.data)
       return res.status(StatusCodes.OK).json(response);
     } catch (error) {
       if (session.inTransaction()) {

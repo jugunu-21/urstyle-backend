@@ -16,7 +16,6 @@ export const collection = (router: Router): void => {
   router.post('/collection/admincollectionfetch',
     authGuard.isAuth,
     collectionController.collectionbyUserId,
-
   )
   router.post('/collection/update/:collectionId',
     authGuard.isAuth,

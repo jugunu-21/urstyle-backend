@@ -159,10 +159,19 @@ export const collectionService = {
     }
   },
   getCollections: async (session: ClientSession,
-    userId?: string
+    userId?: string, categoryQueryInput?: string, likedQuery?: string
   ) => {
+    console.log("likedQuery", likedQuery)
+    console.log("categoryQueryInput", categoryQueryInput)
     try {
       const collections = await Collection.aggregate([
+        {
+          $match: {
+            ...(categoryQueryInput && {
+              collectionCategory: { $in: [categoryQueryInput] }, // Use $in to match arrays
+            }),
+          },
+        },
         {
           $lookup: {
             from: "likes", // The collection to join
@@ -208,8 +217,8 @@ export const collectionService = {
               }
             }
           }
-        }
-        ,
+        },
+
         {
           $lookup: {
             from: "products",
