@@ -2,6 +2,7 @@ import mongoose, { ClientSession, ObjectId } from 'mongoose'
 import { Collection } from '@/models'
 import { error } from 'console'
 import { ok } from 'assert'
+import { Like } from '@/models/like'
 
 export const collectionService = {
   create: (
@@ -162,54 +163,53 @@ export const collectionService = {
   ) => {
     try {
       const collections = await Collection.aggregate([
-        // Lookup for likes
         {
-
           $lookup: {
-            from: "Like", // Lookup the 'Like' collection
-            let: {
-              likesIds: "$likes" // The array of Like document IDs from the collection
-            },
+            from: "likes", // The collection to join
+            let: { likesIds: "$likes", inputUserId: userId }, // Extract likes array and inputUserId
             pipeline: [
-              // {
-              //   $match: {
-              //     $expr: {
-              //       $in: ["$_id", "$$likesIds"] // Match Likes where the _id is in the likes array from the collection
-              //     }
-              //   }
-              // },
               {
                 $match: {
                   $expr: {
-                    // Match the userId in the Like document to the userId passed to the function
-                    $eq: [{ $toObjectId: "$userId" }, { $toObjectId: userId }]
+                    $and: [
+                      {
+                        $in: [
+                          "$_id", // The _id of the Like document
+                          "$$likesIds" // Array of likeIds from the current document
+                        ]
+                      },
+                      {
+                        $eq: [
+                          "$userId", // userId in the Like document
+                          { $toObjectId: "$$inputUserId" } // Convert inputUserId to ObjectId if needed
+                        ]
+                      }
+                    ]
                   }
                 }
               }
             ],
-            as: "userLikes" // This will be an array of Likes where the userId matches the provided userId
+            as: "userLikes" // Field to store the matching Like documents
           }
         },
-
-
-        // Add likestatus field based on whether userLikes array is not empty (user has liked the collection)
         {
           $addFields: {
-            likestatus: userId
-              ? { $gt: [{ $size: "$userLikes" }, 0] } // If userLikes is not empty, likestatus is true
-              : null // If userId is null, likestatus will be null
+            likestatus: {
+              $cond: {
+                if: { $ne: [userId, undefined] }, // Check if userId is not null
+                then: { // If userId exists, check userLikes array size
+                  $cond: {
+                    if: { $gt: [{ $size: "$userLikes" }, 0] }, // If userLikes is not empty
+                    then: true, // Set likestatus to 1
+                    else: false// Set likestatus to 0 if userLikes is empty
+                  }
+                },
+                else: "$$REMOVE" // If userId is null, remove likestatus field
+              }
+            }
           }
-        },
-        // Add likestatus field
-        {
-          $addFields: {
-            likestatus: userId
-              ? { $cond: { if: { $gt: [{ $size: "$userLikes" }, 0] }, then: true, else: false } }
-              : null // If userId is null, likestatus will be null or can be excluded
-          }
-        },
-
-        // Lookup for products
+        }
+        ,
         {
           $lookup: {
             from: "products",
@@ -229,15 +229,13 @@ export const collectionService = {
             as: "products"
           }
         },
-
-        // Project the necessary fields
         {
           $project: {
             _id: 0,
             name: 1,
             description: 1,
             collectionId: "$_id",
-            // likestatus: 1,  // Includes likestatus field
+            likestatus: 1,  // Includes likestatus field
             userLikes: 1,  // Includes userLikes field (optional)
             products: {
               $map: {
@@ -273,10 +271,6 @@ export const collectionService = {
       throw error;
     }
   }
-
-
-
-
   ,
   getCollectionByCollectiIds: async ({ collectionIds, session }: {
     collectionIds: object[],
